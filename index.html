@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f3f0ea">
+<meta name="description" content="weird flex but it’s ok — unusual little browser games.">
+<title>weird flex but it’s ok</title>
+<link rel="icon" type="image/png" sizes="64x64" href="/favicon.png?v=2">
+<link rel="shortcut icon" href="/favicon.ico?v=2">
+<style>
+:root{--paper:#f3f0ea;--ink:#151515;--muted:#6c6964;--line:#d7d2ca}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,Arial,Helvetica,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+main{width:min(100% - 48px,1320px);margin:0 auto}
+.header{padding:48px 0 56px;border-bottom:1px solid var(--line)}
+.kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 24px}
+.title{font-size:clamp(54px,10vw,150px);line-height:.9;letter-spacing:-.08em;font-weight:760;margin:0;max-width:11ch}
+.title span{display:block}
+.subtitle{margin:26px 0 0;max-width:36rem;color:var(--muted);font-size:15px;line-height:1.55}
+.games{padding:24px 0 72px}
+.game{display:grid;grid-template-columns:1.08fr .92fr;gap:30px;align-items:start;padding:34px 0;border-bottom:1px solid var(--line)}
+.game:nth-child(even){grid-template-columns:.92fr 1.08fr}
+.game:nth-child(even) .visual{order:2}
+.game:nth-child(even) .info{order:1}
+.game:last-child{border-bottom:none}
+.visual{display:block;overflow:hidden;background:#ddd}
+.visual img{display:block;width:100%;height:100%;object-fit:cover;aspect-ratio:16/10}
+.info{display:flex;flex-direction:column;justify-content:space-between;min-height:100%}
+.meta{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.num{font-size:12px;color:var(--muted);padding-top:4px;white-space:nowrap}
+.name{font-size:clamp(30px,3.3vw,54px);line-height:.95;letter-spacing:-.06em;margin:0 0 16px;font-weight:740}
+.desc{font-size:17px;line-height:1.5;color:#44413d;max-width:28rem;margin:0 0 26px}
+.link{display:inline-flex;align-items:center;gap:12px;font-weight:700;font-size:14px;letter-spacing:.01em;border-bottom:1px solid var(--ink);padding-bottom:7px;width:max-content;transition:gap .18s ease}
+.link:hover,.link:focus-visible{gap:18px}.link span{font-size:18px;line-height:1}
+.small{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.footer{padding:18px 0 30px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px}
+@media (max-width: 900px){main{width:min(100% - 34px,1320px)}.game,.game:nth-child(even){grid-template-columns:1fr;gap:18px;padding:28px 0}.game:nth-child(even) .visual,.game:nth-child(even) .info{order:unset}.desc{font-size:16px;max-width:none}}
+@media (max-width: 640px){.header{padding:34px 0 38px}.games{padding-bottom:48px}.title{font-size:clamp(44px,18vw,80px)}.name{font-size:clamp(26px,8vw,40px)}.subtitle{font-size:14px}.footer{display:block}.footer span+span{display:block;margin-top:6px}}
+@media (prefers-reduced-motion: reduce){.link{transition:none}}
+</style>
+</head>
+<body>
+<main>
+<header class="header">
+<p class="kicker">weirdflex.online</p>
+<h1 class="title"><span>weird flex</span><span>but it’s ok</span></h1>
+<p class="subtitle">Small strange browser games, with more on the way. Pick your mood: warehouse euphoria, cheerful shiba chaos, or a very questionable day in the life of a seagull.</p>
+</header>
+<section class="games" aria-label="Games list">
+<article class="game">
+<a class="visual" href="/nightshift/" aria-label="Play NightShift Lite"><img style="aspect-ratio:16/10" src="assets/home/nightshift.webp?v=2" alt="NightShift Lite hero image with a DJ playing to a purple warehouse crowd" width="1600" height="900" decoding="async" fetchpriority="high" loading="eager"></a>
+<div class="info"><div><div class="meta"><div><p class="small">Club sim / lite version</p><h2 class="name">NightShift Lite</h2></div><div class="num">01</div></div><p class="desc">Pick a DJ, launch the party and watch the room come alive. A lighter public version of the nightclub idea — fast to open, easy to lose time in.</p></div><a class="link" href="/nightshift/">Play NightShift <span aria-hidden="true">↗</span></a></div>
+</article>
+<article class="game">
+<a class="visual" href="/shibarun/" aria-label="Play ShibaRun"><img style="aspect-ratio:16/10" src="assets/home/shibarun.webp?v=2" alt="ShibaRun title screen and city selection interface" width="1600" height="900" decoding="async" loading="lazy"></a>
+<div class="info"><div><div class="meta"><div><p class="small">Arcade runner</p><h2 class="name">ShibaRun</h2></div><div class="num">02</div></div><p class="desc">A bright endless runner with one determined dog and a growing collection of cities. Cute on the surface, surprisingly hard once the pace kicks in.</p></div><a class="link" href="/shibarun/">Play ShibaRun <span aria-hidden="true">↗</span></a></div>
+</article>
+<article class="game">
+<a class="visual" href="/gullcity/" aria-label="Play Gull and the City"><img style="aspect-ratio:16/10" src="assets/home/gullcity.webp?v=2" alt="Gull and the City pastel city scene with a flying seagull" width="1600" height="900" decoding="async" loading="lazy"></a>
+<div class="info"><div><div class="meta"><div><p class="small">Meditative absurdism</p><h2 class="name">Gull and the City</h2></div><div class="num">03</div></div><p class="desc">Glide above a beautiful city, switch lanes and make tiny terrible choices. Calm, slow and faintly ridiculous in the best possible way.</p></div><a class="link" href="/gullcity/">Play Gull and the City <span aria-hidden="true">↗</span></a></div>
+</article>
+</section>
+<footer class="footer"><span>weird flex but it’s ok</span><span>Small games. More to come. No downloads.</span></footer>
+</main>
+</body>
+</html>
