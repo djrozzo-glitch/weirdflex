@@ -1,3 +1,18 @@
+# VOID SIGNAL v1.2 — Persistent Endless + Mobile Audio
+
+## Changes
+- In Endless, particles that survive a pulse remain in their exact position and keep their velocity and type on the next wave. Only hit particles disappear. The next wave **adds** fresh particles without replacing survivors.
+- Incoming wave batches start at 26, then rise from 17 towards 40 new particles per wave (subject to available field capacity).
+- A hard cap of 150 live particles protects mobile frame rate. If the field fills completely, the game ends with **CRITICAL OVERLOAD**, rather than silently deleting survivors.
+- The 0.35-second gap between waves stays; there are no inter-wave popup screens.
+- The Endless HUD displays kept, added and field population. Energy and personal best remain compatible with prior versions.
+- Web Audio is unlocked from the first touch/pointer/click gesture anywhere in the game, including Start, Sound and Resume, with resume on returning to the page. On iOS, check the device's media volume and silent settings if sound is still blocked.
+- Existing campaign, Daily and Endless saves retain their previous localStorage keys.
+- PWA cache version bumped for updates.
+
+## Testing
+Run `node tests/endless-qa.mjs`, `node tests/qa-v04.mjs` and `node tests/release-qa.mjs`. Mobile sound needs final hands-on verification in Safari iOS and Chrome Android.
+
 ## v1.1.1 — Seamless Endless waves
 
 Endless now advances to the next wave without a blocking success/failure overlay. The delay has been reduced from two seconds to 0.35 seconds. Energy, wave number, total score and game-over behavior are unchanged.

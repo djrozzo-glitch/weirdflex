@@ -54,8 +54,11 @@ export function createDailyGame(day=dailyKey()) {
   return createGameFromLevel(level);
 }
 
-/** Endless waves: generated from a run seed + wave index. No effect on campaign seeds. */
-export function createEndlessGame(wave=1, runSeed=1) {
+/** Endless: survivors remain alive between rounds; only fresh particles are added.
+ * At the capacity limit the run ends as an overload instead of deleting survivors.
+ * The runSeed and wave index fully determine each incoming batch. */
+export const ENDLESS_CAP = 150;
+export function createEndlessGame(wave=1, runSeed=1, survivors=[]) {
   const w = Math.max(1, Math.min(9999, Math.floor(wave)));
   const seed = (Math.imul(runSeed >>> 0, 2654435761) + Math.imul(w, 2246822519)) >>> 0;
   const clusterSets = [
@@ -65,19 +68,31 @@ export function createEndlessGame(wave=1, runSeed=1) {
     [[160,250],[310,170],[460,380],[620,180],[800,320],[510,250]],
   ];
   const clusters = clusterSets[Math.min(clusterSets.length-1, Math.floor((w-1)/3))];
-  const count = Math.min(96, 26 + (w-1)*4);
-  const amp = w >= 2 ? Math.min(12, Math.floor(w/2)+1) : 0;
-  const echo = w >= 3 ? Math.min(13, Math.floor((w-1)/2)) : 0;
-  const freeze = w >= 5 ? Math.min(9, Math.floor((w-3)/3)) : 0;
-  const voidCount = w >= 7 ? Math.min(11, Math.floor((w-5)/3)) : 0;
-  const level = {
-    id:-w, code:`WAVE ${String(w).padStart(2,'0')}`, subtitle:'One pulse per wave. Keep your energy alive.',
-    seed, count, speed:Math.min(2.15, .67 + (w-1)*.075), spread:Math.min(108,75+w*2),
+  const carried = survivors.filter(p=>!p.hit).map(p=>({...p,hit:false,hitTime:-1,depth:0,frozen:0}));
+  if(carried.length >= ENDLESS_CAP) return null; // Critical overload: keep every survivor; end the run.
+  const desired = w===1 ? 26 : Math.min(40, 14+Math.floor(w*1.7));
+  const count = Math.min(desired, ENDLESS_CAP-carried.length);
+  const amp = w >= 2 ? Math.min(count,Math.min(12, Math.floor(w/2)+1)) : 0;
+  const echo = w >= 3 ? Math.min(count-amp,Math.min(13, Math.floor((w-1)/2))) : 0;
+  const freeze = w >= 5 ? Math.min(count-amp-echo,Math.min(9, Math.floor((w-3)/3))) : 0;
+  const voidCount = w >= 7 ? Math.min(count-amp-echo-freeze,Math.min(11, Math.floor((w-5)/3))) : 0;
+  const batch = {
+    id:-w, code:`WAVE ${String(w).padStart(2,'0')}`, subtitle:'Survivors remain. New particles keep arriving.',
+    seed, count, speed:Math.min(2.15,.67+(w-1)*.075), spread:Math.min(108,75+w*2),
     clusters, amp, echo, freeze, void:voidCount,
     thresholds:[endlessTarget(w),75,92],
-    tip:'Clear the target to keep your energy. 90% restores one energy charge.',
+    tip:'Survivors stay in the field. Clear targets before the reactor overloads.',
   };
-  return createGameFromLevel(level);
+  const newParticles=generateParticles(batch).map((p,i)=>({...p,id:(w-1)*1000+i}));
+  const all=[...carried,...newParticles];
+  const level={...batch,count:all.length,amp:all.filter(p=>p.kind==='amplifier').length,
+    echo:all.filter(p=>p.kind==='echo').length,freeze:all.filter(p=>p.kind==='freeze').length,
+    void:all.filter(p=>p.kind==='void').length};
+  const game=createGameFromLevel(level);
+  game.particles=all;
+  game.added=count;
+  game.carried=carried.length;
+  return game;
 }
 export function endlessTarget(wave) { return Math.min(63, 42 + Math.floor((wave-1)/3)*3); }
 export function endlessOutcome(game, energy) {

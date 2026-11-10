@@ -1,4 +1,4 @@
-import { WORLD, LEVELS, STEP, COLORS, createGame, createDailyGame, createEndlessGame, endlessOutcome, endlessTarget, dailyKey, trigger, stepGame, starsFor, ratingFor } from './game-engine.mjs';
+import { WORLD, LEVELS, STEP, COLORS, createGame, createDailyGame, createEndlessGame, ENDLESS_CAP, endlessOutcome, endlessTarget, dailyKey, trigger, stepGame, starsFor, ratingFor } from './game-engine.mjs';
 
 const $ = id => document.getElementById(id);
 const canvas = $('game');
@@ -18,9 +18,9 @@ function refreshEndlessHud(){
   $('endless-hud').classList.toggle('hidden',!active || screen!=='play');
   $('arena-shell').classList.toggle('is-endless',active);
   if(!active)return;
-  $('endless-wave').textContent=`WAVE ${pad(endless.wave)}`;
+  $('endless-wave').textContent=`WAVE ${pad(endless.wave)} · +${game.added||0} NEW · ${game.carried||0} KEPT`;
   $('endless-energy').textContent='◆'.repeat(endless.energy)+'◇'.repeat(3-endless.energy);
-  $('endless-target').textContent=`TARGET ${endlessTarget(endless.wave)}%`;
+  $('endless-target').textContent=`TARGET ${endlessTarget(endless.wave)}% · FIELD ${game.level.count}/${ENDLESS_CAP}`;
   $('endless-total').textContent=`TOTAL ${(endless.score+(game.phase==='finished'?0:game.score)).toLocaleString('en-US')}`;
 }
 function openEndless(){
@@ -32,10 +32,27 @@ function openEndless(){
 }
 function nextEndlessWave(){
   if(mode!=='endless'||!endless||endless.energy<=0)return;
+  const survivors=game.particles.filter(p=>!p.hit);
+  const next=createEndlessGame(endless.wave+1,endless.runSeed,survivors);
+  if(!next){endlessOverload();return;}
   endless.wave++;
-  game=createEndlessGame(endless.wave,endless.runSeed);
+  game=next;
   endlessTransition=0;
   resetFx();updateMission();display('play');
+}
+function endlessOverload(){
+  endlessTransition=0;
+  $('result-kicker').textContent='// REACTOR SATURATED';
+  $('result-rating').textContent='CRITICAL OVERLOAD';
+  $('result-stars').textContent=`${endless.wave} WAVES`;
+  $('result-hits').textContent=String(endless.totalHits);
+  $('result-depth').textContent=pad(endless.bestDepth);
+  $('result-score').textContent=endless.score.toLocaleString('en-US');
+  $('result-line').textContent=`Field reached ${ENDLESS_CAP} particles. Personal best ${endlessBest.toLocaleString('en-US')}.`;
+  $('next').innerHTML='<span>MAIN MENU</span><b>→</b>';
+  $('daily-menu').style.display='none';
+  $('result-overlay').classList.remove('perfect');
+  finishTone(0);display('result');
 }
 function finishEndless(){
   const outcome=endlessOutcome(game,endless.energy);
@@ -125,15 +142,37 @@ function pad(num, n = 2) { return String(num).padStart(n, '0'); }
 function levelAccessible(id) { return id <= save.unlocked; }
 function persist() { try { localStorage.setItem(saveKey, JSON.stringify(save)); } catch {} }
 
+// iOS Safari requires audio to be unlocked inside a real user interaction.
+// Do not await resume() before starting a silent buffer: the gesture must stay active.
+let audioUnlocked = false;
 function audioInit() {
   if (muted) return;
   try {
-    soundCtx ??= new (window.AudioContext || window.webkitAudioContext)();
-    if (soundCtx.state === 'suspended') soundCtx.resume();
-  } catch {
-    soundCtx = null;
-  }
+    const Audio = window.AudioContext || window.webkitAudioContext;
+    if (!Audio) return;
+    soundCtx ??= new Audio();
+    if (!audioUnlocked) {
+      const buffer=soundCtx.createBuffer(1,1,22050);
+      const source=soundCtx.createBufferSource();
+      source.buffer=buffer;source.connect(soundCtx.destination);
+      source.start(0);audioUnlocked=true;
+    }
+    if(soundCtx.state!=='running'){
+      const result=soundCtx.resume();
+      if(result?.catch)result.catch(()=>{});
+    }
+  } catch { soundCtx = null; audioUnlocked=false; }
 }
+// Capture the first touch/click anywhere, including the Start and Sound buttons.
+// This also resumes audio on iOS after returning from another app.
+for(const eventName of ['pointerdown','touchstart','click']){
+  document.addEventListener(eventName,()=>{if(!muted)audioInit()},{capture:true,passive:true});
+}
+document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden && !muted && soundCtx?.state==='suspended'){
+    soundCtx.resume().catch(()=>{});
+  }
+});
 
 function tone(freq, duration, volume = 0.06, type = 'sine', delay = 0) {
   if (muted || !soundCtx) return;

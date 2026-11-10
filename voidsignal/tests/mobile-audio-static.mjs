@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const app=fs.readFileSync(new URL('../app.mjs',import.meta.url),'utf8');
+const sw=fs.readFileSync(new URL('../sw.js',import.meta.url),'utf8');
+assert.ok(app.includes("'touchstart'"),'Touch gesture audio unlock missing');
+assert.ok(app.includes("'pointerdown'"),'Pointer audio unlock missing');
+assert.ok(app.includes('soundCtx.createBufferSource()'),'Silent buffer unlock missing');
+assert.ok(app.includes('soundCtx.resume()'),'Suspended AudioContext not resumed');
+assert.ok(app.includes("document.addEventListener('visibilitychange'"),'Resume after app switching missing');
+assert.ok(app.includes("'voidsignal.v02.muted'"),'Audio preference migration broken');
+assert.ok(sw.includes('void-signal-release-1.2.0'),'PWA cache not updated');
+console.log('PASS — mobile audio unlock gesture paths and PWA update');
+console.log('NOTE — physical iOS / Android sound still needs device verification');
