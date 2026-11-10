@@ -1,36 +1,24 @@
-# VOID SIGNAL v0.3.1
+# VOID SIGNAL v0.4 — Daily & Total Collapse
 
-Hotfix: fixed the primary button gradient being overridden by `background-image: none !important`. The Next Mission, Start Campaign and Understood buttons now show the intended bright cyan gradient. Updated service-worker cache to v0.3.1 to ensure the CSS refreshes. All 20 missions and v0.3 FX remain unchanged.
+A complete standalone HTML5 Canvas / JavaScript / CSS game. Everything is in English.
 
-# VOID SIGNAL v0.3
+## New in 0.4
 
-Playable browser MVP of a one-tap neon chain-reaction arcade game.
+- 30 campaign missions (20 existing + 10 new), rebalanced star thresholds
+- VOID nodes absorb the particular wave that reaches them. They count as hazards, not collectible targets.
+- FREEZE nodes create a standard wave and briefly immobilize nearby particles.
+- Brighter sprites and particle explosions, floating score, temporary slow motion, TOTAL COLLAPSE animation for 100% target completion
+- Daily Signal: seeded UTC challenge, three launches per day per browser profile, local personal best (no server or global leaderboard)
+- Persisting campaign progress from v0.2/v0.3/v0.3.1 via the original `voidsignal.v02.progress` localStorage key.
+- Offline PWA service worker cache v0.4.0; mobile support.
 
-## What's new in v0.3
+## Upload
 
-- Fixed mission names clipping by wrapping complete names within a wider log.
-- Replaced awkward raster-skinned buttons with clean CSS neon/glass buttons.
-- Added 8 painted FX sprites cropped from bespoke generated concept art and integrated glow/compositing into the gameplay Canvas.
-- Expanded spark density and corrected the initial ripple animation.
-- Kept v0.2 progress and sound preferences.
+Upload **the contents of this folder** to a static directory on GitHub Pages, e.g. `/voidsignal/`.
+For a PWA update, reload after the new service worker installs; hard refresh if necessary.
 
+## QA
 
-- Richer illustrated UI with custom sliced interface assets integrated into the layout
-- Expanded campaign from 10 to 20 missions
-- Rebalanced mission progression and thresholds
-- Stronger visual spectacle: trails, burst sparks, extra ripple rings, combo callouts, and bigger impact feedback
-- Deterministic simulation retained
-- Sound effects only, with no ambient drone
-- Mobile-friendly layout, local saves, and PWA support
+`node tests/qa-v04.mjs` checks campaign solvability, fixed-seed reproducibility, VOID/FREEZE distribution and UTC daily rollover.
 
-## Tech
-
-- Vanilla HTML/CSS/JavaScript
-- HTML5 Canvas rendering
-- Web Audio API for SFX
-- localStorage saves
-- Service worker for offline caching
-
-## Publish
-
-Upload the contents of this folder to a static host such as GitHub Pages.
+Daily limit is enforced locally only and can be reset by clearing storage. A real cross-device global leaderboard would require backend infrastructure.

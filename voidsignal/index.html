@@ -19,7 +19,7 @@
   <header class="topbar">
     <button class="brand" id="brand" title="Go to main menu">
       <img src="./assets/logo-mark.png" alt="" aria-hidden="true" class="brand-logo">
-      <span>VOID<span class="brand-lite">SIGNAL</span><small>// v0.3.1</small></span>
+      <span>VOID<span class="brand-lite">SIGNAL</span><small>// v0.4</small></span>
     </button>
     <div class="header-right">
       <span class="online-mark"><i></i> SIGNAL ONLINE</span>
@@ -32,7 +32,7 @@
 
   <main class="layout">
     <aside class="sidebar sidebar-left">
-      <div class="eyebrow">TRANSMISSION LOG <span id="campaign-progress">01 / 20</span></div>
+      <div class="eyebrow">TRANSMISSION LOG <span id="campaign-progress">01 / 30</span></div>
       <div class="mission-list" id="mission-list"></div>
       <div class="side-foot"><span class="side-foot-symbol">◇</span><p>EVERY CHAIN<br>STARTS SOMEWHERE.</p></div>
     </aside>
@@ -66,8 +66,8 @@
           <div class="hero-title">ONE PULSE.<br><em>INFINITE CHAOS.</em></div>
           <p class="hero-copy">Find the right moment. Touch the field.<br>Watch everything fall into place.</p>
           <button class="primary-button ui-button" id="play"><span>START CAMPAIGN</span><b>↗</b></button>
-          <button class="secondary-button ui-button" id="levels-home"><span>SELECT MISSION</span></button>
-          <div class="home-foot"><span id="mission-count-home">20 MISSIONS</span> <span>◆</span> 3 ENERGY TYPES <span>◆</span> ONE CHANCE</div>
+          <button class="secondary-button ui-button" id="levels-home"><span>SELECT MISSION</span></button><button class="daily-home-button" id="daily-home">✦ DAILY SIGNAL · 3 ATTEMPTS</button>
+          <div class="home-foot"><span id="mission-count-home">30 MISSIONS</span> <span>◆</span> 5 ENERGY TYPES <span>◆</span> ONE CHANCE</div>
         </div>
 
         <div class="center-overlay result-overlay hidden" id="result-overlay" aria-live="polite">
@@ -81,11 +81,21 @@
           </div>
           <p class="result-line" id="result-line">Your signal is getting stronger.</p>
           <div class="result-actions">
-            <button class="secondary-button ui-button" id="retry"><span>RETRY</span></button>
+            <button class="secondary-button ui-button" id="retry"><span>RETRY</span></button><button class="secondary-button ui-button" id="daily-menu"><span>DAILY SIGNAL</span></button>
             <button class="primary-button ui-button" id="next"><span>NEXT MISSION</span><b>→</b></button>
           </div>
         </div>
 
+        <div class="center-overlay daily-overlay hidden" id="daily-overlay">
+          <div class="modal-top"><div><div class="overline">// DAILY TRANSMISSION</div><h2>DAILY SIGNAL</h2></div><button id="daily-close" class="close-button" aria-label="Close">×</button></div>
+          <div class="daily-symbol">✦</div>
+          <p>One deterministic field for everyone. You have three launches each UTC day.</p>
+          <strong id="daily-date">2026-11-10 UTC</strong>
+          <div class="daily-remaining" id="daily-attempts">3 / 3 ATTEMPTS REMAINING</div>
+          <div class="daily-record" id="daily-best">NO SCORE YET</div>
+          <button class="primary-button ui-button" id="daily-play">PLAY DAILY SIGNAL</button>
+          <p class="daily-note">Personal best saved on this device. No online leaderboard.</p>
+        </div>
         <div class="center-overlay select-overlay hidden" id="select-overlay">
           <div class="modal-top"><div><div class="overline">// SYSTEM NAVIGATION</div><h2>MISSION SELECT</h2></div><button id="close-levels" class="close-button" aria-label="Close">×</button></div>
           <div id="level-grid" class="level-grid"></div>
@@ -97,9 +107,9 @@
           <div class="help-rows">
             <p><b>01 / OBSERVE</b><span>Particles drift through the field. Wait for the right configuration.</span></p>
             <p><b>02 / TRIGGER</b><span>Tap or click once to launch your only pulse. Each hit creates another shockwave.</span></p>
-            <p><b>03 / CHAIN</b><span>Reach the target percentage to earn stars. Longer chains earn more points.</span></p>
+            <p><b>03 / CHAIN</b><span>Reach the target percentage to earn stars. Longer chains earn more points.</span></p><p><b>04 / SPECIAL ENERGY</b><span>VOID absorbs one incoming wave. FREEZE stops nearby targets briefly. Red VOID nodes are excluded from the destruction objective.</span></p>
           </div>
-          <div class="legend"><span><i class="dot cyan"></i> NORMAL</span><span><i class="dot orange"></i> AMPLIFIER</span><span><i class="dot purple"></i> ECHO</span></div>
+          <div class="legend"><span><i class="dot cyan"></i> NORMAL</span><span><i class="dot orange"></i> AMPLIFIER</span><span><i class="dot purple"></i> ECHO</span><span><i class="dot red"></i> VOID</span><span><i class="dot mint"></i> FREEZE</span></div>
           <button id="help-go" class="primary-button ui-button"><span>UNDERSTOOD</span><b>→</b></button>
         </div>
 
@@ -118,7 +128,7 @@
       <div class="stat-block"><span>PARTICLES REACHED</span><div class="big-stat"><strong id="hits-count">00</strong><span id="total-count">/ 24</span></div><div class="progress-track"><div id="progress-fill"></div></div><small id="hit-percent">0% OF FIELD</small></div>
       <div class="stat-block"><span>MAX CHAIN DEPTH</span><strong id="chain-depth">00</strong><small>CONSECUTIVE LINKS</small></div>
       <div class="thresholds"><div class="eyebrow">MISSION OBJECTIVES</div><div class="star-row" id="star-row"></div></div>
-      <div class="energy-types"><div class="eyebrow">ENERGY SIGNATURES</div><div class="energy-type"><i class="dot cyan"></i><span>STANDARD</span><small>CHAIN</small></div><div id="amplifier-key" class="energy-type"><i class="dot orange"></i><span>AMPLIFIER</span><small>WIDE</small></div><div id="echo-key" class="energy-type"><i class="dot purple"></i><span>ECHO</span><small>DOUBLE</small></div></div>
+      <div class="energy-types"><div class="eyebrow">ENERGY SIGNATURES</div><div class="energy-type"><i class="dot cyan"></i><span>STANDARD</span><small>CHAIN</small></div><div id="amplifier-key" class="energy-type"><i class="dot orange"></i><span>AMPLIFIER</span><small>WIDE</small></div><div id="echo-key" class="energy-type"><i class="dot purple"></i><span>ECHO</span><small>DOUBLE</small></div><div id="void-key" class="energy-type"><i class="dot red"></i><span>VOID</span><small>ABSORB</small></div><div id="freeze-key" class="energy-type"><i class="dot mint"></i><span>FREEZE</span><small>HOLD</small></div></div>
       <div class="tip-box"><span class="tip-tag">◈ FIELD NOTE</span><p id="field-tip">Wait for the particles to gather. Then tap once.</p></div>
     </aside>
   </main>

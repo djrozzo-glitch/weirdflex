@@ -1,10 +1,19 @@
-import { WORLD, LEVELS, STEP, COLORS, createGame, trigger, stepGame, starsFor, ratingFor } from './game-engine.mjs';
+import { WORLD, LEVELS, STEP, COLORS, createGame, createDailyGame, dailyKey, trigger, stepGame, starsFor, ratingFor } from './game-engine.mjs';
 
 const $ = id => document.getElementById(id);
 const canvas = $('game');
 const ctx = canvas.getContext('2d', { alpha: false });
 const TOTAL_LEVELS = LEVELS.length;
-const saveKey = 'voidsignal.v02.progress';
+const DAILY_SAVE = 'voidsignal.v04.daily';
+function readDaily(){try{const d=JSON.parse(localStorage.getItem(DAILY_SAVE)||'{}');return d&&typeof d==='object'?d:{}}catch{return {}}}
+let daily=readDaily();
+let mode='campaign';
+let slowTimer=0, collapseTimer=0, collapseDone=false;
+const scorePopups=[];
+function saveDaily(){try{localStorage.setItem(DAILY_SAVE,JSON.stringify(daily))}catch{}}
+function todayDaily(){const day=dailyKey();if(!daily[day])daily[day]={attempts:0,best:0,percent:0};return {day,record:daily[day]};}
+function refreshDaily(){const {day,record}=todayDaily();$('daily-date').textContent=day+' UTC';$('daily-attempts').textContent=`${Math.max(0,3-record.attempts)} / 3 ATTEMPTS REMAINING`;$('daily-best').textContent=record.best?`BEST ${record.best.toLocaleString('en-US')} · ${record.percent}%`:'NO SCORE YET';$('daily-play').disabled=record.attempts>=3;$('daily-play').textContent=record.attempts>=3?'COME BACK TOMORROW':'PLAY DAILY SIGNAL';}
+const saveKey = 'voidsignal.v02.progress'; // Keep existing player progression
 const soundKey = 'voidsignal.v02.muted'; // Preserve v0.2 sound preference
 
 function load() {
@@ -41,7 +50,7 @@ const flashes = [];
 const sparks = [];
 const ripples = [];
 const fxImages = {};
-for (const name of ['core-cyan','core-amber','core-echo','shockwave','burst-amber','burst-violet','comet','nova']) {
+for (const name of ['core-cyan','core-amber','core-echo','shockwave','burst-amber','burst-violet','comet','nova','core-void','core-freeze','burst-void','burst-freeze','collapse']) {
   const img = new Image(); img.src = `./assets/fx/${name}.png`;
   fxImages[name] = img;
 }
@@ -125,17 +134,20 @@ function populateList() {
 
 function updateMission() {
   const l = game.level;
-  selected = l.id;
-  $('level-kicker').innerHTML = `MISSION ${pad(l.id)} <span class="sublabel">// CAMPAIGN</span>`;
+  if(mode==='campaign') selected = l.id;
+  $('level-kicker').innerHTML = mode==='daily'?`DAILY SIGNAL <span class="sublabel">// ${dailyKey()} UTC</span>`:`MISSION ${pad(l.id)} <span class="sublabel">// CAMPAIGN</span>`;
   $('mission-title').textContent = l.code;
   $('mission-description').textContent = l.subtitle;
-  $('total-count').textContent = '/ ' + l.count;
+  $('total-count').textContent = '/ ' + (l.count-(l.void||0));
   $('field-tip').textContent = l.tip;
+  $('void-key').classList.toggle('inactive', !l.void);
+  $('freeze-key').classList.toggle('inactive', !l.freeze);
   $('amplifier-key').classList.toggle('inactive', !l.amp);
   $('echo-key').classList.toggle('inactive', !l.echo);
-  $('best-score').textContent = pad(save.scores[l.id] || 0, 6);
+  $('best-score').textContent = pad(mode==='daily'?todayDaily().record.best:(save.scores[l.id]||0),6);
   $('campaign-progress').textContent = `${pad(Math.min(save.unlocked, TOTAL_LEVELS))} / ${pad(TOTAL_LEVELS)}`;
   $('mission-count-home').textContent = `${TOTAL_LEVELS} MISSIONS`;
+  refreshDaily();
   $('mission-unlock-note').textContent = `Clear at least ${LEVELS[0].thresholds[0]}–${LEVELS.at(-1).thresholds[0]}% to unlock the next mission.`;
   populateList();
   refreshTelemetry();
@@ -145,7 +157,8 @@ function refreshTelemetry() {
   $('live-score').textContent = pad(game.score, 6);
   $('hits-count').textContent = pad(game.hits);
   $('chain-depth').textContent = pad(game.bestDepth);
-  const pc = Math.round(game.hits / game.level.count * 100);
+  const targetCount=game.level.count-(game.level.void||0);
+  const pc = Math.round(game.hits / targetCount * 100);
   $('hit-percent').textContent = pc + '% OF FIELD';
   $('progress-fill').style.width = pc + '%';
   $('star-row').innerHTML = game.level.thresholds.map(v => `<div class="star-goal"><span class="star ${pc >= v ? 'earned' : ''}">★</span><small>${v}%</small></div>`).join('');
@@ -164,7 +177,7 @@ function refreshTelemetry() {
 
 function display(screenName) {
   screen = screenName;
-  for (const [id, state] of [['home-overlay', 'home'], ['select-overlay', 'select'], ['help-overlay', 'help'], ['result-overlay', 'result']]) {
+  for (const [id, state] of [['home-overlay', 'home'], ['select-overlay', 'select'], ['help-overlay', 'help'], ['result-overlay', 'result'], ['daily-overlay','daily']]) {
     $(id).classList.toggle('hidden', state !== screenName);
   }
   $('play-hint').classList.toggle('hide', screenName !== 'play' || game.phase !== 'ready');
@@ -172,6 +185,7 @@ function display(screenName) {
 }
 
 function resetFx() {
+  slowTimer=0;collapseTimer=0;collapseDone=false;scorePopups.length=0;
   flashes.length = 0;
   sparks.length = 0;
   ripples.length = 0;
@@ -184,40 +198,45 @@ function resetFx() {
 
 function choose(id) {
   if (!levelAccessible(id)) return;
+  mode='campaign';
   selected = id;
   game = createGame(id);
   resetFx();
   updateMission();
   display('play');
 }
-
-function restart() { game = createGame(selected); resetFx(); updateMission(); display('play'); }
-function goHome() { game = createGame(selected); resetFx(); updateMission(); display('home'); }
+function openDaily(){const {record}=todayDaily();if(record.attempts>=3){display('daily');return;} mode='daily';game=createDailyGame();resetFx();updateMission();display('play');}
+function restart() { if(mode==='daily'){openDaily();return;} game = createGame(selected); resetFx(); updateMission(); display('play'); }
+function goHome() { mode='campaign';selected=Math.max(1,selected);game = createGame(selected); resetFx(); updateMission(); display('home'); }
 function openPanel(which) { panelBefore = screen; display(which); }
 function closePanel() { display(panelBefore === 'select' || panelBefore === 'help' ? 'home' : panelBefore); }
 
 function onFinish() {
   const stars = starsFor(game);
+  if(mode==='daily'){const {record}=todayDaily();record.best=Math.max(record.best,game.score);record.percent=Math.max(record.percent,Math.round(game.hits*100/(game.level.count-(game.level.void||0))));saveDaily();refreshDaily();}
+  else {
   if (stars) {
     save.stars[selected] = Math.max(save.stars[selected] || 0, stars);
     save.unlocked = Math.max(save.unlocked, Math.min(TOTAL_LEVELS, selected + 1));
   }
   save.scores[selected] = Math.max(save.scores[selected] || 0, game.score);
   persist();
-  $('best-score').textContent = pad(save.scores[selected], 6);
+  }
+  $('best-score').textContent = pad(mode==='daily'?todayDaily().record.best:save.scores[selected], 6);
   $('result-kicker').textContent = stars ? '// TRANSMISSION COMPLETE' : '// TRANSMISSION INCOMPLETE';
   $('result-rating').textContent = ratingFor(game);
   $('result-stars').textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars);
-  $('result-hits').textContent = game.hits + ' / ' + game.level.count;
+  $('result-hits').textContent = game.hits + ' / ' + (game.level.count-(game.level.void||0));
   $('result-depth').textContent = pad(game.bestDepth);
   $('result-score').textContent = game.score.toLocaleString('en-US');
-  const pc = Math.round(game.hits * 100 / game.level.count);
+  const pc = Math.round(game.hits * 100 / (game.level.count-(game.level.void||0)));
   const nextThreshold = game.level.thresholds.find(t => pc < t);
   $('result-line').textContent = pc === 100 ? 'Every particle. One perfect signal.' : nextThreshold ? `Just ${nextThreshold - pc}% away from the next star. Try another timing.` : stars === 3 ? 'All three stars secured. Can you beat your score?' : 'A new mission is waiting.';
-  if (!stars) $('result-line').textContent = `Reach ${game.level.thresholds[0]}% to unlock the next mission.`;
-  $('next').innerHTML = stars ? (selected === TOTAL_LEVELS ? '<span>MISSION SELECT</span><b>→</b>' : '<span>NEXT MISSION</span><b>→</b>') : '<span>TRY AGAIN</span><b>→</b>';
+  if (!stars) $('result-line').textContent = mode==='daily'?'Signal incomplete. Try another timing.':`Reach ${game.level.thresholds[0]}% to unlock the next mission.`;
+  $('next').innerHTML = mode==='daily'?'<span>DAILY RESULTS</span><b>→</b>':stars ? (selected === TOTAL_LEVELS ? '<span>MISSION SELECT</span><b>→</b>' : '<span>NEXT MISSION</span><b>→</b>') : '<span>TRY AGAIN</span><b>→</b>';
   finishTone(stars);
   populateList();
+  if(pc===100) {collapseTimer=1.65;collapseDone=true;slowTimer=Math.max(slowTimer,.6);$('result-rating').textContent='TOTAL COLLAPSE';$('result-overlay').classList.add('perfect');} else $('result-overlay').classList.remove('perfect');
   display('result');
 }
 
@@ -227,6 +246,7 @@ function fire(clientX, clientY) {
   const x = (clientX - rect.left) / rect.width * WORLD.width;
   const y = (clientY - rect.top) / rect.height * WORLD.height;
   audioInit();
+  if(mode==='daily'){const {record}=todayDaily();if(record.attempts>=3){display('daily');return;}record.attempts++;saveDaily();refreshDaily();}
   if (trigger(game, Math.max(0, Math.min(WORLD.width, x)), Math.max(0, Math.min(WORLD.height, y)))) {
     launchTone();
     shake = 3;
@@ -239,12 +259,16 @@ function fire(clientX, clientY) {
 canvas.addEventListener('pointerdown', e => { e.preventDefault(); fire(e.clientX, e.clientY); });
 canvas.addEventListener('keydown', e => {
   if ((e.key === 'Enter' || e.key === ' ') && screen === 'play' && game.phase === 'ready') {
-    e.preventDefault(); audioInit(); trigger(game, 480, 300); launchTone(); $('play-hint').classList.add('hide');
+    e.preventDefault();const r=canvas.getBoundingClientRect();fire(r.left+r.width/2,r.top+r.height/2);
   }
 });
 
 $('play').onclick = () => choose(selected);
 $('levels-home').onclick = () => openPanel('select');
+$('daily-home').onclick=()=>{refreshDaily();openPanel('daily')};
+$('daily-close').onclick=closePanel;
+$('daily-play').onclick=()=>openDaily();
+$('daily-menu').onclick=()=>{goHome();openPanel('daily')};
 $('close-levels').onclick = closePanel;
 $('close-help').onclick = closePanel;
 $('help-go').onclick = closePanel;
@@ -253,6 +277,7 @@ $('retry').onclick = restart;
 $('restart-top').onclick = restart;
 $('brand').onclick = goHome;
 $('next').onclick = () => {
+  if(mode==='daily'){goHome();openPanel('daily');return;}
   const solved = starsFor(game) > 0;
   const nextId = solved ? Math.min(TOTAL_LEVELS, selected + 1) : selected;
   if (solved && selected === TOTAL_LEVELS) { openPanel('select'); return; }
@@ -271,7 +296,7 @@ updateSound();
 addEventListener('keydown', e => {
   const tag = document.activeElement?.tagName;
   if (e.key.toLowerCase() === 'r' && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); restart(); }
-  else if (e.key === 'Escape' && (screen === 'help' || screen === 'select')) closePanel();
+  else if (e.key === 'Escape' && (screen === 'help' || screen === 'select'||screen==='daily')) closePanel();
   else if (e.key === 'Escape' && screen === 'play') goHome();
   else if (e.key.toLowerCase() === 'm' && tag !== 'INPUT') $('sound').click();
 });
@@ -324,12 +349,12 @@ function drawParticle(p, time) {
   const flicker = 0.86 + Math.sin(time * 2.5 + p.phase) * 0.14;
   const r = p.kind === 'normal' ? p.size : p.size + 2;
 
-  drawFx(p.kind === 'amplifier' ? 'core-amber' : p.kind === 'echo' ? 'core-echo' : 'core-cyan', p.x, p.y, p.kind === 'normal' ? 27 : 41, .57);
+  drawFx(p.kind === 'amplifier' ? 'core-amber' : p.kind === 'echo' ? 'core-echo' : p.kind==='void'?'core-void':p.kind==='freeze'?'core-freeze':'core-cyan', p.x, p.y, p.kind === 'normal' ? 27 : 41, .57);
   // trail
   const tx = p.x - p.vx * 8;
   const ty = p.y - p.vy * 8;
   const grad = ctx.createLinearGradient(p.x, p.y, tx, ty);
-  const rgb = p.kind === 'amplifier' ? '255,179,97' : p.kind === 'echo' ? '196,138,255' : '88,217,255';
+  const rgb = p.kind === 'amplifier' ? '255,179,97' : p.kind === 'echo' ? '196,138,255' : p.kind === 'void' ? '255,80,125' : p.kind === 'freeze' ? '137,245,228' : '88,217,255';
   grad.addColorStop(0, `rgba(${rgb},0.20)`);
   grad.addColorStop(1, `rgba(${rgb},0)`);
   ctx.strokeStyle = grad;
@@ -363,7 +388,7 @@ function drawParticle(p, time) {
     ctx.strokeStyle = col;
     ctx.globalAlpha = 0.7;
     ctx.lineWidth = 1.4;
-    if (p.kind === 'amplifier') ctx.strokeRect(-size / 2, -size / 2, size, size);
+    if (p.kind === 'void') {ctx.beginPath();ctx.moveTo(-size,-size);ctx.lineTo(size,size);ctx.moveTo(size,-size);ctx.lineTo(-size,size);ctx.stroke();} else if(p.kind==='freeze'){for(let i=0;i<6;i++){const ang=i*Math.PI/3;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(Math.cos(ang)*size,Math.sin(ang)*size);ctx.stroke()}} else if (p.kind === 'amplifier') ctx.strokeRect(-size / 2, -size / 2, size, size);
     else {
       ctx.beginPath(); ctx.arc(0, 0, size * 0.75, 0, Math.PI * 2); ctx.stroke();
       ctx.beginPath(); ctx.arc(0, 0, size * 1.15, -0.4, 0.5); ctx.stroke();
@@ -374,7 +399,7 @@ function drawParticle(p, time) {
 
 function drawWave(w) {
   if (w.delay > 0) return;
-  const rgb = w.kind === 'amplifier' ? '255,179,97' : w.kind === 'echo' ? '196,138,255' : '88,217,255';
+  const rgb = w.kind === 'amplifier' ? '255,179,97' : w.kind === 'echo' ? '196,138,255' : w.kind==='freeze'?'137,245,228':'88,217,255';
   const fade = (1 - w.r / w.max);
   const alpha = w.r >= w.max ? Math.max(0, (12 - w.life) / 12) * 0.12 : 0.10 + fade * 0.62;
 
@@ -395,7 +420,7 @@ function drawWave(w) {
 
 function drawHitFlash(f) {
   const a = Math.max(0, f.life / 22);
-  drawFx(f.kind==='amplifier'?'burst-amber':f.kind==='echo'?'burst-violet':'nova', f.x, f.y, 30+(22-f.life)*3.8, Math.min(1,a*.75));
+  drawFx(f.kind==='amplifier'?'burst-amber':f.kind==='echo'?'burst-violet':f.kind==='freeze'?'burst-freeze':f.kind==='void'?'burst-void':'nova', f.x, f.y, 30+(22-f.life)*3.8, Math.min(1,a*.75));
   ctx.save();
   ctx.globalAlpha = a;
   ctx.fillStyle = COLORS[f.kind];
@@ -422,7 +447,7 @@ function drawSpark(s) {
 
 function drawRipple(r) {
   ctx.save();
-  const rgb = r.kind === 'amplifier' ? '255,179,97' : r.kind === 'echo' ? '196,138,255' : '88,217,255';
+  const rgb = r.kind === 'amplifier' ? '255,179,97' : r.kind === 'echo' ? '196,138,255' : r.kind==='void'?'255,80,125':r.kind==='freeze'?'137,245,228':'88,217,255';
   ctx.globalAlpha = Math.max(0, r.life / r.maxLife) * 0.7;
   ctx.strokeStyle = `rgba(${rgb},1)`;
   ctx.lineWidth = 2;
@@ -459,6 +484,8 @@ function draw(time) {
   for (const f of flashes) drawHitFlash(f);
   for (const s of sparks) drawSpark(s);
   drawComboCallout(time);
+  for(const pop of scorePopups){ctx.save();ctx.globalAlpha=Math.min(1,pop.life/22);ctx.font='800 20px system-ui';ctx.textAlign='center';ctx.shadowBlur=13;ctx.shadowColor=pop.color;ctx.fillStyle=pop.color;ctx.fillText(pop.text,pop.x,pop.y);ctx.restore();}
+  if(collapseTimer>0){const k=1-collapseTimer/1.65;ctx.save();ctx.globalCompositeOperation='lighter';drawFx('collapse',480,300,240+k*650,Math.min(.95,collapseTimer*.65),k*1.8);ctx.strokeStyle=`rgba(255,215,147,${Math.min(.8,collapseTimer*.5)})`;ctx.lineWidth=10;ctx.beginPath();ctx.arc(480,300,k*740,0,Math.PI*2);ctx.stroke();ctx.restore();}
   if (game.phase === 'ready' && screen === 'play') {
     const pulse = 0.5 + Math.sin(time * 3) * 0.3;
     ctx.strokeStyle = `rgba(95,222,255,${0.09 + pulse * 0.11})`;
@@ -482,6 +509,8 @@ function advanceFx(delta) {
   for (let i = ripples.length - 1; i >= 0; i--) {
     const r = ripples[i]; r.r += r.speed; r.life -= delta * 60; if (r.life <= 0) ripples.splice(i, 1);
   }
+  for(let i=scorePopups.length-1;i>=0;i--){const pop=scorePopups[i];pop.life-=delta*60;pop.y-=delta*24;if(pop.life<=0)scorePopups.splice(i,1);}
+  collapseTimer=Math.max(0,collapseTimer-delta);slowTimer=Math.max(0,slowTimer-delta);
   if (comboLabelTimer > 0) {
     comboLabelTimer -= delta;
     if (comboLabelTimer <= 0) $('combo-banner').classList.add('hidden');
@@ -492,7 +521,8 @@ function emitBurst(ev) {
   const color = COLORS[ev.kind];
   flashes.push({ x: ev.x, y: ev.y, kind: ev.kind, life: 22 });
   ripples.push({ x: ev.x, y: ev.y, r: 4, speed: ev.kind === 'amplifier' ? 3.5 : 2.2, life: 14, maxLife: 14, kind: ev.kind });
-  const count = ev.kind === 'amplifier' ? 22 : ev.kind === 'echo' ? 16 : 12;
+  const count = ev.kind === 'amplifier' ? 22 : ev.kind === 'echo' ? 16 : ev.kind==='void'?20:ev.kind==='freeze'?16:12;
+  if(ev.points && scorePopups.length<50)scorePopups.push({x:ev.x,y:ev.y-15,life:35,text:'+'+ev.points,color});
   for (let i = 0; i < count && sparks.length < 300; i++) {
     const ang = (Math.PI * 2 * i) / count + Math.random() * 0.4;
     const speed = (ev.kind === 'amplifier' ? 3.5 : 2.6) + Math.random() * 1.4;
@@ -516,18 +546,22 @@ function tick(ts) {
   const simulationActive = screen === 'play' || screen === 'result';
 
   if (simulationActive) {
-    accum += delta;
+    accum += delta*(slowTimer>0 && !motionReduced ? .38 : 1);
     let steps = 0;
     while (accum >= STEP && steps < 5) {
       if (screen === 'play' && game.phase !== 'finished') {
         stepGame(game);
         for (const ev of game.events) {
-          if (ev.type === 'hit') {
+          if (ev.type === 'void') {emitBurst(ev);shake=Math.min(8,shake+2);}
+          else if(ev.type==='freeze'){ripples.push({x:ev.x,y:ev.y,r:2,speed:5,life:25,maxLife:25,kind:'freeze'});}
+          else if (ev.type === 'hit') {
             hitTone(ev.kind, ev.depth);
             emitBurst(ev);
             if (ev.kind === 'amplifier') shake = Math.min(6, shake + 1.3);
             else shake = Math.min(4.5, shake + 0.25);
             showCombo(ev.depth);
+            if(ev.depth>=12 && ev.depth%6===0)slowTimer=Math.max(slowTimer,.23);
+            if(game.hits===game.level.count-(game.level.void||0)){collapseTimer=1.65;slowTimer=.8;}
           } else if (ev.type === 'finish') {
             prevFinish = true;
           }

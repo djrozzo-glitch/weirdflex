@@ -165,3 +165,37 @@ body.reduce-motion *,body.reduce-motion *:before,body.reduce-motion *:after{anim
 @media(max-width:1320px){.layout{grid-template-columns:225px minmax(0,1fr) 195px;gap:14px;padding:18px}.mission-item{grid-template-columns:26px minmax(0,1fr) auto;gap:6px;padding:9px 8px}.mission-name{font-size:10px}}
 @media(max-width:1000px){.layout{grid-template-columns:minmax(0,1fr) 205px}.sidebar-left{display:none}}
 @media(max-width:720px){.layout{display:flex;padding:16px 12px 10px}.ui-button{min-height:40px;min-width:150px}.result-actions .ui-button{min-width:120px}.level-card span:not(.level-stars){font-size:8px;line-height:1.25}}
+
+/* v0.4: Daily Signal / new energy signatures / responsive controls */
+.red{background:#ff507d;box-shadow:0 0 10px #ff507d}.mint{background:#89f5e4;box-shadow:0 0 10px #89f5e4}
+.daily-home-button{margin-top:10px;border:1px solid #7049a3;background:linear-gradient(100deg,#211634,#15223e);color:#e3c5ff;padding:11px 18px;border-radius:12px;letter-spacing:.14em;font-weight:800;font-size:11px;cursor:pointer;box-shadow:0 0 26px #a663e128}
+.daily-home-button:hover{border-color:#b987ff;filter:brightness(1.2)}
+.daily-overlay{background:#080d1af5;align-items:center;gap:12px;padding:26px;overflow:auto}
+.daily-overlay .modal-top{align-self:stretch}.daily-overlay p{color:#a2b6d2;max-width:450px;line-height:1.5;margin:0;font-size:12px}
+.daily-symbol{font-size:64px;color:#d4a3ff;text-shadow:0 0 36px #a56bff}
+.daily-overlay strong{font-size:19px;color:#e2ceff;letter-spacing:.09em}
+.daily-remaining,.daily-record{font-size:12px;letter-spacing:.13em;color:#8ceaff}
+.daily-overlay .daily-note{font-size:10px;color:#8194ac}
+.daily-overlay .primary-button:disabled{opacity:.55;cursor:not-allowed;background:#293343!important;color:#b3c1d2!important}
+.result-overlay.perfect{box-shadow:inset 0 0 110px #f8bf6140}.result-overlay.perfect #result-rating{color:#ffcc75;text-shadow:0 0 40px #ff990099}
+.energy-type{min-width:0}.energy-types .energy-type span{overflow-wrap:anywhere}
+#daily-menu{display:none}
+@media(max-width:720px){.daily-overlay{gap:6px;padding:12px}.daily-symbol{font-size:34px}.daily-overlay strong{font-size:12px}.daily-overlay p{font-size:9px}.daily-remaining,.daily-record{font-size:9px}.daily-home-button{padding:7px 11px;font-size:8px}.energy-type{width:50%;}.result-actions{gap:6px}.result-actions .ui-button{min-width:0;flex:1}}
+
+.result-overlay.perfect{background:linear-gradient(180deg,#061020c9,#060d1ad9)}
+@media(max-width:720px){.result-overlay.perfect{background:#060d1ade}}
+@media(max-width:720px){
+ .home-orbit{display:none}
+ .home-overlay{padding:7px 8px}
+ .home-overlay .hero-title{font-size:clamp(20px,5.7vw,28px);line-height:.95;margin:5px 0}
+ .home-overlay .hero-copy{margin:0 0 7px;font-size:9px;line-height:1.35}
+ .home-overlay .ui-button{min-height:32px}
+ .home-overlay .daily-home-button{margin-top:5px;font-size:8px;padding:5px 10px}
+ .result-overlay{padding:8px}
+ .result-overlay h2{font-size:clamp(19px,6vw,26px)}
+ .result-stars{font-size:20px}
+ .result-stats{gap:12px;margin-top:4px}
+ .result-stats b{font-size:15px}
+ .result-line{margin:6px 0;font-size:9px}
+ .result-actions .ui-button{min-height:32px;padding:0 7px;font-size:8px}
+}

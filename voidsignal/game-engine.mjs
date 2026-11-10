@@ -1,4 +1,4 @@
-/* VOID SIGNAL v0.2 — deterministic simulation. No DOM dependencies. */
+/* VOID SIGNAL v0.4 — deterministic simulation. No DOM dependencies. */
 export const WORLD = Object.freeze({ width: 960, height: 600 });
 export const STEP = 1 / 60;
 
@@ -23,10 +23,36 @@ export const LEVELS = [
   { id:17, code:'CASCADE ARRAY', subtitle:'Build a long chain.', seed:177013, count:66, speed:1.56, spread:85, clusters:[[160,210],[305,300],[450,210],[605,300],[760,210],[450,410]], amp:7, echo:7, thresholds:[45,72,91], tip:'Think about chain depth, not just the first cluster.' },
   { id:18, code:'PHANTOM GRID', subtitle:'Tiny gaps everywhere.', seed:188119, count:70, speed:1.62, spread:78, clusters:[[190,190],[375,190],[570,190],[760,190],[190,390],[375,390],[570,390],[760,390]], amp:6, echo:10, thresholds:[46,73,92], tip:'Look for the opening that starts a diagonal collapse.' },
   { id:19, code:'ZERO HOUR', subtitle:'All systems unstable.', seed:199727, count:74, speed:1.7, spread:88, clusters:[[160,170],[320,300],[480,170],[640,300],[800,170],[240,430],[720,430]], amp:9, echo:10, thresholds:[46,74,92], tip:'Your best opening may not be anywhere near the largest group.' },
-  { id:20, code:'EVENT HORIZON', subtitle:'Perfect timing. Total collapse.', seed:210991, count:80, speed:1.82, spread:94, clusters:[[155,195],[315,355],[480,185],[645,355],[815,205],[480,470]], amp:10, echo:12, thresholds:[47,75,93], tip:'This is the final exam. Watch the rhythm and strike once.' }
+  { id:20, code:'EVENT HORIZON', subtitle:'Perfect timing. Total collapse.', seed:210991, count:80, speed:1.82, spread:94, clusters:[[155,195],[315,355],[480,185],[645,355],[815,205],[480,470]], amp:10, echo:12, thresholds:[47,75,93], tip:'This is the final exam. Watch the rhythm and strike once.' },
+  { id:21, code:'DARK MATTER', subtitle:'The void swallows the wave.', seed:221113, count:60, speed:1.35, spread:80, clusters:[[165,200],[345,360],[500,200],[675,350],[805,220]], amp:5, echo:6, void:5, freeze:3, thresholds:[42, 67, 88], tip:'Watch the red absorbers and blue time-freeze nodes.' },
+  { id:22, code:'ICE FIELD', subtitle:'Freeze the current.', seed:232417, count:64, speed:1.45, spread:83, clusters:[[165,200],[345,360],[500,200],[675,350],[805,220]], amp:5, echo:7, void:4, freeze:5, thresholds:[43, 68, 89], tip:'Watch the red absorbers and blue time-freeze nodes.' },
+  { id:23, code:'RED SHIFT', subtitle:'Danger at every corner.', seed:243517, count:66, speed:1.55, spread:87, clusters:[[165,200],[345,360],[500,200],[675,350],[805,220]], amp:7, echo:7, void:6, freeze:4, thresholds:[43, 69, 90], tip:'Watch the red absorbers and blue time-freeze nodes.' },
+  { id:24, code:'PERMAFROST', subtitle:'Make a moment last.', seed:254717, count:68, speed:1.57, spread:85, clusters:[[165,200],[345,360],[500,200],[675,350],[805,220]], amp:7, echo:8, void:4, freeze:8, thresholds:[44, 69, 90], tip:'Watch the red absorbers and blue time-freeze nodes.' },
+  { id:25, code:'NEGATIVE SPACE', subtitle:'Bridge the impossible.', seed:265919, count:70, speed:1.63, spread:89, clusters:[[165,200],[345,360],[500,200],[675,350],[805,220]], amp:8, echo:8, void:7, freeze:5, thresholds:[44, 70, 91], tip:'Watch the red absorbers and blue time-freeze nodes.' },
+  { id:26, code:'CRYO CASCADE', subtitle:'Time is on your side.', seed:276121, count:74, speed:1.67, spread:88, clusters:[[165,200],[345,360],[500,200],[675,350],[805,220]], amp:8, echo:10, void:6, freeze:9, thresholds:[44, 70, 91], tip:'Watch the red absorbers and blue time-freeze nodes.' },
+  { id:27, code:'ZERO POINT', subtitle:'A dangerous beginning.', seed:287323, count:76, speed:1.72, spread:90, clusters:[[165,200],[345,360],[500,200],[675,350],[805,220]], amp:9, echo:10, void:8, freeze:6, thresholds:[45, 71, 92], tip:'Watch the red absorbers and blue time-freeze nodes.' },
+  { id:28, code:'DEEP FREEZE', subtitle:'Slow everything down.', seed:298527, count:78, speed:1.78, spread:90, clusters:[[165,200],[345,360],[500,200],[675,350],[805,220]], amp:9, echo:11, void:8, freeze:10, thresholds:[45, 71, 92], tip:'Watch the red absorbers and blue time-freeze nodes.' },
+  { id:29, code:'SILENT STORM', subtitle:'A storm of silence.', seed:309729, count:80, speed:1.82, spread:92, clusters:[[165,200],[345,360],[500,200],[675,350],[805,220]], amp:10, echo:12, void:9, freeze:8, thresholds:[46, 72, 92], tip:'Watch the red absorbers and blue time-freeze nodes.' },
+  { id:30, code:'TOTAL COLLAPSE', subtitle:'One pulse. Beyond the void.', seed:320933, count:84, speed:1.9, spread:94, clusters:[[165,200],[345,360],[500,200],[675,350],[805,220]], amp:11, echo:12, void:10, freeze:10, thresholds:[46, 73, 93], tip:'Watch the red absorbers and blue time-freeze nodes.' }
 ];
 
-export const COLORS = { normal:'#58d9ff', amplifier:'#ffb35b', echo:'#c48aff' };
+// Earlier layouts stay stable; targets are tuned by sampled solvability in tests.
+for (const level of LEVELS) {
+  if (level.id <= 20) {
+    level.thresholds = [Math.max(32, level.thresholds[0]-3), Math.max(58, level.thresholds[1]-2), Math.max(78, level.thresholds[2]-1)];
+    level.void = level.id < 11 ? 0 : Math.min(5, Math.floor((level.id-9)/3));
+    level.freeze = level.id < 13 ? 0 : Math.min(6, Math.floor((level.id-11)/3));
+    if(level.id >= 11) level.tip = level.id < 13 ? 'Red VOID nodes cancel the wave that reaches them.' : 'VOID absorbs a wave. FREEZE holds nearby particles in place.';
+  }
+}
+export const COLORS = { normal:'#58d9ff', amplifier:'#ffb35b', echo:'#c48aff', void:'#ff507d', freeze:'#89f5e4' };
+export function dailyKey(date=new Date()) { return date.toISOString().slice(0,10); }
+export function createDailyGame(day=dailyKey()) {
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(day) || !Number.isFinite(Date.parse(day+'T00:00:00Z'))) throw new Error('Invalid day');
+  const seed=[...day].reduce((a,c)=>Math.imul(a^c.charCodeAt(0),16777619)>>>0,2166136261);
+  const level={id:0,code:'DAILY SIGNAL',subtitle:`UTC DAILY / ${day}`,seed,count:58,speed:1.40,spread:90,clusters:[[180,205],[350,365],[510,205],[680,365],[795,215]],amp:7,echo:8,void:4,freeze:5,thresholds:[40,67,89],tip:'Three attempts per UTC day. The same field for everyone.'};
+  return createGameFromLevel(level);
+}
 
 export function rngFromSeed(seed) {
   let s = seed >>> 0;
@@ -63,17 +89,23 @@ export function generateParticles(level) {
     });
   }
 
-  const specialIndices = [];
-  const jump = Math.max(2, Math.floor(level.count / (level.amp + level.echo + 1)));
-  for (let i = 0; i < level.amp + level.echo; i++) specialIndices.push((3 + i * jump) % level.count);
-  for (let i = 0; i < level.amp; i++) particles[specialIndices[i]].kind = 'amplifier';
-  for (let i = level.amp; i < level.amp + level.echo; i++) particles[specialIndices[i]].kind = 'echo';
+  // Unique deterministic special indices; no accidental overwrites.
+  const counts = {amplifier:level.amp||0, echo:level.echo||0, void:level.void||0, freeze:level.freeze||0};
+  const pool=particles.map(p=>p.id);
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  let cursor=0;
+  for(const [kind,num] of Object.entries(counts)) {
+    for(let i=0;i<num && cursor<pool.length;i++) particles[pool[cursor++]].kind=kind;
+  }
   return particles;
 }
 
 export function createGame(id) {
   const level = LEVELS[id - 1];
   if (!level) throw new Error('Unknown mission ' + id);
+  return createGameFromLevel(level);
+}
+export function createGameFromLevel(level) {
   return {
     level,
     particles: generateParticles(level),
@@ -89,6 +121,7 @@ export function createGame(id) {
     settle: 0,
     finished: false,
     peak: 0,
+    absorbed:0, frozen:0,
   };
 }
 
@@ -102,7 +135,7 @@ export function trigger(game, x, y) {
 }
 
 function addWave(game, x, y, kind, depth, delay = 0) {
-  const max = kind === 'amplifier' ? 178 : kind === 'echo' ? 116 : kind === 'origin' ? 115 : 100;
+  const max = kind === 'amplifier' ? 178 : kind === 'echo' ? 116 : kind === 'freeze' ? 108 : kind === 'origin' ? 115 : 100;
   const speed = kind === 'amplifier' ? 5.8 : kind === 'echo' ? 4.9 : 4.8;
   game.waves.push({ x, y, kind, depth, r: 0, max, age: 0, delay, life: 0, speed });
 }
@@ -115,6 +148,7 @@ export function stepGame(game) {
 
   for (const p of game.particles) {
     if (p.hit) continue;
+    if(p.frozen>0){p.frozen--;continue;}
     p.x += p.vx;
     p.y += p.vy;
     if (p.x < 17) { p.x = 17; p.vx = Math.abs(p.vx); }
@@ -132,20 +166,32 @@ export function stepGame(game) {
     const previous = w.r;
     w.r = Math.min(w.max, w.r + w.speed);
 
+    // VOID consumes exactly the wave that reaches it. Other waves remain active.
+    // Prioritize absorbers before scoring collisions at an identical step.
+    const intersects = p => !p.hit && Math.hypot(p.x-w.x,p.y-w.y) <= w.r+p.size && Math.hypot(p.x-w.x,p.y-w.y) >= Math.max(0,previous-p.size-5);
+    const absorber=game.particles.find(p=>p.kind==='void'&&intersects(p));
+    if(absorber){
+      absorber.hit=true; game.absorbed++;
+      game.events.push({type:'void',kind:'void',x:absorber.x,y:absorber.y,depth:w.depth});
+      continue; // The absorber destroys this wave, not all waves.
+    }
     for (const p of game.particles) {
-      if (p.hit) continue;
-      const d = Math.hypot(p.x - w.x, p.y - w.y);
-      if (d <= w.r + p.size && d >= Math.max(0, previous - p.size - 5)) {
-        p.hit = true;
-        p.hitTime = game.elapsed;
-        p.depth = w.depth + 1;
-        game.hits++;
-        game.bestDepth = Math.max(game.bestDepth, p.depth);
-        const kindBonus = p.kind === 'amplifier' ? 1.4 : p.kind === 'echo' ? 1.2 : 1;
-        game.score += Math.round(100 * (1 + Math.min(15, p.depth) * .28) * kindBonus);
-        game.events.push({ type: 'hit', kind: p.kind, x: p.x, y: p.y, depth: p.depth, hit: game.hits });
-        addWave(game, p.x, p.y, p.kind, p.depth, 0);
-        if (p.kind === 'echo') addWave(game, p.x, p.y, 'echo', p.depth, 28);
+      if(!intersects(p)) continue;
+      p.hit = true; p.hitTime=game.elapsed; p.depth=w.depth+1;
+      game.hits++; game.bestDepth=Math.max(game.bestDepth,p.depth);
+      const kindBonus = p.kind==='amplifier'?1.4:p.kind==='echo'?1.2:p.kind==='freeze'?1.25:1;
+      const points=Math.round(100*(1+Math.min(15,p.depth)*.28)*kindBonus);
+      game.score+=points;
+      game.events.push({type:'hit',kind:p.kind,x:p.x,y:p.y,depth:p.depth,hit:game.hits,points});
+      addWave(game,p.x,p.y,p.kind,p.depth,0);
+      if(p.kind==='echo') addWave(game,p.x,p.y,'echo',p.depth,28);
+      if(p.kind==='freeze') {
+        let held=0;
+        for(const other of game.particles){
+          if(!other.hit && other.kind!=='void' && Math.hypot(other.x-p.x,other.y-p.y)<160){other.frozen=Math.max(other.frozen||0,92);held++;}
+        }
+        game.frozen+=held;
+        game.events.push({type:'freeze',kind:'freeze',x:p.x,y:p.y,depth:p.depth,held});
       }
     }
 
@@ -168,11 +214,11 @@ export function stepGame(game) {
 }
 
 export function starsFor(game) {
-  const percent = Math.round(game.hits * 100 / game.level.count);
+  const percent = Math.round(game.hits * 100 / (game.level.count-(game.level.void||0)));
   return game.level.thresholds.reduce((n, t) => n + (percent >= t ? 1 : 0), 0);
 }
 
 export function ratingFor(game) {
-  const pc = Math.round(100 * game.hits / game.level.count);
+  const pc = Math.round(100 * game.hits / (game.level.count-(game.level.void||0)));
   return pc === 100 ? 'PERFECT CHAIN' : pc >= 90 ? 'SPECTACULAR' : pc >= 70 ? 'EXCELLENT' : pc >= 45 ? 'GOOD SIGNAL' : 'SIGNAL LOST';
 }
