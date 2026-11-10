@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f3f0ea">
-<meta name="description" content="WeirdFlex — original browser games by Ilia Rozov. Play VOID SIGNAL, BREACH.exe, NightShift, ShibaRun, Gull and the City, Kollegium, and more.">
+<meta name="description" content="WeirdFlex — original browser games by Ilia Rozov. Play VOID SIGNAL, BREACH.exe, Groove Raid, NightShift, ShibaRun, Gull and the City, Kollegium, and more.">
+<title>weird flex but it’s ok</title>
 <link rel="canonical" href="https://weirdflex.online/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://weirdflex.online/">
@@ -13,8 +14,7 @@
 <meta property="og:description" content="Original browser games by Ilia Rozov. A growing collection of games, with more on the way.">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="weird flex but it’s ok">
-<meta name="twitter:description" content="Original browser games by Ilia Rozov. More games on the way.">
-<title>weird flex but it’s ok</title>
+<meta name="twitter:description" content="Original browser games by Ilia Rozov. A growing collection of games, with more on the way.">
 <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png?v=2">
 <link rel="shortcut icon" href="/favicon.ico?v=2">
 <style>
@@ -25,43 +25,59 @@ a{color:inherit;text-decoration:none}a:focus-visible{outline:2px solid #2e6cb3;o
 main{width:min(calc(100% - 56px),1410px);margin:0 auto}
 .header{display:flex;align-items:end;justify-content:space-between;gap:35px;padding:30px 0 26px;border-bottom:1px solid var(--line)}
 .kicker{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
-.title{font-size:clamp(44px,6vw,82px);line-height:.90;letter-spacing:-.082em;font-weight:790;margin:0}
-.title span{display:block}
-.subtitle{color:#5c5955;line-height:1.5;font-size:15px;max-width:350px;margin:0 0 5px}
+.title{font-size:clamp(44px,6vw,82px);line-height:.90;letter-spacing:-.082em;font-weight:790;margin:0}.title span{display:block}
+.subtitle{color:#5c5955;line-height:1.5;font-size:15px;max-width:360px;margin:0 0 5px}
 .games{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;padding:24px 0 32px}
-.game{min-width:0;display:flex;flex-direction:column}
-.visual{display:block;position:relative;overflow:hidden;aspect-ratio:16/9;background:#151923;border-radius:9px}
-.visual img,.visual svg{display:block;width:100%;height:100%;object-fit:cover}
-.visual img{transition:transform .36s ease}
-.game:hover .visual img{transform:scale(1.035)}
-.game-info{padding:13px 2px 0;display:flex;flex-direction:column;flex:1}
-.game-title{font-size:clamp(19px,1.85vw,27px);font-weight:760;letter-spacing:-.045em;line-height:1.08;margin:0 0 7px}
-.game-desc{font-size:13px;line-height:1.42;color:#63605b;margin:0 0 11px;max-width:44ch}
-.links{display:flex;flex-wrap:wrap;column-gap:20px;row-gap:9px;margin-top:auto}
-.link{font-size:12px;letter-spacing:-.01em;font-weight:720;border-bottom:1px solid currentColor;padding-bottom:3px;white-space:nowrap}
-.link:hover{opacity:.6}
-.footer{border-top:1px solid var(--line);padding:17px 0 26px;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
-.footer strong{color:var(--ink)}.footer-mail{border-bottom:1px solid currentColor;color:var(--ink)}
+.game{min-width:0;display:flex;flex-direction:column}.visual{display:block;position:relative;overflow:hidden;aspect-ratio:16/9;background:#151923;border-radius:9px}.visual img,.visual svg{display:block;width:100%;height:100%;object-fit:cover}.visual img{transition:transform .36s ease}.game:hover .visual img{transform:scale(1.035)}
+.game-info{padding:13px 2px 0;display:flex;flex-direction:column;flex:1}.game-title{font-size:clamp(19px,1.85vw,27px);font-weight:760;letter-spacing:-.045em;line-height:1.08;margin:0 0 7px}.game-desc{font-size:13px;line-height:1.42;color:#63605b;margin:0 0 11px;max-width:44ch}
+.links{display:flex;flex-wrap:wrap;column-gap:20px;row-gap:9px;margin-top:auto}.link{font-size:12px;letter-spacing:-.01em;font-weight:720;border-bottom:1px solid currentColor;padding-bottom:3px;white-space:nowrap}.link:hover{opacity:.6}
+.footer{border-top:1px solid var(--line);padding:17px 0 26px;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;font-size:12px;color:var(--muted)}.footer strong{color:var(--ink)}.footer-mail{border-bottom:1px solid currentColor;color:var(--ink)}
 @media(max-width:980px){.games{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}.header{align-items:start}.title{font-size:clamp(46px,7vw,78px)}}
 @media(max-width:650px){main{width:min(calc(100% - 32px),1410px)}.header{display:block;padding:27px 0 20px}.subtitle{margin:18px 0 0;font-size:13px}.title{font-size:clamp(47px,13vw,70px)}.games{grid-template-columns:1fr;gap:26px;padding-top:19px}.game-title{font-size:24px}.game-desc{font-size:14px}.footer{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.visual img{transition:none}}
 </style>
 </head>
 <body>
-<main><header class="header"><div><p class="kicker">WEIRDFLEX.ONLINE</p><h1 class="title"><span>weird flex</span><span>but it’s ok</span></h1></div><p class="subtitle">Original browser games by Ilia Rozov.<br>A growing collection of small, strange games. Pick one and play.</p></header>
-<section class="games" aria-label="Games"><article class="game"><a class="visual" href="/breach/" aria-label="BREACH.exe" ><img src="assets/home/breach.webp?v=1" alt="BREACH.exe cyberpunk signal routing puzzle" width="960" height="540" decoding="async" loading="eager" fetchpriority="high"></a><div class="game-info"><h2 class="game-title">BREACH.exe</h2><p class="game-desc">Route the signal through neon networks. Beat missions, manage TRACE and take on the daily breach.</p><div class="links"><a class="link" href="/breach/" >Play ↗</a></div></div></article>
-<article class="game"><a class="visual" href="/voidsignal/" aria-label="VOID SIGNAL" ><svg role="img" aria-label="VOID SIGNAL neon orbital cover" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540">
-<defs><radialGradient id="vg"><stop stop-color="#173c60"/><stop offset=".53" stop-color="#121e3e"/><stop offset="1" stop-color="#080d20"/></radialGradient><radialGradient id="glow"><stop stop-color="#bb4a99" stop-opacity=".44"/><stop offset="1" stop-color="#bb4a99" stop-opacity="0"/></radialGradient><filter id="blur"><feGaussianBlur stdDeviation="11"/></filter><linearGradient id="orb"><stop stop-color="#5adeff"/><stop offset=".55" stop-color="#ab70e9"/><stop offset="1" stop-color="#fa5bac"/></linearGradient></defs>
-<rect width="960" height="540" fill="url(#vg)"/><circle cx="795" cy="95" r="300" fill="url(#glow)"/><circle cx="278" cy="258" r="211" fill="none" stroke="#58e0ff" stroke-width="16" opacity=".33" filter="url(#blur)"/>
-<circle cx="278" cy="258" r="210" fill="none" stroke="url(#orb)" stroke-width="5"/><circle cx="278" cy="258" r="148" fill="none" stroke="#bd7bea" stroke-width="5"/><circle cx="278" cy="258" r="96" fill="none" stroke="#ffb966" stroke-width="5"/>
-<circle cx="278" cy="258" r="15" fill="#62edff"/><circle cx="263" cy="48" r="16" fill="#62e2ff"/><circle cx="423" cy="266" r="15" fill="#e7a4ff"/><circle cx="164" cy="349" r="15" fill="#ffbd70"/><circle cx="332" cy="163" r="12" fill="#67eaff"/>
-<circle cx="278" cy="258" r="260" fill="none" stroke="#376a94" stroke-width="1.5" opacity=".24"/><g fill="#fff" opacity=".21"><circle cx="700" cy="105" r="2"/><circle cx="849" cy="178" r="3"/><circle cx="647" cy="435" r="2"/><circle cx="784" cy="444" r="1.8"/></g>
-<text x="530" y="238" font-size="112" font-weight="900" font-family="Arial, Helvetica, sans-serif" fill="#f0f5ff" letter-spacing="-3">VOID</text><text x="530" y="348" font-size="104" font-weight="900" font-family="Arial, Helvetica, sans-serif" fill="#5bdcff" letter-spacing="-3">SIGNAL</text>
-<text x="535" y="401" font-size="19" font-weight="700" letter-spacing="5" font-family="Arial, Helvetica, sans-serif" fill="#bec2db">ONE PULSE. INFINITE CHAOS.</text></svg></a><div class="game-info"><h2 class="game-title">VOID SIGNAL</h2><p class="game-desc">A hypnotic chain-reaction puzzle. Shape a pulse, trigger spectacular collapses and chase the perfect run.</p><div class="links"><a class="link" href="/voidsignal/" >Play ↗</a></div></div></article>
-<article class="game"><a class="visual" href="/nightshift/" aria-label="NightShift" ><img src="assets/home/nightshift.webp?v=3" alt="DJ on stage at NightShift warehouse party" width="960" height="540" decoding="async" loading="lazy"></a><div class="game-info"><h2 class="game-title">NightShift</h2><p class="game-desc">Book a DJ and start the party online, or download the full club-building simulator.</p><div class="links"><a class="link" href="/nightshift/" >Play online ↗</a><a class="link" target="_blank" rel="noopener noreferrer" href="https://drive.google.com/drive/u/0/folders/16iXtiFMnP6FYz82i_WorHt7TNgBB4JuG">Full game · downloads ↗</a></div></div></article>
-<article class="game"><a class="visual" href="/shibarun/" aria-label="ShibaRun" ><img src="assets/home/shibarun.webp?v=2" alt="ShibaRun game cover" width="960" height="540" decoding="async" loading="lazy"></a><div class="game-info"><h2 class="game-title">ShibaRun</h2><p class="game-desc">Run through world cities with Ozzy the Shiba. Jump, dodge and collect syrniki.</p><div class="links"><a class="link" href="/shibarun/" >Play ↗</a></div></div></article>
-<article class="game"><a class="visual" href="/gullcity/" aria-label="Gull and the City" ><img src="assets/home/gullcity.webp?v=2" alt="Gull and the City illustrated cover" width="960" height="540" decoding="async" loading="lazy"></a><div class="game-info"><h2 class="game-title">Gull and the City</h2><p class="game-desc">Float above a pastel city. One button, two flight lanes and dubious seagull decisions.</p><div class="links"><a class="link" href="/gullcity/" >Play ↗</a></div></div></article>
-<article class="game"><a class="visual" href="https://kollegium.online/en/" aria-label="Kollegium" target="_blank" rel="noopener noreferrer"><img src="assets/home/kollegium.webp" alt="Kollegium academy artwork" width="960" height="540" decoding="async" loading="lazy"></a><div class="game-info"><h2 class="game-title">Kollegium</h2><p class="game-desc">Explore a world where logic meets magic. Investigate mysteries and find the culprit.</p><div class="links"><a class="link" href="https://kollegium.online/en/" target="_blank" rel="noopener noreferrer">Play ↗</a></div></div></article></section>
-<footer class="footer"><span>Games by <strong>Ilia Rozov</strong></span><span>Got an idea? <a class="footer-mail" href="mailto:djrozzo@gmail.com">djrozzo@gmail.com</a></span></footer></main>
+<main>
+<header class="header">
+<div>
+<p class="kicker">WEIRDFLEX.ONLINE</p>
+<h1 class="title"><span>weird flex</span><span>but it’s ok</span></h1>
+</div>
+<p class="subtitle">Original browser games by Ilia Rozov.<br>A growing collection of small, strange games. Pick one and play.</p>
+</header>
+<section class="games" aria-label="Games">
+<article class="game">
+  <a class="visual" href="/breach/" aria-label="Play BREACH.exe"><img src="assets/home/breach.webp?v=1" alt="BREACH.exe cyberpunk signal routing puzzle" width="960" height="540" decoding="async" loading="eager" fetchpriority="high"></a>
+  <div class="game-info"><h2 class="game-title">BREACH.exe</h2><p class="game-desc">Route the signal through neon networks. Beat missions, manage TRACE and take on the daily breach.</p><div class="links"><a class="link" href="/breach/">Play</a></div></div>
+</article>
+<article class="game">
+  <a class="visual" href="/voidsignal/" aria-label="Play VOID SIGNAL">
+  <svg role="img" aria-label="VOID SIGNAL neon orbital cover" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540"><defs><radialGradient id="vg"><stop stop-color="#173c60"/><stop offset=".53" stop-color="#121e3e"/><stop offset="1" stop-color="#080d20"/></radialGradient><radialGradient id="glow"><stop stop-color="#bb4a99" stop-opacity=".44"/><stop offset="1" stop-color="#bb4a99" stop-opacity="0"/></radialGradient><filter id="blur"><feGaussianBlur stdDeviation="11"/></filter><linearGradient id="orb"><stop stop-color="#5adeff"/><stop offset=".55" stop-color="#ab70e9"/><stop offset="1" stop-color="#fa5bac"/></linearGradient></defs><rect width="960" height="540" fill="url(#vg)"/><circle cx="795" cy="95" r="300" fill="url(#glow)"/><circle cx="278" cy="258" r="211" fill="none" stroke="#58e0ff" stroke-width="16" opacity=".33" filter="url(#blur)"/><circle cx="278" cy="258" r="210" fill="none" stroke="url(#orb)" stroke-width="5"/><circle cx="278" cy="258" r="148" fill="none" stroke="#bd7bea" stroke-width="5"/><circle cx="278" cy="258" r="96" fill="none" stroke="#ffb966" stroke-width="5"/><circle cx="278" cy="258" r="15" fill="#62edff"/><circle cx="263" cy="48" r="16" fill="#62e2ff"/><circle cx="423" cy="266" r="15" fill="#e7a4ff"/><circle cx="164" cy="349" r="15" fill="#ffbd70"/><circle cx="332" cy="163" r="12" fill="#67eaff"/><circle cx="278" cy="258" r="260" fill="none" stroke="#376a94" stroke-width="1.5" opacity=".24"/><g fill="#fff" opacity=".21"><circle cx="700" cy="105" r="2"/><circle cx="849" cy="178" r="3"/><circle cx="647" cy="435" r="2"/><circle cx="784" cy="444" r="1.8"/></g><text x="530" y="238" font-size="112" font-weight="900" font-family="Arial, Helvetica, sans-serif" fill="#f0f5ff" letter-spacing="-3">VOID</text><text x="530" y="348" font-size="104" font-weight="900" font-family="Arial, Helvetica, sans-serif" fill="#5bdcff" letter-spacing="-3">SIGNAL</text><text x="535" y="401" font-size="19" font-weight="700" letter-spacing="5" font-family="Arial, Helvetica, sans-serif" fill="#bec2db">ONE PULSE. INFINITE CHAOS.</text></svg></a>
+  <div class="game-info"><h2 class="game-title">VOID SIGNAL</h2><p class="game-desc">A hypnotic chain-reaction puzzle. Shape a pulse, trigger spectacular collapses and chase the perfect run.</p><div class="links"><a class="link" href="/voidsignal/">Play</a></div></div>
+</article>
+<article class="game">
+  <a class="visual" href="/grooveraid/" aria-label="Play Groove Raid"><img src="assets/home/grooveraid.webp?v=1" alt="Groove Raid neon spaceship racing through vinyl grooves" width="960" height="540" decoding="async" loading="lazy"></a>
+  <div class="game-info"><h2 class="game-title">Groove Raid</h2><p class="game-desc">Drop into the record and blast through neon grooves. A music-charged arcade shooter with vinyl lanes, glowing hazards and pure club energy.</p><div class="links"><a class="link" href="/grooveraid/">Play</a></div></div>
+</article>
+<article class="game">
+  <a class="visual" href="/nightshift/" aria-label="Play NightShift online"><img src="assets/home/nightshift.webp?v=3" alt="DJ on stage at NightShift warehouse party" width="960" height="540" decoding="async" loading="lazy"></a>
+  <div class="game-info"><h2 class="game-title">NightShift</h2><p class="game-desc">Book a DJ and start the party online, or download the full club-building simulator.</p><div class="links"><a class="link" href="/nightshift/">Play online</a><a class="link" href="https://drive.google.com/drive/u/0/folders/16iXtiFMnP6FYz82i_WorHt7TNgBB4JuG" target="_blank" rel="noopener noreferrer">Full game · downloads</a></div></div>
+</article>
+<article class="game">
+  <a class="visual" href="/shibarun/" aria-label="Play ShibaRun"><img src="assets/home/shibarun.webp?v=2" alt="ShibaRun game cover" width="960" height="540" decoding="async" loading="lazy"></a>
+  <div class="game-info"><h2 class="game-title">ShibaRun</h2><p class="game-desc">Run through world cities with Ozzy the Shiba. Jump, dodge and collect syrniki.</p><div class="links"><a class="link" href="/shibarun/">Play</a></div></div>
+</article>
+<article class="game">
+  <a class="visual" href="/gullcity/" aria-label="Play Gull and the City"><img src="assets/home/gullcity.webp?v=2" alt="Gull and the City illustrated cover" width="960" height="540" decoding="async" loading="lazy"></a>
+  <div class="game-info"><h2 class="game-title">Gull and the City</h2><p class="game-desc">Float above a pastel city. One button, two flight lanes and dubious seagull decisions.</p><div class="links"><a class="link" href="/gullcity/">Play</a></div></div>
+</article>
+<article class="game">
+  <a class="visual" href="https://kollegium.online/en/" aria-label="Play Kollegium" target="_blank" rel="noopener noreferrer"><img src="assets/home/kollegium.webp" alt="Kollegium academy artwork" width="960" height="540" decoding="async" loading="lazy"></a>
+  <div class="game-info"><h2 class="game-title">Kollegium</h2><p class="game-desc">Explore a world where logic meets magic. Investigate mysteries and find the culprit.</p><div class="links"><a class="link" href="https://kollegium.online/en/" target="_blank" rel="noopener noreferrer">Play</a></div></div>
+</article>
+</section>
+<footer class="footer"><span>Games by <strong>Ilia Rozov</strong></span><span>Got an idea? <a class="footer-mail" href="mailto:djrozzo@gmail.com">djrozzo@gmail.com</a></span></footer>
+</main>
 </body>
 </html>
