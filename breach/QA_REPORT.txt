@@ -1,0 +1,26 @@
+BREACH.exe 4.2 — QA SUMMARY
+==========================
+
+PASS — 50/50 campaign missions solved from generated reference routes.
+PASS — 90/90 daily challenge seeds (90 consecutive UTC dates) solved.
+PASS — Daily challenge generation repeats identically for the same UTC day.
+PASS — In-progress daily retains the original date across UTC midnight.
+PASS — Stages 1–3 have no Firewall, Relay, or Booster mechanics.
+PASS — Relay and Booster generation at their expected unlock stages.
+PASS — Scoring: reference-path completion earns 3 stars; hint or failed
+       injection caps at 2 stars; TRACE thresholds downgrade stars.
+PASS — TRACE exempt in the first 3 stages, and 100% triggers detection.
+PASS — Tie-breaker for matching stars/moves uses lower TRACE.
+PASS — Main JavaScript and service worker pass Node.js syntax checks.
+PASS — PWA asset cache references and referenced image paths exist.
+PASS — ZIP manifest contains game assets, icons, SW, and HTML.
+
+NOT VERIFIED IN THIS ENVIRONMENT
+- Headless Chromium navigation was blocked by administrator policy;
+  actual mobile viewport layout, touch, interactive animation, PWA install,
+  offline restart and Safari/iOS behavior require device testing.
+
+BEHAVIOR NOTE
+- Chapter networks were rebalanced in 4.2; old best scores and stars
+  remain stored for save compatibility.
+- Daily records are local only, not a public leaderboard.
