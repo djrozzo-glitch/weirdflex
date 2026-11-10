@@ -1,19 +1,22 @@
-# GROOVE RAID v0.1
-A playable, original browser arcade shooter inspired by the forward-scrolling mechanics of classic River Raid, set inside a vinyl groove.
+# GROOVE RAID v0.2 — 124 BPM
 
-## Play
-Open `index.html` in any modern browser. To host on GitHub Pages, put the files at the repository root (or in a subdirectory) and enable Pages.
+Browser arcade, custom illustrated assets, music playback and synced pulse.
 
-## Controls
-- Desktop: ←/→ or A/D steer; ↑/↓ or W/S change speed; Space fires; P or Esc pauses; Mute button toggles sound.
-- Mobile: drag horizontally on the playfield to steer, or use left/right buttons. Hold FIRE to shoot; + / − to change speed.
+## Adding your own music
 
-## Mechanics
-- Infinite procedural scrolling groove; fixed-seed predictable obstacle sequence
-- Shooting, 2 enemy types, electrical cracks, recharge pickups
-- Beat accents at 128 BPM generated with Web Audio; no background drone or externally hosted audio
-- Increasing speed and obstacle density, energy attrition, score and saved high score
-- Responsive interface, installable PWA and offline cache after first visit
+Put your audio files in `audio/` and edit `audio/tracks.json`:
 
-## Technical
-Pure HTML, CSS and JavaScript, no runtime dependencies. Fonts use Google Fonts when online; built-in fallbacks are provided for offline play.
+```json
+[
+  {"file": "my-track.mp3", "title": "My Track", "offset": 0},
+  {"file": "my-second-track.ogg", "title": "Second Track", "offset": 0.12}
+]
+```
+
+`offset` is the seconds from the start of the recording to the first downbeat (optional). All tracks are assumed 124 BPM. Names are case-sensitive on GitHub Pages. Browser games cannot enumerate a server folder directly: update `tracks.json`, or use **LOAD YOUR TRACKS** in the menu to select audio files from your computer.
+
+Music toggle (♫) mutes/unmutes songs; the speaker button toggles gameplay SFX independently. Music pauses and resumes along with gameplay, and plays the next playlist item after the track ends. Local file loading via the button works offline. Music files are NOT included in this ZIP; copy yours into `audio/`. The beat display is driven by audio playback time when a track is playing, with an internal 124 BPM fallback.
+
+## Deployment
+
+Upload all contents to GitHub Pages. On first update, refresh the site to replace the old service worker cache.
