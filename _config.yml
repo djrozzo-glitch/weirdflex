@@ -1,0 +1,23 @@
+# GitHub Pages publication: keep original GLBs in Git but do not ship them.
+# NightShift Lite uses the corresponding *_opt.glb models.
+# Do not exclude characters, *_opt.glb, audio or game code.
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - "nightshift/assets/models/bar.glb"
+  - "nightshift/assets/models/dj.glb"
+  - "nightshift/assets/models/entrance.glb"
+  - "nightshift/assets/models/floor.glb"
+  - "nightshift/assets/models/laser.glb"
+  - "nightshift/assets/models/light.glb"
+  - "nightshift/assets/models/plant2.glb"
+  - "nightshift/assets/models/poster.glb"
+  - "nightshift/assets/models/rail.glb"
+  - "nightshift/assets/models/sofa.glb"
+  - "nightshift/assets/models/speaker.glb"
+  - "nightshift/assets/models/stool.glb"
+  - "nightshift/assets/models/table.glb"
+  - "nightshift/assets/models/wall.glb"
+  - "nightshift/assets/models/wc.glb"
