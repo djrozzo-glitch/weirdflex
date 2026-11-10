@@ -54,6 +54,41 @@ export function createDailyGame(day=dailyKey()) {
   return createGameFromLevel(level);
 }
 
+/** Endless waves: generated from a run seed + wave index. No effect on campaign seeds. */
+export function createEndlessGame(wave=1, runSeed=1) {
+  const w = Math.max(1, Math.min(9999, Math.floor(wave)));
+  const seed = (Math.imul(runSeed >>> 0, 2654435761) + Math.imul(w, 2246822519)) >>> 0;
+  const clusterSets = [
+    [[245,220],[480,340],[715,220]],
+    [[180,200],[365,350],[565,200],[785,365]],
+    [[200,180],[390,400],[570,190],[770,390],[480,290]],
+    [[160,250],[310,170],[460,380],[620,180],[800,320],[510,250]],
+  ];
+  const clusters = clusterSets[Math.min(clusterSets.length-1, Math.floor((w-1)/3))];
+  const count = Math.min(96, 26 + (w-1)*4);
+  const amp = w >= 2 ? Math.min(12, Math.floor(w/2)+1) : 0;
+  const echo = w >= 3 ? Math.min(13, Math.floor((w-1)/2)) : 0;
+  const freeze = w >= 5 ? Math.min(9, Math.floor((w-3)/3)) : 0;
+  const voidCount = w >= 7 ? Math.min(11, Math.floor((w-5)/3)) : 0;
+  const level = {
+    id:-w, code:`WAVE ${String(w).padStart(2,'0')}`, subtitle:'One pulse per wave. Keep your energy alive.',
+    seed, count, speed:Math.min(2.15, .67 + (w-1)*.075), spread:Math.min(108,75+w*2),
+    clusters, amp, echo, freeze, void:voidCount,
+    thresholds:[endlessTarget(w),75,92],
+    tip:'Clear the target to keep your energy. 90% restores one energy charge.',
+  };
+  return createGameFromLevel(level);
+}
+export function endlessTarget(wave) { return Math.min(63, 42 + Math.floor((wave-1)/3)*3); }
+export function endlessOutcome(game, energy) {
+  const eligible=game.level.count-(game.level.void||0);
+  const percent=Math.round(game.hits*100/eligible);
+  const target=endlessTarget(-game.level.id);
+  const cleared=percent>=target;
+  const perfect=percent>=90;
+  return {percent,target,cleared,energy:Math.max(0,Math.min(3,energy+(cleared?0:-1)+(perfect?1:0)))};
+}
+
 export function rngFromSeed(seed) {
   let s = seed >>> 0;
   return () => {

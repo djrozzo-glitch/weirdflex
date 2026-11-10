@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#080c19">
   <meta name="description" content="VOID SIGNAL. One pulse. Infinite chaos. A neon chain reaction arcade game.">
   <meta property="og:title" content="VOID SIGNAL — One pulse. Infinite chaos.">
-  <meta property="og:description" content="Choose your moment. Trigger the chain. Master 30 neon missions and a new Daily Signal every day.">
+  <meta property="og:description" content="Master 30 neon missions, Daily Signal, and Endless Mode. One pulse, infinite waves.">
   <meta property="og:image" content="https://weirdflex.online/voidsignal/assets/cover.png">
   <meta property="og:url" content="https://weirdflex.online/voidsignal/">
   <meta property="og:type" content="website">
@@ -66,6 +66,8 @@
         <div class="arena-corner br">960 × 600</div>
 
         <div class="combo-banner hidden" id="combo-banner">CHAIN x1</div>
+        <div id="endless-hud" class="endless-hud hidden" aria-live="polite"><span id="endless-wave">WAVE 01</span><strong id="endless-energy">◆◆◆</strong><span id="endless-target">TARGET 42%</span><span id="endless-total">TOTAL 0</span></div>
+        <div id="endless-transition" class="endless-transition hidden" aria-live="polite"><div id="endless-transition-title">WAVE CLEARED</div><p id="endless-transition-info">Preparing next wave…</p></div>
 
         <div class="center-overlay" id="home-overlay">
           <div class="home-orbit"><span class="ring r1"></span><span class="ring r2"></span><span class="ring r3"></span><span class="orbit-dot"></span></div>
@@ -73,7 +75,7 @@
           <div class="hero-title">ONE PULSE.<br><em>INFINITE CHAOS.</em></div>
           <p class="hero-copy">Find the right moment. Touch the field.<br>Watch everything fall into place.</p>
           <button class="primary-button ui-button" id="play"><span>START CAMPAIGN</span><b>↗</b></button>
-          <button class="secondary-button ui-button" id="levels-home"><span>SELECT MISSION</span></button><button class="daily-home-button" id="daily-home">✦ DAILY SIGNAL · 3 ATTEMPTS</button>
+          <button class="secondary-button ui-button" id="levels-home"><span>SELECT MISSION</span></button><button class="endless-home-button" id="endless-home">∞ ENDLESS MODE <span>NEW</span></button><button class="daily-home-button" id="daily-home">✦ DAILY SIGNAL · 3 ATTEMPTS</button>
           <div class="home-foot"><span id="mission-count-home">30 MISSIONS</span> <span>◆</span> 5 ENERGY TYPES <span>◆</span> ONE CHANCE</div>
         </div>
 
@@ -88,7 +90,7 @@
           <div class="settings-list"><label class="settings-row">SOUND EFFECTS <input type="checkbox" id="setting-sound" checked></label>
           <label class="settings-row">SCREEN SHAKE <input type="checkbox" id="setting-shake" checked></label>
           <label class="settings-row">FLASH EFFECTS <input type="checkbox" id="setting-flash" checked></label></div>
-          <p class="settings-copy">Keyboard: Space / Enter to fire, R to restart, P to pause, M to mute, Esc to return.</p>
+          <p class="settings-copy">Keyboard: Space / Enter to fire, R to restart, P to pause, M to mute, Esc to return. Endless: clear each wave target; three energy charges; 90%+ restores one.</p>
           <p class="settings-copy">Progress and Daily scores are saved only on this device. No tracking, ads, accounts or external analytics.</p>
           <a href="./privacy.html" class="settings-link">PRIVACY & DATA</a>
           <button id="settings-done" class="primary-button ui-button"><span>DONE</span></button>

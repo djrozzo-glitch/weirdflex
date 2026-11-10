@@ -1,4 +1,4 @@
-import { WORLD, LEVELS, STEP, COLORS, createGame, createDailyGame, dailyKey, trigger, stepGame, starsFor, ratingFor } from './game-engine.mjs';
+import { WORLD, LEVELS, STEP, COLORS, createGame, createDailyGame, createEndlessGame, endlessOutcome, endlessTarget, dailyKey, trigger, stepGame, starsFor, ratingFor } from './game-engine.mjs';
 
 const $ = id => document.getElementById(id);
 const canvas = $('game');
@@ -8,6 +8,63 @@ const DAILY_SAVE = 'voidsignal.v04.daily';
 function readDaily(){try{const d=JSON.parse(localStorage.getItem(DAILY_SAVE)||'{}');return d&&typeof d==='object'?d:{}}catch{return {}}}
 let daily=readDaily();
 let mode='campaign';
+const ENDLESS_SAVE='voidsignal.v11.endless';
+function readEndlessBest(){try{return Math.max(0,Number(localStorage.getItem(ENDLESS_SAVE))||0)}catch{return 0}}
+let endlessBest=readEndlessBest();
+let endless=null;
+let endlessTransition=0;
+function refreshEndlessHud(){
+  const active=mode==='endless'&&!!endless;
+  $('endless-hud').classList.toggle('hidden',!active || screen!=='play');
+  $('arena-shell').classList.toggle('is-endless',active);
+  if(!active)return;
+  $('endless-wave').textContent=`WAVE ${pad(endless.wave)}`;
+  $('endless-energy').textContent='◆'.repeat(endless.energy)+'◇'.repeat(3-endless.energy);
+  $('endless-target').textContent=`TARGET ${endlessTarget(endless.wave)}%`;
+  $('endless-total').textContent=`TOTAL ${(endless.score+(game.phase==='finished'?0:game.score)).toLocaleString('en-US')}`;
+}
+function openEndless(){
+  mode='endless';
+  endless={wave:1,score:0,energy:3,runSeed:(Date.now() ^ (Math.random()*4294967296))>>>0,totalHits:0,bestDepth:0};
+  endlessTransition=0;
+  game=createEndlessGame(endless.wave,endless.runSeed);
+  resetFx();updateMission();display('play');
+}
+function nextEndlessWave(){
+  if(mode!=='endless'||!endless||endless.energy<=0)return;
+  endless.wave++;
+  game=createEndlessGame(endless.wave,endless.runSeed);
+  endlessTransition=0;
+  $('endless-transition').classList.add('hidden');
+  resetFx();updateMission();display('play');
+}
+function finishEndless(){
+  const outcome=endlessOutcome(game,endless.energy);
+  endless.score+=game.score;
+  endless.totalHits+=game.hits;
+  endless.bestDepth=Math.max(endless.bestDepth,game.bestDepth);
+  endless.energy=outcome.energy;
+  if(endless.score>endlessBest){endlessBest=endless.score;try{localStorage.setItem(ENDLESS_SAVE,String(endlessBest))}catch{}}
+  if(endless.energy<=0){
+    $('result-kicker').textContent='// ENDLESS SIGNAL LOST';
+    $('result-rating').textContent='RUN COMPLETE';
+    $('result-stars').textContent=`${endless.wave} WAVES`;
+    $('result-hits').textContent=String(endless.totalHits);
+    $('result-depth').textContent=pad(endless.bestDepth);
+    $('result-score').textContent=endless.score.toLocaleString('en-US');
+    $('result-line').textContent=`Reached wave ${endless.wave} · Personal best ${endlessBest.toLocaleString('en-US')}.`;
+    $('next').innerHTML='<span>MAIN MENU</span><b>→</b>';
+    $('daily-menu').style.display='none';
+    $('result-overlay').classList.remove('perfect');
+    finishTone(0);display('result');return;
+  }
+  $('endless-transition-title').textContent=outcome.cleared?'WAVE CLEARED':'SIGNAL WEAKENED';
+  $('endless-transition-info').textContent=`${outcome.percent}% reached · ${outcome.cleared?'ENERGY STABLE':'−1 ENERGY'} · Next wave incoming`;
+  endlessTransition=2.0;
+  $('endless-transition').classList.remove('hidden');
+  refreshEndlessHud();
+}
+
 let slowTimer=0, collapseTimer=0, collapseDone=false;
 const scorePopups=[];
 function saveDaily(){try{localStorage.setItem(DAILY_SAVE,JSON.stringify(daily))}catch{}}
@@ -140,7 +197,7 @@ function populateList() {
 function updateMission() {
   const l = game.level;
   if(mode==='campaign') selected = l.id;
-  $('level-kicker').innerHTML = mode==='daily'?`DAILY SIGNAL <span class="sublabel">// ${dailyKey()} UTC</span>`:`MISSION ${pad(l.id)} <span class="sublabel">// CAMPAIGN</span>`;
+  $('level-kicker').innerHTML = mode==='endless'?`ENDLESS // WAVE ${pad(endless.wave)} <span class="sublabel">ENERGY ${endless.energy}/3</span>`:mode==='daily'?`DAILY SIGNAL <span class="sublabel">// ${dailyKey()} UTC</span>`:`MISSION ${pad(l.id)} <span class="sublabel">// CAMPAIGN</span>`;
   $('mission-title').textContent = l.code;
   $('mission-description').textContent = l.subtitle;
   $('total-count').textContent = '/ ' + (l.count-(l.void||0));
@@ -149,7 +206,7 @@ function updateMission() {
   $('freeze-key').classList.toggle('inactive', !l.freeze);
   $('amplifier-key').classList.toggle('inactive', !l.amp);
   $('echo-key').classList.toggle('inactive', !l.echo);
-  $('best-score').textContent = pad(mode==='daily'?todayDaily().record.best:(save.scores[l.id]||0),6);
+  $('best-score').textContent = pad(mode==='endless'?endlessBest:mode==='daily'?todayDaily().record.best:(save.scores[l.id]||0),6);
   $('campaign-progress').textContent = `${pad(Math.min(save.unlocked, TOTAL_LEVELS))} / ${pad(TOTAL_LEVELS)}`;
   $('mission-count-home').textContent = `${TOTAL_LEVELS} MISSIONS`;
   refreshDaily();
@@ -159,7 +216,7 @@ function updateMission() {
 }
 
 function refreshTelemetry() {
-  $('live-score').textContent = pad(game.score, 6);
+  $('live-score').textContent = pad(mode==='endless'&&endless?endless.score+(game.phase==='finished'?0:game.score):game.score, 6);
   $('hits-count').textContent = pad(game.hits);
   $('chain-depth').textContent = pad(game.bestDepth);
   const targetCount=game.level.count-(game.level.void||0);
@@ -174,7 +231,7 @@ function refreshTelemetry() {
   const hs = pad(Math.floor((secs % 1) * 100));
   $('timer-readout').textContent = `∆ ${mm}:${ss}.${hs}`;
   const message = screen === 'home' ? 'AWAITING TRANSMISSION' : game.phase === 'ready' ? 'AWAITING INPUT' : game.phase === 'active' ? 'CHAIN REACTION ACTIVE' : 'TRANSMISSION COMPLETE';
-  $('system-message').textContent = message;
+  $('system-message').textContent = mode==='endless'?`ENDLESS · WAVE ${pad(endless.wave)} · ${message}`:message;
   $('pulse-indicator').classList.toggle('active', game.phase === 'active');
   $('level-state').textContent = game.phase === 'ready' ? '● READY' : game.phase === 'active' ? '● LIVE' : '● COMPLETE';
   $('level-state').className = 'level-state ' + (game.phase === 'active' ? 'active' : game.phase === 'finished' ? 'complete' : '');
@@ -187,6 +244,7 @@ function display(screenName) {
   }
   $('play-hint').classList.toggle('hide', screenName !== 'play' || game.phase !== 'ready');
   refreshTelemetry();
+  refreshEndlessHud();
 }
 
 function resetFx() {
@@ -196,6 +254,7 @@ function resetFx() {
   ripples.length = 0;
   comboLabelTimer = 0;
   $('combo-banner').classList.add('hidden');
+  $('endless-transition').classList.add('hidden');
   shake = 0;
   accum = 0;
   prevFinish = false;
@@ -211,8 +270,8 @@ function choose(id) {
   display('play');
 }
 function openDaily(){const {record}=todayDaily();if(record.attempts>=3){display('daily');return;} mode='daily';game=createDailyGame();resetFx();updateMission();display('play');}
-function restart() { if(mode==='daily'){openDaily();return;} game = createGame(selected); resetFx(); updateMission(); display('play'); }
-function goHome() { mode='campaign';selected=Math.max(1,selected);game = createGame(selected); resetFx(); updateMission(); display('home'); }
+function restart() { if(mode==='endless'){openEndless();return;} if(mode==='daily'){openDaily();return;} game = createGame(selected); resetFx(); updateMission(); display('play'); }
+function goHome() { endlessTransition=0;endless=null;$('endless-transition').classList.add('hidden');mode='campaign';selected=Math.max(1,selected);game = createGame(selected); resetFx(); updateMission(); display('home'); }
 function openPanel(which) { panelBefore = screen; display(which); }
 function pauseGame(){if(screen!=='play')return;pausedFrom=screen;display('pause');$('pause').setAttribute('aria-pressed','true');$('resume').focus();}
 function resumeGame(){if(screen!=='pause')return;display(pausedFrom);$('pause').setAttribute('aria-pressed','false');canvas.focus();}
@@ -221,6 +280,8 @@ function closeSettings(){if(screen!=='settings')return;display(panelBefore);$('s
 function closePanel() { display(['select','help','daily','settings'].includes(panelBefore) ? 'home' : panelBefore); }
 
 function onFinish() {
+  if(mode==='endless'){finishEndless();return;}
+  $('daily-menu').style.display='';
   const stars = starsFor(game);
   if(mode==='daily'){const {record}=todayDaily();record.best=Math.max(record.best,game.score);record.percent=Math.max(record.percent,Math.round(game.hits*100/(game.level.count-(game.level.void||0))));saveDaily();refreshDaily();}
   else {
@@ -273,6 +334,7 @@ canvas.addEventListener('keydown', e => {
 });
 
 $('play').onclick = () => choose(selected);
+$('endless-home').onclick=openEndless;
 $('levels-home').onclick = () => openPanel('select');
 $('daily-home').onclick=()=>{refreshDaily();openPanel('daily')};
 $('daily-close').onclick=closePanel;
@@ -295,6 +357,7 @@ $('retry').onclick = restart;
 $('restart-top').onclick = restart;
 $('brand').onclick = goHome;
 $('next').onclick = () => {
+  if(mode==='endless'){goHome();return;}
   if(mode==='daily'){goHome();openPanel('daily');return;}
   const solved = starsFor(game) > 0;
   const nextId = solved ? Math.min(TOTAL_LEVELS, selected + 1) : selected;
@@ -566,6 +629,7 @@ function tick(ts) {
   lastTime = ts;
   backgroundClock += delta;
   const simulationActive = screen === 'play' || screen === 'result';
+  if(mode==='endless' && screen==='play' && endlessTransition>0){endlessTransition=Math.max(0,endlessTransition-delta);if(!endlessTransition)nextEndlessWave();}
 
   if (simulationActive) {
     accum += delta*(slowTimer>0 && !motionReduced ? .38 : 1);
@@ -597,7 +661,7 @@ function tick(ts) {
 
   advanceFx(delta);
   draw(backgroundClock);
-  if (ts - lastUI > 70) { refreshTelemetry(); lastUI = ts; }
+  if (ts - lastUI > 70) { refreshTelemetry(); refreshEndlessHud(); lastUI = ts; }
   requestAnimationFrame(tick);
 }
 

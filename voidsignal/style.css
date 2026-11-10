@@ -226,3 +226,28 @@ button:disabled{cursor:not-allowed}
  .select-overlay,.help-overlay,.daily-overlay,.settings-overlay{overscroll-behavior:contain}
  .result-overlay .result-line{flex-shrink:0}
 }
+
+/* ENDLESS MODE — release 1.1 */
+.endless-home-button{margin-top:10px;border:1px solid #b589ff;border-radius:13px;background:linear-gradient(105deg,#33215b,#1a3560 68%,#163b50);box-shadow:0 0 22px #a35dff35,inset 0 1px #cab5ff66;color:#f6e9ff;min-height:42px;min-width:220px;padding:0 18px;letter-spacing:.14em;font-weight:800;font-size:11px;cursor:pointer;transition:filter .15s,transform .15s}
+.endless-home-button:hover,.endless-home-button:focus-visible{filter:brightness(1.3);transform:translateY(-1px)}
+.endless-home-button span{font-size:8px;color:#201127;background:#b7f7ff;padding:4px 6px;border-radius:5px;margin-left:9px}
+.endless-hud{position:absolute;z-index:4;top:13px;left:50%;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:12px;background:#091426dc;border:1px solid #774ca3;border-radius:30px;padding:8px 14px;color:#e9e2ff;font-size:10px;font-weight:750;letter-spacing:.08em;box-shadow:0 0 22px #7c39ba44;white-space:nowrap;pointer-events:none}
+.endless-hud strong{color:#ffce78;font-size:15px;letter-spacing:.2em}
+.endless-hud .empty-energy{color:#526178}
+.endless-hud.hidden,.endless-transition.hidden{display:none!important}
+.endless-transition{position:absolute;z-index:7;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center;background:radial-gradient(circle,#0a1b31d9,#081020ad 66%,#08102066);color:#d6faff}
+.endless-transition>div{font-weight:900;letter-spacing:.09em;font-size:clamp(23px,4vw,45px);text-shadow:0 0 25px #5adfff}
+.endless-transition p{font-size:12px;color:#c0cfea;margin-top:14px;letter-spacing:.09em}
+@media(max-width:720px){.endless-hud{top:9px;font-size:8px;gap:6px;padding:5px 8px;max-width:96%;white-space:normal}.endless-hud strong{font-size:10px}.endless-home-button{min-width:188px;min-height:35px;font-size:9px;margin-top:5px}.endless-transition>div{font-size:24px}.endless-transition p{font-size:10px}}
+
+/* HUD and mobile launch screen safety */
+.is-endless .combo-banner{top:58px}
+@media(max-width:720px){
+  .home-overlay{justify-content:flex-start;overflow-y:auto;gap:3px;padding:9px 12px}
+  .home-overlay .home-orbit{display:none}
+  .home-overlay .hero-title{font-size:clamp(19px,5.2vw,28px);line-height:.98;margin:5px 0}
+  .home-overlay .hero-copy{font-size:9px;line-height:1.25;margin:1px 0 4px}
+  .home-overlay .ui-button,.home-overlay .daily-home-button,.home-overlay .endless-home-button{min-height:30px;margin-top:2px;padding:3px 10px;font-size:9px}
+  .home-overlay .home-foot{display:none}
+  .is-endless .combo-banner{top:42px}
+}

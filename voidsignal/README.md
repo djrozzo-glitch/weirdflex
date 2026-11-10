@@ -1,3 +1,9 @@
+# VOID SIGNAL 1.1 — Endless Mode
+
+**New**: Endless Mode. A fresh set of particles spawns automatically after each resolved reaction. Each wave gives one pulse; clear the target to preserve your three energy charges. Below target costs one charge; clear 90% or more to recharge one (maximum three). When energy reaches zero the run ends, showing total score, waves survived, best chain depth, and a locally saved personal best. Difficulty and particle types ramp with each wave, with a safe cap on particle count. Waves are deterministic within a run seed.
+
+Start Endless from the main menu. Press R to begin a fresh Endless run. Pause works between waves too. Campaign and Daily remain unchanged, and their localStorage keys are preserved.
+
 # VOID SIGNAL — Public Release 1.0
 
 A standalone neon chain-reaction arcade game for desktop and mobile browsers.
