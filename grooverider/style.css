@@ -14,3 +14,9 @@
 .mobile-controls{display:none!important}
 @media(min-width:900px){.shell{max-width:640px}.stage{box-shadow:0 12px 90px #f1498b22,0 0 0 4px #100c16}canvas{width:min(100%,calc((100svh - 126px) * .62))}}
 @media(max-width:540px){canvas{width:min(100%,calc((100svh - 104px) * .64))}.shell{padding:4px 6px 6px}.top{height:44px}.hud{padding-top:9px}footer{font-size:8px;padding:7px 2px 3px}.stage{box-shadow:0 8px 34px #e83e7d18,0 0 0 3px #100c16}}
+
+/* Full track credits: two/three-line wrapping rather than clipped titles. */
+.hud-track{position:relative;min-width:0;padding-top:1px}
+#trackLabel{display:block;max-width:none;margin:0 auto;overflow:visible;text-overflow:clip;white-space:normal;overflow-wrap:anywhere;word-break:normal;font-size:9px;line-height:1.35;color:#f1c9df;text-shadow:0 1px 7px #05020b}
+.beat-dots{margin-top:5px}
+@media(max-width:540px){#trackLabel{font-size:8px;line-height:1.35}.hud{grid-template-columns:.85fr 1.55fr .85fr;column-gap:5px}.hud-track{padding:0 2px}.hud-energy small{font-size:8px}}
