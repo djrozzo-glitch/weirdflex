@@ -4,15 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f3f0ea">
-<meta name="description" content="weird flex but it’s ok — four browser games: NightShift Lite, ShibaRun, Gull and the City, and Kollegium.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://weirdflex.online/">
-<meta property="og:site_name" content="weirdflex.online">
-<meta property="og:title" content="weird flex but it’s ok">
-<meta property="og:description" content="Four browser games: NightShift Lite, ShibaRun, Gull and the City, and Kollegium.">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="weird flex but it’s ok">
-<meta name="twitter:description" content="Four browser games: NightShift Lite, ShibaRun, Gull and the City, and Kollegium.">
+<meta name="description" content="weird flex but it’s ok — small strange browser games including BREACH.exe, NightShift, ShibaRun, Gull and the City, and Kollegium.">
 <title>weird flex but it’s ok</title>
 <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png?v=2">
 <link rel="shortcut icon" href="/favicon.ico?v=2">
@@ -47,6 +39,8 @@ main{width:min(100% - 48px,1320px);margin:0 auto}
 @media (max-width: 900px){main{width:min(100% - 34px,1320px)}.game,.game:nth-child(even){grid-template-columns:1fr;gap:18px;padding:28px 0}.game:nth-child(even) .visual,.game:nth-child(even) .info{order:unset}.desc{font-size:16px;max-width:none}}
 @media (max-width: 640px){.header{padding:34px 0 38px}.games{padding-bottom:48px}.title{font-size:clamp(44px,18vw,80px)}.name{font-size:clamp(26px,8vw,40px)}.subtitle{font-size:14px}.footer{display:block}.footer span+span{display:block;margin-top:6px}}
 @media (prefers-reduced-motion: reduce){.link{transition:none}}
+.links{display:flex;flex-wrap:wrap;column-gap:28px;row-gap:16px;align-items:center}
+@media(max-width:640px){.links{column-gap:20px}}
 </style>
 </head>
 <body>
@@ -54,27 +48,31 @@ main{width:min(100% - 48px,1320px);margin:0 auto}
 <header class="header">
 <p class="kicker">weirdflex.online</p>
 <h1 class="title"><span>weird flex</span><span>but it’s ok</span></h1>
-<p class="subtitle">Small strange browser games, with more on the way. Pick your mood: warehouse euphoria, cheerful shiba chaos, a very questionable day in the life of a seagull, or a mystery where logic meets magic.</p>
+<p class="subtitle">Small strange browser games, with more on the way. Pick a puzzle, throw a party, run with a shiba, take to the skies, or solve a mystery.</p>
 </header>
 <section class="games" aria-label="Games list">
 <article class="game">
-<a class="visual" href="/nightshift/" aria-label="Play NightShift Lite"><img style="aspect-ratio:16/10" src="assets/home/nightshift.webp?v=2" alt="NightShift Lite hero image with a DJ playing to a purple warehouse crowd" width="1600" height="900" decoding="async" fetchpriority="high" loading="eager"></a>
-<div class="info"><div><div class="meta"><div><p class="small">Club sim / lite version</p><h2 class="name">NightShift Lite</h2></div><div class="num">01</div></div><p class="desc">Pick a DJ, launch the party and watch the room come alive. A lighter public version of the nightclub idea — fast to open, easy to lose time in.</p></div><a class="link" href="/nightshift/">Play NightShift <span aria-hidden="true">↗</span></a></div>
+<a class="visual" href="/breach/" aria-label="Play BREACH.exe"><img style="aspect-ratio:16/10" src="assets/home/breach.webp?v=1" alt="BREACH.exe neon cyberpunk signal routing puzzle game" width="1200" height="675" decoding="async" fetchpriority="high" loading="eager"></a>
+<div class="info"><div><div class="meta"><div><p class="small">Cyberpunk / signal routing puzzle</p><h2 class="name">BREACH.exe</h2></div><div class="num">01</div></div><p class="desc">Rotate network tiles, connect the signal and breach the server. A neon logic puzzle with 50 missions, trace pressure and a daily challenge.</p></div><a class="link" href="/breach/">Play BREACH.exe <span aria-hidden="true">↗</span></a></div>
+</article>
+<article class="game">
+<a class="visual" href="/nightshift/" aria-label="Play NightShift online"><img style="aspect-ratio:16/10" src="assets/home/nightshift.webp?v=3" alt="NightShift: DJ performing in a purple-lit warehouse club" width="1600" height="900" decoding="async" loading="lazy"></a>
+<div class="info"><div><div class="meta"><div><p class="small">Club simulation</p><h2 class="name">NightShift</h2></div><div class="num">02</div></div><p class="desc">Run an underground club your way. Play the streamlined DJ-and-party version in your browser, or download the full club-building simulator with construction, upgrades and management.</p></div><div class="links"><a class="link" href="/nightshift/">Play online <span aria-hidden="true">↗</span></a><a class="link" href="https://drive.google.com/drive/u/0/folders/16iXtiFMnP6FYz82i_WorHt7TNgBB4JuG" target="_blank" rel="noopener noreferrer">Full game · downloads <span aria-hidden="true">↗</span></a></div></div>
 </article>
 <article class="game">
 <a class="visual" href="/shibarun/" aria-label="Play ShibaRun"><img style="aspect-ratio:16/10" src="assets/home/shibarun.webp?v=2" alt="ShibaRun title screen and city selection interface" width="1600" height="900" decoding="async" loading="lazy"></a>
-<div class="info"><div><div class="meta"><div><p class="small">Arcade runner</p><h2 class="name">ShibaRun</h2></div><div class="num">02</div></div><p class="desc">A bright endless runner with one determined dog and a growing collection of cities. Cute on the surface, surprisingly hard once the pace kicks in.</p></div><a class="link" href="/shibarun/">Play ShibaRun <span aria-hidden="true">↗</span></a></div>
+<div class="info"><div><div class="meta"><div><p class="small">Arcade runner</p><h2 class="name">ShibaRun</h2></div><div class="num">03</div></div><p class="desc">A bright endless runner with one determined dog and a growing collection of cities. Cute on the surface, surprisingly hard once the pace kicks in.</p></div><a class="link" href="/shibarun/">Play ShibaRun <span aria-hidden="true">↗</span></a></div>
 </article>
 <article class="game">
 <a class="visual" href="/gullcity/" aria-label="Play Gull and the City"><img style="aspect-ratio:16/10" src="assets/home/gullcity.webp?v=2" alt="Gull and the City pastel city scene with a flying seagull" width="1600" height="900" decoding="async" loading="lazy"></a>
-<div class="info"><div><div class="meta"><div><p class="small">Meditative absurdism</p><h2 class="name">Gull and the City</h2></div><div class="num">03</div></div><p class="desc">Glide above a beautiful city, switch lanes and make tiny terrible choices. Calm, slow and faintly ridiculous in the best possible way.</p></div><a class="link" href="/gullcity/">Play Gull and the City <span aria-hidden="true">↗</span></a></div>
+<div class="info"><div><div class="meta"><div><p class="small">Meditative absurdism</p><h2 class="name">Gull and the City</h2></div><div class="num">04</div></div><p class="desc">Glide above a beautiful city, switch lanes and make tiny terrible choices. Calm, slow and faintly ridiculous in the best possible way.</p></div><a class="link" href="/gullcity/">Play Gull and the City <span aria-hidden="true">↗</span></a></div>
 </article>
 <article class="game">
-<a class="visual" href="https://kollegium.online/en/" target="_blank" rel="noopener noreferrer" aria-label="Play Kollegium (opens in a new tab)"><img src="assets/home/kollegium.webp" alt="Kollegium: a gothic academy rising above a misty fantasy valley" width="1200" height="750" decoding="async" loading="lazy"></a>
-<div class="info"><div><div class="meta"><div><p class="small">Mystery / detective adventure</p><h2 class="name">Kollegium</h2></div><div class="num">04</div></div><p class="desc">Enter a world where logic and magic live side by side. Explore mysterious cases, examine evidence, uncover contradictions and name the culprit.</p></div><a class="link" href="https://kollegium.online/en/" target="_blank" rel="noopener noreferrer">Play Kollegium <span aria-hidden="true">↗</span></a></div>
+<a class="visual" href="https://kollegium.online/en/" target="_blank" rel="noopener noreferrer" aria-label="Play Kollegium in a new tab"><img style="aspect-ratio:16/10" src="assets/home/kollegium.webp" alt="Kollegium: gothic academy above a fantasy valley" width="1200" height="750" decoding="async" loading="lazy"></a>
+<div class="info"><div><div class="meta"><div><p class="small">Mystery / detective adventure</p><h2 class="name">Kollegium</h2></div><div class="num">05</div></div><p class="desc">Enter a world where logic meets magic. Examine evidence, uncover contradictions and solve mysterious cases.</p></div><a class="link" href="https://kollegium.online/en/" target="_blank" rel="noopener noreferrer">Play Kollegium <span aria-hidden="true">↗</span></a></div>
 </article>
 </section>
-<footer class="footer"><span>weird flex but it’s ok</span><span>Small games. More to come. No downloads.</span></footer>
+<footer class="footer"><span>weird flex but it’s ok</span><span>Small strange browser games. More on the way.</span></footer>
 </main>
 </body>
 </html>
