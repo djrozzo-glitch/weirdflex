@@ -1,10 +1,10 @@
-# GROOVE RAID v1.0 — Drift in the Groove
+# GROOVE RAID v1.2 — Velvet Groove
 
-New in this build:
-- removed the square ship background by replacing the player art with a transparent version
-- full 2D movement across the groove (keyboard + touch drag)
-- softer, more meditative feel and longer listening runs
-- calmer bosses, smoother pacing, softer hit feedback
-- mobile right-side controls now act as UP / DOWN
+This pass includes:
+- integrated the new transparent ship sprite and reduced its on-screen size
+- made the whole play area shorter vertically so it fits better on screen
+- strengthened the fullscreen desktop vinyl-record underlay
+- rewrote mobile touch steering to use full-stage drag with window-level tracking
+- ZIP still excludes the audio folder, so keep your existing `audio/` directory when uploading
 
-Important: this ZIP intentionally excludes the audio folder. Keep your existing `audio/` directory with all MP3 files when uploading. Hard refresh after deploy.
+After deploy, do a hard refresh.
