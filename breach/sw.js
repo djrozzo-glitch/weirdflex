@@ -1,5 +1,5 @@
 // BREACH.exe 4.2 — versioned offline shell, network-first navigation.
-const CACHE='breach-exe-4.2.0';
+const CACHE='breach-exe-5.0.0';
 const SHELL=['./','./index.html','./manifest.webmanifest','./favicon.png','./icon-192.png','./icon-512.png'];
 const GAME_ASSETS=[
 'assets/keyart.png',

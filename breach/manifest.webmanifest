@@ -1,10 +1,10 @@
 {
-  "id": "./",
-  "name": "BREACH.exe \u2014 Signal Routing Puzzle",
+  "id": "/breach/",
+  "name": "BREACH.exe — Signal Routing Puzzle",
   "short_name": "BREACH.exe",
   "description": "A cyberpunk signal-routing puzzle game with 50 missions and daily challenges.",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/breach/",
+  "scope": "/breach/",
   "display": "standalone",
   "background_color": "#050812",
   "theme_color": "#071321",
@@ -22,5 +22,11 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "lang": "en",
+  "categories": [
+    "games",
+    "puzzle"
+  ],
+  "prefer_related_applications": false
 }
