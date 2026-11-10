@@ -35,7 +35,7 @@ main{width:min(100% - 48px,1320px);margin:0 auto}
 .link{display:inline-flex;align-items:center;gap:12px;font-weight:700;font-size:14px;letter-spacing:.01em;border-bottom:1px solid var(--ink);padding-bottom:7px;width:max-content;transition:gap .18s ease}
 .link:hover,.link:focus-visible{gap:18px}.link span{font-size:18px;line-height:1}
 .small{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
-.footer{padding:18px 0 30px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px}
+.footer{padding:18px 0 30px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:13px}.footer strong{color:var(--ink);font-weight:700}.footer-mail{color:var(--ink);border-bottom:1px solid currentColor;padding-bottom:2px}.footer-mail:hover{opacity:.6}
 @media (max-width: 900px){main{width:min(100% - 34px,1320px)}.game,.game:nth-child(even){grid-template-columns:1fr;gap:18px;padding:28px 0}.game:nth-child(even) .visual,.game:nth-child(even) .info{order:unset}.desc{font-size:16px;max-width:none}}
 @media (max-width: 640px){.header{padding:34px 0 38px}.games{padding-bottom:48px}.title{font-size:clamp(44px,18vw,80px)}.name{font-size:clamp(26px,8vw,40px)}.subtitle{font-size:14px}.footer{display:block}.footer span+span{display:block;margin-top:6px}}
 @media (prefers-reduced-motion: reduce){.link{transition:none}}
@@ -72,7 +72,7 @@ main{width:min(100% - 48px,1320px);margin:0 auto}
 <div class="info"><div><div class="meta"><div><p class="small">Mystery / detective adventure</p><h2 class="name">Kollegium</h2></div><div class="num">05</div></div><p class="desc">Enter a world where logic meets magic. Examine evidence, uncover contradictions and solve mysterious cases.</p></div><a class="link" href="https://kollegium.online/en/" target="_blank" rel="noopener noreferrer">Play Kollegium <span aria-hidden="true">↗</span></a></div>
 </article>
 </section>
-<footer class="footer"><span>weird flex but it’s ok</span><span>Small strange browser games. More on the way.</span></footer>
+<footer class="footer"><span>Games by <strong>Ilia Rozov</strong></span><span>Got an idea? <a class="footer-mail" href="mailto:djrozzo@gmail.com">djrozzo@gmail.com</a></span></footer>
 </main>
 </body>
 </html>
