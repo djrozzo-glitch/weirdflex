@@ -35,7 +35,6 @@ function nextEndlessWave(){
   endless.wave++;
   game=createEndlessGame(endless.wave,endless.runSeed);
   endlessTransition=0;
-  $('endless-transition').classList.add('hidden');
   resetFx();updateMission();display('play');
 }
 function finishEndless(){
@@ -58,10 +57,8 @@ function finishEndless(){
     $('result-overlay').classList.remove('perfect');
     finishTone(0);display('result');return;
   }
-  $('endless-transition-title').textContent=outcome.cleared?'WAVE CLEARED':'SIGNAL WEAKENED';
-  $('endless-transition-info').textContent=`${outcome.percent}% reached · ${outcome.cleared?'ENERGY STABLE':'−1 ENERGY'} · Next wave incoming`;
-  endlessTransition=2.0;
-  $('endless-transition').classList.remove('hidden');
+  // Seamless Endless: no inter-wave splash screen; let the final shockwave fade briefly.
+  endlessTransition=0.35;
   refreshEndlessHud();
 }
 
@@ -254,7 +251,6 @@ function resetFx() {
   ripples.length = 0;
   comboLabelTimer = 0;
   $('combo-banner').classList.add('hidden');
-  $('endless-transition').classList.add('hidden');
   shake = 0;
   accum = 0;
   prevFinish = false;
@@ -271,7 +267,7 @@ function choose(id) {
 }
 function openDaily(){const {record}=todayDaily();if(record.attempts>=3){display('daily');return;} mode='daily';game=createDailyGame();resetFx();updateMission();display('play');}
 function restart() { if(mode==='endless'){openEndless();return;} if(mode==='daily'){openDaily();return;} game = createGame(selected); resetFx(); updateMission(); display('play'); }
-function goHome() { endlessTransition=0;endless=null;$('endless-transition').classList.add('hidden');mode='campaign';selected=Math.max(1,selected);game = createGame(selected); resetFx(); updateMission(); display('home'); }
+function goHome() { endlessTransition=0;endless=null;mode='campaign';selected=Math.max(1,selected);game = createGame(selected); resetFx(); updateMission(); display('home'); }
 function openPanel(which) { panelBefore = screen; display(which); }
 function pauseGame(){if(screen!=='play')return;pausedFrom=screen;display('pause');$('pause').setAttribute('aria-pressed','true');$('resume').focus();}
 function resumeGame(){if(screen!=='pause')return;display(pausedFrom);$('pause').setAttribute('aria-pressed','false');canvas.focus();}

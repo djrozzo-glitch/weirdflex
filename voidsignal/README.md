@@ -1,3 +1,7 @@
+## v1.1.1 — Seamless Endless waves
+
+Endless now advances to the next wave without a blocking success/failure overlay. The delay has been reduced from two seconds to 0.35 seconds. Energy, wave number, total score and game-over behavior are unchanged.
+
 # VOID SIGNAL 1.1 — Endless Mode
 
 **New**: Endless Mode. A fresh set of particles spawns automatically after each resolved reaction. Each wave gives one pulse; clear the target to preserve your three energy charges. Below target costs one charge; clear 90% or more to recharge one (maximum three). When energy reaches zero the run ends, showing total score, waves survived, best chain depth, and a locally saved personal best. Difficulty and particle types ramp with each wave, with a safe cap on particle count. Waves are deterministic within a run seed.
