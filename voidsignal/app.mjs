@@ -5,7 +5,7 @@ const canvas = $('game');
 const ctx = canvas.getContext('2d', { alpha: false });
 const TOTAL_LEVELS = LEVELS.length;
 const saveKey = 'voidsignal.v02.progress';
-const soundKey = 'voidsignal.v02.muted';
+const soundKey = 'voidsignal.v02.muted'; // Preserve v0.2 sound preference
 
 function load() {
   try {
@@ -40,6 +40,16 @@ let comboLabelTimer = 0;
 const flashes = [];
 const sparks = [];
 const ripples = [];
+const fxImages = {};
+for (const name of ['core-cyan','core-amber','core-echo','shockwave','burst-amber','burst-violet','comet','nova']) {
+  const img = new Image(); img.src = `./assets/fx/${name}.png`;
+  fxImages[name] = img;
+}
+function drawFx(name, x, y, size, opacity=1, rotation=0) {
+  const img=fxImages[name]; if (!img?.complete || !img.naturalWidth) return;
+  ctx.save(); ctx.globalCompositeOperation='lighter'; ctx.globalAlpha=opacity;
+  ctx.translate(x,y);ctx.rotate(rotation);ctx.drawImage(img,-size/2,-size/2,size,size);ctx.restore();
+}
 const motionReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 if (motionReduced) document.body.classList.add('reduce-motion');
 
@@ -220,7 +230,7 @@ function fire(clientX, clientY) {
   if (trigger(game, Math.max(0, Math.min(WORLD.width, x)), Math.max(0, Math.min(WORLD.height, y)))) {
     launchTone();
     shake = 3;
-    ripples.push({ x, y, r: 10, life: 20, kind: 'normal' });
+    ripples.push({ x, y, r: 10, life: 20, maxLife:20, speed:2.5, kind: 'normal' });
     $('play-hint').classList.add('hide');
     refreshTelemetry();
   }
@@ -267,7 +277,7 @@ addEventListener('keydown', e => {
 });
 
 function showCombo(depth) {
-  if (depth < 5) return;
+  if (depth < 5 || depth === game.bestDepth-1) return;
   const banner = $('combo-banner');
   const label = depth >= 20 ? `MEGA CHAIN x${depth}` : depth >= 12 ? `CHAIN BURST x${depth}` : `CHAIN x${depth}`;
   banner.textContent = label;
@@ -314,6 +324,7 @@ function drawParticle(p, time) {
   const flicker = 0.86 + Math.sin(time * 2.5 + p.phase) * 0.14;
   const r = p.kind === 'normal' ? p.size : p.size + 2;
 
+  drawFx(p.kind === 'amplifier' ? 'core-amber' : p.kind === 'echo' ? 'core-echo' : 'core-cyan', p.x, p.y, p.kind === 'normal' ? 27 : 41, .57);
   // trail
   const tx = p.x - p.vx * 8;
   const ty = p.y - p.vy * 8;
@@ -367,6 +378,7 @@ function drawWave(w) {
   const fade = (1 - w.r / w.max);
   const alpha = w.r >= w.max ? Math.max(0, (12 - w.life) / 12) * 0.12 : 0.10 + fade * 0.62;
 
+  if (w.r > 14) drawFx('shockwave',w.x,w.y,w.r*2.3,Math.min(.48,alpha*.7));
   ctx.strokeStyle = `rgba(${rgb},${alpha})`;
   ctx.lineWidth = w.kind === 'amplifier' ? 4 : 3;
   ctx.shadowBlur = 28;
@@ -383,6 +395,7 @@ function drawWave(w) {
 
 function drawHitFlash(f) {
   const a = Math.max(0, f.life / 22);
+  drawFx(f.kind==='amplifier'?'burst-amber':f.kind==='echo'?'burst-violet':'nova', f.x, f.y, 30+(22-f.life)*3.8, Math.min(1,a*.75));
   ctx.save();
   ctx.globalAlpha = a;
   ctx.fillStyle = COLORS[f.kind];
@@ -395,6 +408,7 @@ function drawHitFlash(f) {
 }
 
 function drawSpark(s) {
+  if (s.life > s.maxLife*.72) drawFx('comet',s.x,s.y,12,.19,Math.atan2(s.vy,s.vx));
   ctx.save();
   ctx.globalAlpha = Math.max(0, s.life / s.maxLife);
   ctx.strokeStyle = s.color;
@@ -459,7 +473,6 @@ function draw(time) {
 }
 
 function advanceFx(delta) {
-  flashes.splice(0, 0); // no-op keeps array mutable in place
   for (let i = flashes.length - 1; i >= 0; i--) { flashes[i].life -= delta * 60; if (flashes[i].life <= 0) flashes.splice(i, 1); }
   for (let i = sparks.length - 1; i >= 0; i--) {
     const s = sparks[i];
@@ -479,16 +492,16 @@ function emitBurst(ev) {
   const color = COLORS[ev.kind];
   flashes.push({ x: ev.x, y: ev.y, kind: ev.kind, life: 22 });
   ripples.push({ x: ev.x, y: ev.y, r: 4, speed: ev.kind === 'amplifier' ? 3.5 : 2.2, life: 14, maxLife: 14, kind: ev.kind });
-  const count = ev.kind === 'amplifier' ? 12 : ev.kind === 'echo' ? 8 : 6;
+  const count = ev.kind === 'amplifier' ? 22 : ev.kind === 'echo' ? 16 : 12;
   for (let i = 0; i < count && sparks.length < 300; i++) {
     const ang = (Math.PI * 2 * i) / count + Math.random() * 0.4;
-    const speed = (ev.kind === 'amplifier' ? 2.8 : 2.1) + Math.random() * 1.4;
+    const speed = (ev.kind === 'amplifier' ? 3.5 : 2.6) + Math.random() * 1.4;
     sparks.push({
       x: ev.x, y: ev.y,
       vx: Math.cos(ang) * speed,
       vy: Math.sin(ang) * speed,
-      life: 12 + Math.random() * 10,
-      maxLife: 22,
+      life: 17 + Math.random() * 14,
+      maxLife: 31,
       width: ev.kind === 'amplifier' ? 2 : 1.4,
       color,
     });
