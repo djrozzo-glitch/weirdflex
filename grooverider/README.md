@@ -1,10 +1,9 @@
-# GROOVE RAID v0.6
+# GROOVE RAID v0.8 — Auto Fire
 
-New in v0.6:
-- Mini-boss encounters
-- Enemy projectile attacks
-- Section wave announcements
-- Improved energy pickup FX
-- Stronger energy economy / balance
+- Your ship now fires continuously while playing.
+- The mobile FIRE button and Space firing binding were removed.
+- Shot energy cost is reduced for auto fire, while passive and boost energy consumption remain unchanged.
+- Menu/paused/game-over states do not fire.
+- Music playlist, powerups and enemies are retained.
 
-Upload the contents of this folder over your existing `grooverider` site files. Keep the `audio/` folder with your MP3 files. Hard refresh after deploy.
+Upload the **contents** of this folder to `grooverider/`, preserving all existing audio MP3 files.
