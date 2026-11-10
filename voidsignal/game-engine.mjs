@@ -1,0 +1,66 @@
+/* VOID SIGNAL — deterministic simulation. No DOM dependencies. */
+export const WORLD = Object.freeze({ width: 960, height: 600 });
+export const STEP = 1 / 60;
+export const LEVELS = [
+  { id:1, code:'FIRST CONTACT', subtitle:'One spark is all it takes.', seed:11023, count:24, speed:.56, spread:80, clusters:[[280,270],[465,290],[650,310]], amp:0, echo:0, thresholds:[35,60,83], tip:'Wait for the particles to gather. Then tap once.' },
+  { id:2, code:'THE DRIFT', subtitle:'Patience pays.', seed:22397, count:30, speed:.88, spread:90, clusters:[[240,200],[430,350],[690,260]], amp:0, echo:0, thresholds:[36,62,85], tip:'A well-timed pulse reaches more than a quick one.' },
+  { id:3, code:'CROSS CURRENT', subtitle:'Watch the flow.', seed:33113, count:36, speed:1.05, spread:78, clusters:[[240,300],[450,220],[685,355]], amp:0, echo:0, thresholds:[38,64,86], tip:'Trigger where two groups are about to meet.' },
+  { id:4, code:'OVERDRIVE', subtitle:'A new kind of energy.', seed:44969, count:37, speed:.89, spread:83, clusters:[[245,300],[470,290],[705,300]], amp:3, echo:0, thresholds:[40,65,87], tip:'Amber Amplifiers send out a much larger wave.' },
+  { id:5, code:'DOMINO THEORY', subtitle:'Make it travel.', seed:51709, count:43, speed:1.15, spread:75, clusters:[[185,260],[370,325],[570,265],[760,325]], amp:4, echo:0, thresholds:[40,65,88], tip:'Reach an Amplifier to bridge distant clusters.' },
+  { id:6, code:'AFTERIMAGE', subtitle:'Some signals return.', seed:63521, count:42, speed:1.05, spread:88, clusters:[[250,250],[485,320],[700,240]], amp:3, echo:4, thresholds:[40,67,88], tip:'Violet Echo particles send a second delayed pulse.' },
+  { id:7, code:'DOUBLE TAKE', subtitle:'The second wave counts.', seed:74357, count:49, speed:1.3, spread:88, clusters:[[200,235],[400,345],[620,225],[790,370]], amp:4, echo:5, thresholds:[40,68,89], tip:'Let an Echo catch particles that escaped the first wave.' },
+  { id:8, code:'CRITICAL MASS', subtitle:'Go for the cascade.', seed:85627, count:53, speed:1.5, spread:94, clusters:[[205,185],[400,240],[580,365],[750,325]], amp:6, echo:6, thresholds:[42,70,90], tip:'Amplifiers can reach Echoes across the field.' },
+  { id:9, code:'THE SINGULARITY', subtitle:'Everything is connected.', seed:98179, count:58, speed:1.48, spread:89, clusters:[[210,205],[425,365],[605,200],[765,375]], amp:6, echo:8, thresholds:[44,71,91], tip:'Aim for the first link, not the largest cluster.' },
+  { id:10, code:'VOID SIGNAL', subtitle:'One pulse. All of it.', seed:105943, count:64, speed:1.65, spread:96, clusters:[[155,210],[340,370],[505,190],[675,360],[815,215]], amp:8, echo:8, thresholds:[45,72,93], tip:'Master the timing and clear the entire board.' }
+];
+export const COLORS = {normal:'#58d9ff', amplifier:'#ffb35b', echo:'#c48aff'};
+export function rngFromSeed(seed){ let s=seed>>>0; return ()=> {s=(s+0x6D2B79F5)>>>0;let t=s;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296;}; }
+export function generateParticles(level){
+ const rand=rngFromSeed(level.seed);const particles=[];
+ for(let i=0;i<level.count;i++){
+  const center=level.clusters[i%level.clusters.length]; const ang=rand()*Math.PI*2; const radius=Math.sqrt(rand())*level.spread;
+  const heading=rand()*Math.PI*2;const velocity=(.65+rand()*.65)*level.speed;
+  particles.push({id:i, x:Math.max(22,Math.min(938,center[0]+Math.cos(ang)*radius)),y:Math.max(22,Math.min(578,center[1]+Math.sin(ang)*radius)),vx:Math.cos(heading)*velocity,vy:Math.sin(heading)*velocity,kind:'normal',hit:false,hitTime:-1,depth:0,phase:rand()*6.28,size:4+rand()*2.2});
+ }
+ // Spread special particles across the clusters instead of bunching at the start.
+ const specialIndices=[]; const jump= Math.max(2,Math.floor(level.count/(level.amp+level.echo+1)));
+ for(let i=0;i<level.amp+level.echo;i++) specialIndices.push((3+i*jump)%level.count);
+ for(let i=0;i<level.amp;i++)particles[specialIndices[i]].kind='amplifier';
+ for(let i=level.amp;i<level.amp+level.echo;i++)particles[specialIndices[i]].kind='echo';
+ return particles;
+}
+export function createGame(id){const level=LEVELS[id-1];if(!level)throw new Error('Unknown mission '+id);return {level,particles:generateParticles(level),waves:[],sparks:[],elapsed:0,frame:0,phase:'ready',hits:0,score:0,bestDepth:0,pulse:null,events:[],settle:0,finished:false,peak:0};}
+export function trigger(game,x,y){if(game.phase!=='ready')return false;game.phase='active';game.pulse={x,y};addWave(game,x,y,'origin',0,0);game.events.push({type:'launch',x,y});return true;}
+function addWave(game,x,y,kind,depth,delay=0){const max=kind==='amplifier'?178:kind==='echo'?116:kind==='origin'?115:100;game.waves.push({x,y,kind,depth,r:0,max,age:0,delay,life:0,alpha:1});}
+export function stepGame(game){if(game.phase==='finished')return;
+ game.elapsed+=STEP;game.frame++;game.events=[];
+ for(const p of game.particles){if(p.hit)continue;p.x+=p.vx;p.y+=p.vy;
+  if(p.x<17){p.x=17;p.vx=Math.abs(p.vx);}else if(p.x>943){p.x=943;p.vx=-Math.abs(p.vx);}
+  if(p.y<17){p.y=17;p.vy=Math.abs(p.vy);}else if(p.y>583){p.y=583;p.vy=-Math.abs(p.vy);}
+ }
+ if(game.phase!=='active')return;
+ const alive=[];
+ for(const w of game.waves){
+  if(w.delay>0){w.delay--;alive.push(w);continue;}
+  w.age++;
+  const previous=w.r;
+  w.r=Math.min(w.max,w.r+(w.kind==='amplifier'?5.5:w.kind==='echo'?4.9:4.8));
+  for(const p of game.particles){if(p.hit)continue;
+   const d=Math.hypot(p.x-w.x,p.y-w.y);
+   if(d<=w.r+p.size && d>=Math.max(0,previous-p.size-5)){
+    p.hit=true;p.hitTime=game.elapsed;p.depth=w.depth+1;game.hits++;game.bestDepth=Math.max(game.bestDepth,p.depth);
+    game.score+=Math.round(100*(1+Math.min(15,p.depth)*.28)*(p.kind==='amplifier'?1.4:p.kind==='echo'?1.2:1));
+    game.events.push({type:'hit',kind:p.kind,x:p.x,y:p.y,depth:p.depth,hit:game.hits});
+    addWave(game,p.x,p.y,p.kind,p.depth,0);
+    if(p.kind==='echo')addWave(game,p.x,p.y,'echo',p.depth,28);
+   }
+  }
+  if(w.r<w.max)alive.push(w);else{w.life++;if(w.life<12)alive.push(w);}
+ }
+ game.waves=alive;
+ game.peak=Math.max(game.peak,game.waves.length);
+ if(game.waves.length===0){game.settle++;if(game.settle>=20){game.phase='finished';game.finished=true;game.events.push({type:'finish'});}}
+ else game.settle=0;
+}
+export function starsFor(game){const percent=Math.round(game.hits*100/game.level.count);return game.level.thresholds.reduce((n,t)=>n+(percent>=t?1:0),0);}
+export function ratingFor(game){const pc=Math.round(100*game.hits/game.level.count);return pc===100?'PERFECT CHAIN':pc>=90?'SPECTACULAR':pc>=70?'EXCELLENT':pc>=45?'GOOD SIGNAL':'SIGNAL LOST';}

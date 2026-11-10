@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#080c19"><meta name="description" content="VOID SIGNAL. One pulse. Infinite chaos. A minimalist neon chain reaction arcade game."><meta property="og:title" content="VOID SIGNAL — One pulse. Infinite chaos."><meta property="og:description" content="Choose your moment. Trigger the chain. Master 10 neon missions."><meta property="og:image" content="./assets/cover.png">
+<link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./assets/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./assets/icon-192.png"><link rel="stylesheet" href="./style.css"><title>VOID SIGNAL // Chain Reaction</title>
+</head>
+<body>
+<div id="app">
+<header class="topbar">
+ <button class="brand" id="brand" title="Go to main menu"><span class="brand-mark" aria-hidden="true"><span></span><span></span></span><span>VOID<span class="brand-lite">SIGNAL</span><small>// v0.1</small></span></button>
+ <div class="header-right"><span class="online-mark"><i></i> SIGNAL ONLINE</span><button id="sound" class="icon-button" aria-label="Toggle sound" title="Toggle sound"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5ZM15 9c1.5 1.2 1.5 4.8 0 6M18 6c3.5 3.2 3.5 8.8 0 12"/></svg></button><button id="help" class="icon-button" aria-label="How to play" title="How to play">?</button></div>
+</header>
+<main class="layout">
+ <aside class="sidebar sidebar-left">
+  <div class="eyebrow">TRANSMISSION LOG <span>01 / 10</span></div>
+  <div class="mission-list" id="mission-list"></div>
+  <div class="side-foot"><span class="side-foot-symbol">◇</span><p>EVERY CHAIN<br>STARTS SOMEWHERE.</p></div>
+ </aside>
+ <section class="maincol">
+  <div class="stage-top"><div><div class="tiny-label" id="level-kicker">MISSION 01 <span class="sublabel">// CAMPAIGN</span></div><h1 id="mission-title">FIRST CONTACT</h1><p id="mission-description">One spark is all it takes.</p></div><div class="stage-top-right"><span id="level-state" class="level-state">● READY</span><button id="restart-top" class="text-button" title="Restart mission">↻ RESET</button></div></div>
+  <div class="arena-shell" id="arena-shell">
+   <canvas id="game" width="960" height="600" tabindex="0" role="button" aria-label="Chain reaction arena. Tap or click to release your only pulse."></canvas>
+   <div class="arena-corner tl">[ A1 ]</div><div class="arena-corner tr" id="coord">X: 480 Y: 300</div><div class="arena-corner bl">∆ 00:00.00</div><div class="arena-corner br">960 × 600</div>
+   <div class="center-overlay" id="home-overlay">
+    <div class="home-orbit"><span class="ring r1"></span><span class="ring r2"></span><span class="ring r3"></span><span class="orbit-dot"></span></div>
+    <div class="overline">// INITIATE TRANSMISSION</div><div class="hero-title">ONE PULSE.<br><em>INFINITE CHAOS.</em></div>
+    <p class="hero-copy">Find the right moment. Touch the field.<br>Watch everything fall into place.</p>
+    <button class="primary-button" id="play">START CAMPAIGN <span>↗</span></button>
+    <button class="ghost-button" id="levels-home">SELECT MISSION</button>
+    <div class="home-foot">10 MISSIONS <span>◆</span> 3 ENERGY TYPES <span>◆</span> ONE CHANCE</div>
+   </div>
+   <div class="center-overlay result-overlay hidden" id="result-overlay" aria-live="polite">
+    <div class="overline" id="result-kicker">// TRANSMISSION COMPLETE</div><h2 id="result-rating">EXCELLENT</h2><div id="result-stars" class="result-stars">☆☆☆</div>
+    <div class="result-stats"><div><span>PARTICLES</span><b id="result-hits">0 / 0</b></div><div><span>CHAIN DEPTH</span><b id="result-depth">0</b></div><div><span>SCORE</span><b id="result-score">0</b></div></div>
+    <p class="result-line" id="result-line">Your signal is getting stronger.</p>
+    <div class="result-actions"><button class="secondary-button" id="retry">↻ RETRY</button><button class="primary-button" id="next">NEXT MISSION <span>→</span></button></div>
+   </div>
+   <div class="center-overlay select-overlay hidden" id="select-overlay"><div class="modal-top"><div><div class="overline">// SYSTEM NAVIGATION</div><h2>MISSION SELECT</h2></div><button id="close-levels" class="close-button" aria-label="Close">×</button></div><div id="level-grid" class="level-grid"></div><p class="modal-foot">Clear at least 35–45% to unlock the next mission.</p></div>
+   <div class="center-overlay help-overlay hidden" id="help-overlay"><div class="modal-top"><div><div class="overline">// FIELD MANUAL</div><h2>HOW TO PLAY</h2></div><button id="close-help" class="close-button" aria-label="Close">×</button></div><div class="help-rows"><p><b>01 / OBSERVE</b><span>Particles drift through the field. Wait for the right configuration.</span></p><p><b>02 / TRIGGER</b><span>Tap or click once to launch your only pulse. Each hit creates another shockwave.</span></p><p><b>03 / CHAIN</b><span>Reach the target percentage to earn stars. Longer chains earn more points.</span></p></div><div class="legend"><span><i class="dot cyan"></i> NORMAL</span><span><i class="dot orange"></i> AMPLIFIER</span><span><i class="dot purple"></i> ECHO</span></div><button id="help-go" class="primary-button">UNDERSTOOD <span>→</span></button></div>
+   <div class="play-hint" id="play-hint"><span class="hint-pulse">◎</span> TAP ANYWHERE TO RELEASE PULSE <span class="hint-pulse">◎</span></div>
+  </div>
+  <div class="bottom-panel"><div class="bottom-left"><span class="pulse-indicator" id="pulse-indicator"></span><span id="system-message">AWAITING INPUT</span></div><div class="bottom-right"><span>PRESS <kbd>R</kbd> TO RESTART</span><span class="divider-pipe">|</span><span>CLICK / TAP TO FIRE</span></div></div>
+ </section>
+ <aside class="sidebar sidebar-right">
+  <div class="eyebrow">LIVE TELEMETRY</div><div class="stat-block"><span>CHAIN SCORE</span><strong id="live-score">000000</strong><small>BEST <span id="best-score">000000</span></small></div>
+  <div class="stat-block"><span>PARTICLES REACHED</span><div class="big-stat"><strong id="hits-count">00</strong><span id="total-count">/ 24</span></div><div class="progress-track"><div id="progress-fill"></div></div><small id="hit-percent">0% OF FIELD</small></div>
+  <div class="stat-block"><span>MAX CHAIN DEPTH</span><strong id="chain-depth">00</strong><small>CONSECUTIVE LINKS</small></div>
+  <div class="thresholds"><div class="eyebrow">MISSION OBJECTIVES</div><div class="star-row" id="star-row"></div></div>
+  <div class="energy-types"><div class="eyebrow">ENERGY SIGNATURES</div><div class="energy-type"><i class="dot cyan"></i><span>STANDARD</span><small>CHAIN</small></div><div id="amplifier-key" class="energy-type"><i class="dot orange"></i><span>AMPLIFIER</span><small>WIDE</small></div><div id="echo-key" class="energy-type"><i class="dot purple"></i><span>ECHO</span><small>DOUBLE</small></div></div>
+  <div class="tip-box"><span class="tip-tag">◈ FIELD NOTE</span><p id="field-tip">Wait for the particles to gather. Then tap once.</p></div>
+ </aside>
+</main>
+<footer class="footer"><span>VOID SIGNAL © 2026 <span class="sep">/</span> EXPERIMENTAL ARCADE SYSTEM</span><span>DESIGNED FOR THAT ONE MORE TRY <span class="footer-symbol">✳</span></span></footer>
+</div>
+<script type="module" src="./app.mjs"></script>
+</body></html>
