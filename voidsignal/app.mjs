@@ -37,6 +37,11 @@ let game = createGame(1);
 let selected = 1;
 let screen = 'home';
 let panelBefore = 'home';
+let pausedFrom = 'play';
+const prefsKey = 'voidsignal.v1.preferences';
+let preferences = {shake:true,flash:true};
+try {preferences={...preferences,...JSON.parse(localStorage.getItem(prefsKey)||'{}')}}catch {}
+function savePreferences(){try{localStorage.setItem(prefsKey,JSON.stringify(preferences))}catch{}}
 let soundCtx = null;
 let lastTime = 0;
 let accum = 0;
@@ -56,7 +61,7 @@ for (const name of ['core-cyan','core-amber','core-echo','shockwave','burst-ambe
 }
 function drawFx(name, x, y, size, opacity=1, rotation=0) {
   const img=fxImages[name]; if (!img?.complete || !img.naturalWidth) return;
-  ctx.save(); ctx.globalCompositeOperation='lighter'; ctx.globalAlpha=opacity;
+  if(!preferences.flash)return; ctx.save(); ctx.globalCompositeOperation='lighter'; ctx.globalAlpha=opacity;
   ctx.translate(x,y);ctx.rotate(rotation);ctx.drawImage(img,-size/2,-size/2,size,size);ctx.restore();
 }
 const motionReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -177,7 +182,7 @@ function refreshTelemetry() {
 
 function display(screenName) {
   screen = screenName;
-  for (const [id, state] of [['home-overlay', 'home'], ['select-overlay', 'select'], ['help-overlay', 'help'], ['result-overlay', 'result'], ['daily-overlay','daily']]) {
+  for (const [id, state] of [['home-overlay', 'home'], ['select-overlay', 'select'], ['help-overlay', 'help'], ['result-overlay', 'result'], ['daily-overlay','daily'],['pause-overlay','pause'],['settings-overlay','settings']]) {
     $(id).classList.toggle('hidden', state !== screenName);
   }
   $('play-hint').classList.toggle('hide', screenName !== 'play' || game.phase !== 'ready');
@@ -209,7 +214,11 @@ function openDaily(){const {record}=todayDaily();if(record.attempts>=3){display(
 function restart() { if(mode==='daily'){openDaily();return;} game = createGame(selected); resetFx(); updateMission(); display('play'); }
 function goHome() { mode='campaign';selected=Math.max(1,selected);game = createGame(selected); resetFx(); updateMission(); display('home'); }
 function openPanel(which) { panelBefore = screen; display(which); }
-function closePanel() { display(panelBefore === 'select' || panelBefore === 'help' ? 'home' : panelBefore); }
+function pauseGame(){if(screen!=='play')return;pausedFrom=screen;display('pause');$('pause').setAttribute('aria-pressed','true');$('resume').focus();}
+function resumeGame(){if(screen!=='pause')return;display(pausedFrom);$('pause').setAttribute('aria-pressed','false');canvas.focus();}
+function openSettings(){if(screen==='pause')return;openPanel('settings');$('setting-sound').checked=!muted;$('setting-shake').checked=preferences.shake;$('setting-flash').checked=preferences.flash;$('settings-close').focus();}
+function closeSettings(){if(screen!=='settings')return;display(panelBefore);$('settings').focus();}
+function closePanel() { display(['select','help','daily','settings'].includes(panelBefore) ? 'home' : panelBefore); }
 
 function onFinish() {
   const stars = starsFor(game);
@@ -273,6 +282,15 @@ $('close-levels').onclick = closePanel;
 $('close-help').onclick = closePanel;
 $('help-go').onclick = closePanel;
 $('help').onclick = () => openPanel('help');
+$('pause').onclick=()=>screen==='pause'?resumeGame():pauseGame();
+$('resume').onclick=resumeGame;
+$('pause-menu').onclick=()=>{goHome();$('pause').setAttribute('aria-pressed','false')};
+$('settings').onclick=openSettings;
+$('settings-close').onclick=closeSettings;
+$('settings-done').onclick=closeSettings;
+$('setting-sound').onchange=()=>{if($('setting-sound').checked===muted)$('sound').click()};
+$('setting-shake').onchange=e=>{preferences.shake=e.target.checked;savePreferences()};
+$('setting-flash').onchange=e=>{preferences.flash=e.target.checked;savePreferences()};
 $('retry').onclick = restart;
 $('restart-top').onclick = restart;
 $('brand').onclick = goHome;
@@ -295,7 +313,10 @@ updateSound();
 
 addEventListener('keydown', e => {
   const tag = document.activeElement?.tagName;
-  if (e.key.toLowerCase() === 'r' && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); restart(); }
+  if (e.key.toLowerCase() === 'p' && !e.metaKey && !e.ctrlKey && !e.altKey && (screen==='play'||screen==='pause')){e.preventDefault();if(screen==='play')pauseGame();else resumeGame();}
+  else if (e.key.toLowerCase() === 'r' && screen==='play' && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); restart(); }
+  else if(e.key==='Escape'&&screen==='pause')resumeGame();
+  else if(e.key==='Escape'&&screen==='settings')closeSettings();
   else if (e.key === 'Escape' && (screen === 'help' || screen === 'select'||screen==='daily')) closePanel();
   else if (e.key === 'Escape' && screen === 'play') goHome();
   else if (e.key.toLowerCase() === 'm' && tag !== 'INPUT') $('sound').click();
@@ -472,7 +493,7 @@ function drawComboCallout(time) {
 
 function draw(time) {
   ctx.save();
-  if (shake > 0 && !motionReduced) {
+  if (shake > 0 && !motionReduced && preferences.shake) {
     ctx.translate((Math.sin(time * 70) * shake) * 0.6, (Math.cos(time * 57) * shake) * 0.6);
     shake *= 0.88;
     if (shake < 0.2) shake = 0;
@@ -485,7 +506,7 @@ function draw(time) {
   for (const s of sparks) drawSpark(s);
   drawComboCallout(time);
   for(const pop of scorePopups){ctx.save();ctx.globalAlpha=Math.min(1,pop.life/22);ctx.font='800 20px system-ui';ctx.textAlign='center';ctx.shadowBlur=13;ctx.shadowColor=pop.color;ctx.fillStyle=pop.color;ctx.fillText(pop.text,pop.x,pop.y);ctx.restore();}
-  if(collapseTimer>0){const k=1-collapseTimer/1.65;ctx.save();ctx.globalCompositeOperation='lighter';drawFx('collapse',480,300,240+k*650,Math.min(.95,collapseTimer*.65),k*1.8);ctx.strokeStyle=`rgba(255,215,147,${Math.min(.8,collapseTimer*.5)})`;ctx.lineWidth=10;ctx.beginPath();ctx.arc(480,300,k*740,0,Math.PI*2);ctx.stroke();ctx.restore();}
+  if(collapseTimer>0 && preferences.flash){const k=1-collapseTimer/1.65;ctx.save();ctx.globalCompositeOperation='lighter';drawFx('collapse',480,300,240+k*650,Math.min(.95,collapseTimer*.65),k*1.8);ctx.strokeStyle=`rgba(255,215,147,${Math.min(.8,collapseTimer*.5)})`;ctx.lineWidth=10;ctx.beginPath();ctx.arc(480,300,k*740,0,Math.PI*2);ctx.stroke();ctx.restore();}
   if (game.phase === 'ready' && screen === 'play') {
     const pulse = 0.5 + Math.sin(time * 3) * 0.3;
     ctx.strokeStyle = `rgba(95,222,255,${0.09 + pulse * 0.11})`;
@@ -518,6 +539,7 @@ function advanceFx(delta) {
 }
 
 function emitBurst(ev) {
+  if(!preferences.flash)return;
   const color = COLORS[ev.kind];
   flashes.push({ x: ev.x, y: ev.y, kind: ev.kind, life: 22 });
   ripples.push({ x: ev.x, y: ev.y, r: 4, speed: ev.kind === 'amplifier' ? 3.5 : 2.2, life: 14, maxLife: 14, kind: ev.kind });
@@ -579,9 +601,13 @@ function tick(ts) {
   requestAnimationFrame(tick);
 }
 
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&screen==='play')pauseGame();lastTime=0;});
+window.addEventListener('blur',()=>{if(screen==='play')pauseGame();lastTime=0;});
 updateMission();
 display('home');
 requestAnimationFrame(tick);
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').then(reg=>{reg.addEventListener('updatefound',()=>{const installing=reg.installing;if(installing)installing.addEventListener('statechange',()=>{if(installing.state==='installed'&&navigator.serviceWorker.controller){$('update-banner').hidden=false;}})});}).catch(() => {}));
 }
+
+$('update-reload').onclick=()=>location.reload();

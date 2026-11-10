@@ -6,26 +6,33 @@
   <meta name="theme-color" content="#080c19">
   <meta name="description" content="VOID SIGNAL. One pulse. Infinite chaos. A neon chain reaction arcade game.">
   <meta property="og:title" content="VOID SIGNAL — One pulse. Infinite chaos.">
-  <meta property="og:description" content="Choose your moment. Trigger the chain. Master 20 neon missions.">
-  <meta property="og:image" content="./assets/cover.png">
+  <meta property="og:description" content="Choose your moment. Trigger the chain. Master 30 neon missions and a new Daily Signal every day.">
+  <meta property="og:image" content="https://weirdflex.online/voidsignal/assets/cover.png">
+  <meta property="og:url" content="https://weirdflex.online/voidsignal/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://weirdflex.online/voidsignal/">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="./assets/icon-192.png">
   <link rel="stylesheet" href="./style.css">
-  <title>VOID SIGNAL v0.3 // Chain Reaction</title>
+  <title>VOID SIGNAL — One Pulse. Infinite Chaos.</title>
 </head>
 <body>
 <div id="app">
+<div id="update-banner" class="update-banner" hidden>NEW VERSION AVAILABLE <button id="update-reload">RELOAD</button></div>
   <header class="topbar">
     <button class="brand" id="brand" title="Go to main menu">
       <img src="./assets/logo-mark.png" alt="" aria-hidden="true" class="brand-logo">
-      <span>VOID<span class="brand-lite">SIGNAL</span><small>// v0.4</small></span>
+      <span>VOID<span class="brand-lite">SIGNAL</span><small>// 1.0</small></span>
     </button>
     <div class="header-right">
       <span class="online-mark"><i></i> SIGNAL ONLINE</span>
       <button id="sound" class="icon-button" aria-label="Toggle sound" title="Toggle sound">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5ZM15 9c1.5 1.2 1.5 4.8 0 6M18 6c3.5 3.2 3.5 8.8 0 12"/></svg>
       </button>
+      <button id="pause" class="icon-button" aria-label="Pause game" title="Pause game" aria-pressed="false">Ⅱ</button>
+      <button id="settings" class="icon-button" aria-label="Settings" title="Settings">⚙</button>
       <button id="help" class="icon-button" aria-label="How to play" title="How to play">?</button>
     </div>
   </header>
@@ -70,6 +77,22 @@
           <div class="home-foot"><span id="mission-count-home">30 MISSIONS</span> <span>◆</span> 5 ENERGY TYPES <span>◆</span> ONE CHANCE</div>
         </div>
 
+        <div class="center-overlay pause-overlay hidden" id="pause-overlay" role="dialog" aria-label="Game paused" aria-modal="true">
+          <div class="overline">// SIGNAL STANDBY</div><h2>PAUSED</h2>
+          <p class="pause-copy">Your field is frozen. Resume when you're ready.</p>
+          <button id="resume" class="primary-button ui-button"><span>RESUME</span><b>▶</b></button>
+          <button id="pause-menu" class="secondary-button ui-button"><span>MAIN MENU</span></button>
+        </div>
+        <div class="center-overlay settings-overlay hidden" id="settings-overlay" role="dialog" aria-label="Settings" aria-modal="true">
+          <div class="modal-top"><div><div class="overline">// CONFIGURATION</div><h2>SETTINGS</h2></div><button id="settings-close" class="close-button" aria-label="Close settings">×</button></div>
+          <div class="settings-list"><label class="settings-row">SOUND EFFECTS <input type="checkbox" id="setting-sound" checked></label>
+          <label class="settings-row">SCREEN SHAKE <input type="checkbox" id="setting-shake" checked></label>
+          <label class="settings-row">FLASH EFFECTS <input type="checkbox" id="setting-flash" checked></label></div>
+          <p class="settings-copy">Keyboard: Space / Enter to fire, R to restart, P to pause, M to mute, Esc to return.</p>
+          <p class="settings-copy">Progress and Daily scores are saved only on this device. No tracking, ads, accounts or external analytics.</p>
+          <a href="./privacy.html" class="settings-link">PRIVACY & DATA</a>
+          <button id="settings-done" class="primary-button ui-button"><span>DONE</span></button>
+        </div>
         <div class="center-overlay result-overlay hidden" id="result-overlay" aria-live="polite">
           <div class="overline" id="result-kicker">// TRANSMISSION COMPLETE</div>
           <h2 id="result-rating">EXCELLENT</h2>
@@ -89,12 +112,12 @@
         <div class="center-overlay daily-overlay hidden" id="daily-overlay">
           <div class="modal-top"><div><div class="overline">// DAILY TRANSMISSION</div><h2>DAILY SIGNAL</h2></div><button id="daily-close" class="close-button" aria-label="Close">×</button></div>
           <div class="daily-symbol">✦</div>
-          <p>One deterministic field for everyone. You have three launches each UTC day.</p>
+          <p>One deterministic field for everyone. Three shots per UTC day. An attempt is used when you fire, even if you restart or leave.</p>
           <strong id="daily-date">2026-11-10 UTC</strong>
           <div class="daily-remaining" id="daily-attempts">3 / 3 ATTEMPTS REMAINING</div>
           <div class="daily-record" id="daily-best">NO SCORE YET</div>
           <button class="primary-button ui-button" id="daily-play">PLAY DAILY SIGNAL</button>
-          <p class="daily-note">Personal best saved on this device. No online leaderboard.</p>
+          <p class="daily-note">Personal best saved on this device. Scores stay on this device. No online leaderboard.</p>
         </div>
         <div class="center-overlay select-overlay hidden" id="select-overlay">
           <div class="modal-top"><div><div class="overline">// SYSTEM NAVIGATION</div><h2>MISSION SELECT</h2></div><button id="close-levels" class="close-button" aria-label="Close">×</button></div>
@@ -133,7 +156,7 @@
     </aside>
   </main>
 
-  <footer class="footer"><span>VOID SIGNAL © 2026 <span class="sep">/</span> EXPERIMENTAL ARCADE SYSTEM</span><span>DESIGNED FOR THAT ONE MORE TRY <span class="footer-symbol">✳</span></span></footer>
+  <footer class="footer"><span>VOID SIGNAL © 2026 <span class="sep">/</span> PUBLIC RELEASE 1.0</span><span><a href="./privacy.html">PRIVACY</a> · <span>DESIGNED FOR THAT ONE MORE TRY</span> <span class="footer-symbol">✳</span></span></footer>
 </div>
 <script type="module" src="./app.mjs"></script>
 </body>
