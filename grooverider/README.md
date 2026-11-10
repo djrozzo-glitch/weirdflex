@@ -1,9 +1,8 @@
-# GROOVE RAID v1.3 — Velvet Groove Hotfix
+# GROOVE RAID v1.4 — Velvet Groove Touch Fix
 
 Fixes:
-- removed the crash caused by binding controls to buttons that no longer exist
-- restored desktop keyboard movement
-- restored mobile touch-drag steering
-- increased stage height again so the playfield is not too short
+- mobile touch now works from any point on the screen, not just on the ship
+- touch control is now relative drag, so the ship no longer teleports to the tap point
+- desktop controls preserved
 
 Keep your existing `audio/` folder when uploading. Hard refresh after deploy.
