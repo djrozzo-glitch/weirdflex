@@ -1,3 +1,7 @@
+# VOID SIGNAL v0.3.1
+
+Hotfix: fixed the primary button gradient being overridden by `background-image: none !important`. The Next Mission, Start Campaign and Understood buttons now show the intended bright cyan gradient. Updated service-worker cache to v0.3.1 to ensure the CSS refreshes. All 20 missions and v0.3 FX remain unchanged.
+
 # VOID SIGNAL v0.3
 
 Playable browser MVP of a one-tap neon chain-reaction arcade game.

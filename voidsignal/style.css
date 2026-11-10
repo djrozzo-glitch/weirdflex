@@ -153,7 +153,7 @@ body.reduce-motion *,body.reduce-motion *:before,body.reduce-motion *:after{anim
 .mission-name{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:normal;word-break:normal;line-height:1.32;font-size:11px;letter-spacing:.035em;font-weight:700}
 .mission-index{font-size:12px}
 .mission-status{font-size:12px;white-space:nowrap;letter-spacing:-1px}
-.ui-button{background-image:none!important;isolation:isolate;min-height:48px;min-width:198px;border-radius:12px;box-shadow:0 0 0 1px rgba(130,200,255,.1),0 7px 24px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.24);transition:transform .17s ease,filter .17s ease,box-shadow .17s ease}
+.ui-button{background-image:none;isolation:isolate;min-height:48px;min-width:198px;border-radius:12px;box-shadow:0 0 0 1px rgba(130,200,255,.1),0 7px 24px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.24);transition:transform .17s ease,filter .17s ease,box-shadow .17s ease}
 .ui-button:before{content:'';position:absolute;inset:4px;border:1px solid rgba(255,255,255,.19);border-radius:8px;pointer-events:none}
 .ui-button:after{content:'';position:absolute;left:16px;right:16px;bottom:1px;height:2px;background:rgba(255,255,255,.45);filter:blur(3px);pointer-events:none}
 .primary-button{background:linear-gradient(115deg,#00a9e8 0%,#47e5ff 44%,#9bf4ff 100%);border:1px solid #9aeeff;color:#041521;text-shadow:none;box-shadow:0 0 26px rgba(20,203,255,.32),inset 0 1px 0 rgba(255,255,255,.68)}
