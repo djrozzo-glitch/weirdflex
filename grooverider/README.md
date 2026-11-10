@@ -1,9 +1,10 @@
-# GROOVE RAID v0.8 — Auto Fire
+# GROOVE RAID v0.9 — Deep Listening Edition
 
-- Your ship now fires continuously while playing.
-- The mobile FIRE button and Space firing binding were removed.
-- Shot energy cost is reduced for auto fire, while passive and boost energy consumption remain unchanged.
-- Menu/paused/game-over states do not fire.
-- Music playlist, powerups and enemies are retained.
+What changed:
+- fixed mobile drag steering and mobile controls fallback
+- auto fire preserved on mobile
+- lower enemy density / calmer pacing
+- prettier bullets and glowing orb projectiles
+- ZIP intentionally excludes MP3 files to avoid deleting your audio on upload
 
-Upload the **contents** of this folder to `grooverider/`, preserving all existing audio MP3 files.
+Update the files in your `grooverider` folder, but KEEP the existing `audio/` folder with all MP3 files. After deploy, hard refresh the page.
