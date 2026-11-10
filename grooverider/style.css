@@ -8,3 +8,5 @@
 .header-right{align-items:center}.icon-btn{transition:background .18s,border-color .18s,transform .12s;min-width:37px}.icon-btn:hover{background:#392044;border-color:#f067b4}.icon-btn:active{transform:scale(.94)}.icon-btn:focus-visible{outline:2px solid #81fbe3;outline-offset:3px}#nextTrackBtn{font-size:18px;color:#85f5e5}#trackLabel{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:155px;margin:0 auto}@media(max-width:540px){.icon-btn{min-width:33px;width:33px;height:35px}.brand strong{font-size:21px}.brand small{letter-spacing:.06em}.header-right{gap:3px}}
 
 #playbackStatus{font:10px/1.25 'DM Mono',monospace;color:#85f5e5;max-width:205px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;text-align:right}#playbackStatus.problem{color:#ffa0ba}@media(max-width:820px){#playbackStatus{display:none}}
+
+.icon-btn .icon-svg{width:18px;height:18px;display:block;margin:auto}.icon-btn.off .icon-svg{opacity:.75}.icon-fallback{display:block;line-height:1}
