@@ -1,22 +1,17 @@
-# GROOVE RAID v0.2 — 124 BPM
+# GROOVE RAID v0.3 — ROZZO Edition
 
-Browser arcade, custom illustrated assets, music playback and synced pulse.
+## Deploy
 
-## Adding your own music
+Replace `index.html`, `game.js`, `style.css`, `sw.js`, `README.md`, `audio/tracks.json`, and the assets from this archive in `weirdflex/grooverider/`. **Keep all nine existing MP3 files in the server `audio/` folder. They are NOT included in this ZIP.** Do not delete the folder when uploading this archive.
 
-Put your audio files in `audio/` and edit `audio/tracks.json`:
+## Playlist
 
-```json
-[
-  {"file": "my-track.mp3", "title": "My Track", "offset": 0},
-  {"file": "my-second-track.ogg", "title": "Second Track", "offset": 0.12}
-]
-```
+`audio/tracks.json` lists all nine existing rozzo MP3 filenames exactly as they appear in GitHub, including Unicode en dashes. The music starts from the first song when you click DROP THE NEEDLE, automatically advances when a song ends, and loops the entire playlist. The `⏭` button skips to the next track. The ♫ button independently mutes/unmutes music, the speaker button toggles gameplay SFX, and pause/resume also pauses/resumes music.
 
-`offset` is the seconds from the start of the recording to the first downbeat (optional). All tracks are assumed 124 BPM. Names are case-sensitive on GitHub Pages. Browser games cannot enumerate a server folder directly: update `tracks.json`, or use **LOAD YOUR TRACKS** in the menu to select audio files from your computer.
+## Rhythm
 
-Music toggle (♫) mutes/unmutes songs; the speaker button toggles gameplay SFX independently. Music pauses and resumes along with gameplay, and plays the next playlist item after the track ends. Local file loading via the button works offline. Music files are NOT included in this ZIP; copy yours into `audio/`. The beat display is driven by audio playback time when a track is playing, with an internal 124 BPM fallback.
+The game uses 124 BPM (60/124 seconds per beat). Timing is driven by the HTML audio element's playback position, and the game analyzes bass/mid-frequency energy for responsive edge glow, speed and enemy movement. Visual pulses occur at every 4-beat bar. Actual beat alignment requires configuring each track's `offset` (seconds until its first downbeat); all offsets currently default to zero. No claimed automatic beat detection or musical structure detection.
 
-## Deployment
+## Notes
 
-Upload all contents to GitHub Pages. On first update, refresh the site to replace the old service worker cache.
+GitHub Pages is case-sensitive. MP3s require hosting on the same site; simply opening index.html locally will not load the JSON playlist. Audio playback begins on user interaction per browser policies. If an old build persists, hard-refresh to update the PWA cache. ZIP verified with Node syntax checks and archive integrity; actual visual test in a live browser remains recommended.
