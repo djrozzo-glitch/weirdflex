@@ -1,6 +1,7 @@
-/* VOID SIGNAL — deterministic simulation. No DOM dependencies. */
+/* VOID SIGNAL v0.2 — deterministic simulation. No DOM dependencies. */
 export const WORLD = Object.freeze({ width: 960, height: 600 });
 export const STEP = 1 / 60;
+
 export const LEVELS = [
   { id:1, code:'FIRST CONTACT', subtitle:'One spark is all it takes.', seed:11023, count:24, speed:.56, spread:80, clusters:[[280,270],[465,290],[650,310]], amp:0, echo:0, thresholds:[35,60,83], tip:'Wait for the particles to gather. Then tap once.' },
   { id:2, code:'THE DRIFT', subtitle:'Patience pays.', seed:22397, count:30, speed:.88, spread:90, clusters:[[240,200],[430,350],[690,260]], amp:0, echo:0, thresholds:[36,62,85], tip:'A well-timed pulse reaches more than a quick one.' },
@@ -11,56 +12,167 @@ export const LEVELS = [
   { id:7, code:'DOUBLE TAKE', subtitle:'The second wave counts.', seed:74357, count:49, speed:1.3, spread:88, clusters:[[200,235],[400,345],[620,225],[790,370]], amp:4, echo:5, thresholds:[40,68,89], tip:'Let an Echo catch particles that escaped the first wave.' },
   { id:8, code:'CRITICAL MASS', subtitle:'Go for the cascade.', seed:85627, count:53, speed:1.5, spread:94, clusters:[[205,185],[400,240],[580,365],[750,325]], amp:6, echo:6, thresholds:[42,70,90], tip:'Amplifiers can reach Echoes across the field.' },
   { id:9, code:'THE SINGULARITY', subtitle:'Everything is connected.', seed:98179, count:58, speed:1.48, spread:89, clusters:[[210,205],[425,365],[605,200],[765,375]], amp:6, echo:8, thresholds:[44,71,91], tip:'Aim for the first link, not the largest cluster.' },
-  { id:10, code:'VOID SIGNAL', subtitle:'One pulse. All of it.', seed:105943, count:64, speed:1.65, spread:96, clusters:[[155,210],[340,370],[505,190],[675,360],[815,215]], amp:8, echo:8, thresholds:[45,72,93], tip:'Master the timing and clear the entire board.' }
+  { id:10, code:'VOID SIGNAL', subtitle:'One pulse. All of it.', seed:105943, count:64, speed:1.65, spread:96, clusters:[[155,210],[340,370],[505,190],[675,360],[815,215]], amp:8, echo:8, thresholds:[45,72,93], tip:'Master the timing and clear the entire board.' },
+
+  { id:11, code:'WAVE BREAKER', subtitle:'Break through the middle.', seed:118811, count:48, speed:1.12, spread:72, clusters:[[180,180],[330,310],[485,185],[640,320],[790,210]], amp:5, echo:2, thresholds:[42,68,90], tip:'A small opening can turn into a huge cascade.' },
+  { id:12, code:'SPLIT HORIZON', subtitle:'Left meets right.', seed:129901, count:54, speed:1.24, spread:78, clusters:[[205,240],[205,380],[760,220],[760,360],[480,300]], amp:5, echo:5, thresholds:[43,69,90], tip:'Use the center cluster as a bridge between both halves.' },
+  { id:13, code:'LATE ARRIVAL', subtitle:'The delayed wave wins.', seed:133307, count:52, speed:1.33, spread:90, clusters:[[190,210],[385,350],[585,235],[775,350]], amp:2, echo:8, thresholds:[42,68,89], tip:'Echoes are strongest when the first wave leaves survivors behind.' },
+  { id:14, code:'ORBIT FALL', subtitle:'Let the field come to you.', seed:147911, count:60, speed:1.45, spread:95, clusters:[[240,200],[480,180],[720,210],[320,390],[630,385]], amp:6, echo:6, thresholds:[44,70,90], tip:'Sometimes waiting half a second makes all the difference.' },
+  { id:15, code:'WIDE OPEN', subtitle:'Big rings, tiny margins.', seed:152233, count:62, speed:1.52, spread:110, clusters:[[150,300],[315,185],[475,300],[640,420],[820,290]], amp:8, echo:4, thresholds:[44,71,91], tip:'Amplifiers reward bold openings and clean alignment.' },
+  { id:16, code:'GHOST LOOP', subtitle:'What comes back, connects.', seed:166451, count:58, speed:1.40, spread:82, clusters:[[220,190],[220,390],[480,300],[740,200],[740,390]], amp:4, echo:9, thresholds:[43,70,90], tip:'A second pulse can finish what the first one started.' },
+  { id:17, code:'CASCADE ARRAY', subtitle:'Build a long chain.', seed:177013, count:66, speed:1.56, spread:85, clusters:[[160,210],[305,300],[450,210],[605,300],[760,210],[450,410]], amp:7, echo:7, thresholds:[45,72,91], tip:'Think about chain depth, not just the first cluster.' },
+  { id:18, code:'PHANTOM GRID', subtitle:'Tiny gaps everywhere.', seed:188119, count:70, speed:1.62, spread:78, clusters:[[190,190],[375,190],[570,190],[760,190],[190,390],[375,390],[570,390],[760,390]], amp:6, echo:10, thresholds:[46,73,92], tip:'Look for the opening that starts a diagonal collapse.' },
+  { id:19, code:'ZERO HOUR', subtitle:'All systems unstable.', seed:199727, count:74, speed:1.7, spread:88, clusters:[[160,170],[320,300],[480,170],[640,300],[800,170],[240,430],[720,430]], amp:9, echo:10, thresholds:[46,74,92], tip:'Your best opening may not be anywhere near the largest group.' },
+  { id:20, code:'EVENT HORIZON', subtitle:'Perfect timing. Total collapse.', seed:210991, count:80, speed:1.82, spread:94, clusters:[[155,195],[315,355],[480,185],[645,355],[815,205],[480,470]], amp:10, echo:12, thresholds:[47,75,93], tip:'This is the final exam. Watch the rhythm and strike once.' }
 ];
-export const COLORS = {normal:'#58d9ff', amplifier:'#ffb35b', echo:'#c48aff'};
-export function rngFromSeed(seed){ let s=seed>>>0; return ()=> {s=(s+0x6D2B79F5)>>>0;let t=s;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296;}; }
-export function generateParticles(level){
- const rand=rngFromSeed(level.seed);const particles=[];
- for(let i=0;i<level.count;i++){
-  const center=level.clusters[i%level.clusters.length]; const ang=rand()*Math.PI*2; const radius=Math.sqrt(rand())*level.spread;
-  const heading=rand()*Math.PI*2;const velocity=(.65+rand()*.65)*level.speed;
-  particles.push({id:i, x:Math.max(22,Math.min(938,center[0]+Math.cos(ang)*radius)),y:Math.max(22,Math.min(578,center[1]+Math.sin(ang)*radius)),vx:Math.cos(heading)*velocity,vy:Math.sin(heading)*velocity,kind:'normal',hit:false,hitTime:-1,depth:0,phase:rand()*6.28,size:4+rand()*2.2});
- }
- // Spread special particles across the clusters instead of bunching at the start.
- const specialIndices=[]; const jump= Math.max(2,Math.floor(level.count/(level.amp+level.echo+1)));
- for(let i=0;i<level.amp+level.echo;i++) specialIndices.push((3+i*jump)%level.count);
- for(let i=0;i<level.amp;i++)particles[specialIndices[i]].kind='amplifier';
- for(let i=level.amp;i<level.amp+level.echo;i++)particles[specialIndices[i]].kind='echo';
- return particles;
+
+export const COLORS = { normal:'#58d9ff', amplifier:'#ffb35b', echo:'#c48aff' };
+
+export function rngFromSeed(seed) {
+  let s = seed >>> 0;
+  return () => {
+    s = (s + 0x6D2B79F5) >>> 0;
+    let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 }
-export function createGame(id){const level=LEVELS[id-1];if(!level)throw new Error('Unknown mission '+id);return {level,particles:generateParticles(level),waves:[],sparks:[],elapsed:0,frame:0,phase:'ready',hits:0,score:0,bestDepth:0,pulse:null,events:[],settle:0,finished:false,peak:0};}
-export function trigger(game,x,y){if(game.phase!=='ready')return false;game.phase='active';game.pulse={x,y};addWave(game,x,y,'origin',0,0);game.events.push({type:'launch',x,y});return true;}
-function addWave(game,x,y,kind,depth,delay=0){const max=kind==='amplifier'?178:kind==='echo'?116:kind==='origin'?115:100;game.waves.push({x,y,kind,depth,r:0,max,age:0,delay,life:0,alpha:1});}
-export function stepGame(game){if(game.phase==='finished')return;
- game.elapsed+=STEP;game.frame++;game.events=[];
- for(const p of game.particles){if(p.hit)continue;p.x+=p.vx;p.y+=p.vy;
-  if(p.x<17){p.x=17;p.vx=Math.abs(p.vx);}else if(p.x>943){p.x=943;p.vx=-Math.abs(p.vx);}
-  if(p.y<17){p.y=17;p.vy=Math.abs(p.vy);}else if(p.y>583){p.y=583;p.vy=-Math.abs(p.vy);}
- }
- if(game.phase!=='active')return;
- const alive=[];
- for(const w of game.waves){
-  if(w.delay>0){w.delay--;alive.push(w);continue;}
-  w.age++;
-  const previous=w.r;
-  w.r=Math.min(w.max,w.r+(w.kind==='amplifier'?5.5:w.kind==='echo'?4.9:4.8));
-  for(const p of game.particles){if(p.hit)continue;
-   const d=Math.hypot(p.x-w.x,p.y-w.y);
-   if(d<=w.r+p.size && d>=Math.max(0,previous-p.size-5)){
-    p.hit=true;p.hitTime=game.elapsed;p.depth=w.depth+1;game.hits++;game.bestDepth=Math.max(game.bestDepth,p.depth);
-    game.score+=Math.round(100*(1+Math.min(15,p.depth)*.28)*(p.kind==='amplifier'?1.4:p.kind==='echo'?1.2:1));
-    game.events.push({type:'hit',kind:p.kind,x:p.x,y:p.y,depth:p.depth,hit:game.hits});
-    addWave(game,p.x,p.y,p.kind,p.depth,0);
-    if(p.kind==='echo')addWave(game,p.x,p.y,'echo',p.depth,28);
-   }
+
+export function generateParticles(level) {
+  const rand = rngFromSeed(level.seed);
+  const particles = [];
+  for (let i = 0; i < level.count; i++) {
+    const center = level.clusters[i % level.clusters.length];
+    const ang = rand() * Math.PI * 2;
+    const radius = Math.sqrt(rand()) * level.spread;
+    const heading = rand() * Math.PI * 2;
+    const velocity = (.65 + rand() * .65) * level.speed;
+    particles.push({
+      id: i,
+      x: Math.max(22, Math.min(938, center[0] + Math.cos(ang) * radius)),
+      y: Math.max(22, Math.min(578, center[1] + Math.sin(ang) * radius)),
+      vx: Math.cos(heading) * velocity,
+      vy: Math.sin(heading) * velocity,
+      kind: 'normal',
+      hit: false,
+      hitTime: -1,
+      depth: 0,
+      phase: rand() * 6.28,
+      size: 4 + rand() * 2.2,
+    });
   }
-  if(w.r<w.max)alive.push(w);else{w.life++;if(w.life<12)alive.push(w);}
- }
- game.waves=alive;
- game.peak=Math.max(game.peak,game.waves.length);
- if(game.waves.length===0){game.settle++;if(game.settle>=20){game.phase='finished';game.finished=true;game.events.push({type:'finish'});}}
- else game.settle=0;
+
+  const specialIndices = [];
+  const jump = Math.max(2, Math.floor(level.count / (level.amp + level.echo + 1)));
+  for (let i = 0; i < level.amp + level.echo; i++) specialIndices.push((3 + i * jump) % level.count);
+  for (let i = 0; i < level.amp; i++) particles[specialIndices[i]].kind = 'amplifier';
+  for (let i = level.amp; i < level.amp + level.echo; i++) particles[specialIndices[i]].kind = 'echo';
+  return particles;
 }
-export function starsFor(game){const percent=Math.round(game.hits*100/game.level.count);return game.level.thresholds.reduce((n,t)=>n+(percent>=t?1:0),0);}
-export function ratingFor(game){const pc=Math.round(100*game.hits/game.level.count);return pc===100?'PERFECT CHAIN':pc>=90?'SPECTACULAR':pc>=70?'EXCELLENT':pc>=45?'GOOD SIGNAL':'SIGNAL LOST';}
+
+export function createGame(id) {
+  const level = LEVELS[id - 1];
+  if (!level) throw new Error('Unknown mission ' + id);
+  return {
+    level,
+    particles: generateParticles(level),
+    waves: [],
+    elapsed: 0,
+    frame: 0,
+    phase: 'ready',
+    hits: 0,
+    score: 0,
+    bestDepth: 0,
+    pulse: null,
+    events: [],
+    settle: 0,
+    finished: false,
+    peak: 0,
+  };
+}
+
+export function trigger(game, x, y) {
+  if (game.phase !== 'ready') return false;
+  game.phase = 'active';
+  game.pulse = { x, y };
+  addWave(game, x, y, 'origin', 0, 0);
+  game.events.push({ type: 'launch', x, y });
+  return true;
+}
+
+function addWave(game, x, y, kind, depth, delay = 0) {
+  const max = kind === 'amplifier' ? 178 : kind === 'echo' ? 116 : kind === 'origin' ? 115 : 100;
+  const speed = kind === 'amplifier' ? 5.8 : kind === 'echo' ? 4.9 : 4.8;
+  game.waves.push({ x, y, kind, depth, r: 0, max, age: 0, delay, life: 0, speed });
+}
+
+export function stepGame(game) {
+  if (game.phase === 'finished') return;
+  game.elapsed += STEP;
+  game.frame++;
+  game.events = [];
+
+  for (const p of game.particles) {
+    if (p.hit) continue;
+    p.x += p.vx;
+    p.y += p.vy;
+    if (p.x < 17) { p.x = 17; p.vx = Math.abs(p.vx); }
+    else if (p.x > 943) { p.x = 943; p.vx = -Math.abs(p.vx); }
+    if (p.y < 17) { p.y = 17; p.vy = Math.abs(p.vy); }
+    else if (p.y > 583) { p.y = 583; p.vy = -Math.abs(p.vy); }
+  }
+
+  if (game.phase !== 'active') return;
+
+  const alive = [];
+  for (const w of game.waves) {
+    if (w.delay > 0) { w.delay--; alive.push(w); continue; }
+    w.age++;
+    const previous = w.r;
+    w.r = Math.min(w.max, w.r + w.speed);
+
+    for (const p of game.particles) {
+      if (p.hit) continue;
+      const d = Math.hypot(p.x - w.x, p.y - w.y);
+      if (d <= w.r + p.size && d >= Math.max(0, previous - p.size - 5)) {
+        p.hit = true;
+        p.hitTime = game.elapsed;
+        p.depth = w.depth + 1;
+        game.hits++;
+        game.bestDepth = Math.max(game.bestDepth, p.depth);
+        const kindBonus = p.kind === 'amplifier' ? 1.4 : p.kind === 'echo' ? 1.2 : 1;
+        game.score += Math.round(100 * (1 + Math.min(15, p.depth) * .28) * kindBonus);
+        game.events.push({ type: 'hit', kind: p.kind, x: p.x, y: p.y, depth: p.depth, hit: game.hits });
+        addWave(game, p.x, p.y, p.kind, p.depth, 0);
+        if (p.kind === 'echo') addWave(game, p.x, p.y, 'echo', p.depth, 28);
+      }
+    }
+
+    if (w.r < w.max) alive.push(w);
+    else { w.life++; if (w.life < 12) alive.push(w); }
+  }
+
+  game.waves = alive;
+  game.peak = Math.max(game.peak, game.waves.length);
+  if (game.waves.length === 0) {
+    game.settle++;
+    if (game.settle >= 20) {
+      game.phase = 'finished';
+      game.finished = true;
+      game.events.push({ type: 'finish' });
+    }
+  } else {
+    game.settle = 0;
+  }
+}
+
+export function starsFor(game) {
+  const percent = Math.round(game.hits * 100 / game.level.count);
+  return game.level.thresholds.reduce((n, t) => n + (percent >= t ? 1 : 0), 0);
+}
+
+export function ratingFor(game) {
+  const pc = Math.round(100 * game.hits / game.level.count);
+  return pc === 100 ? 'PERFECT CHAIN' : pc >= 90 ? 'SPECTACULAR' : pc >= 70 ? 'EXCELLENT' : pc >= 45 ? 'GOOD SIGNAL' : 'SIGNAL LOST';
+}
