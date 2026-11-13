@@ -1,0 +1,152 @@
+{
+  "image": "kombucha-atlas.png",
+  "sheet_size": [
+    1280,
+    960
+  ],
+  "cell_size": [
+    320,
+    320
+  ],
+  "grid": [
+    4,
+    3
+  ],
+  "frames": [
+    {
+      "name": "idle",
+      "row": 0,
+      "col": 0,
+      "x": 0,
+      "y": 0,
+      "w": 320,
+      "h": 320,
+      "file": "assets/kombucha_idle.png"
+    },
+    {
+      "name": "run_1",
+      "row": 0,
+      "col": 1,
+      "x": 320,
+      "y": 0,
+      "w": 320,
+      "h": 320,
+      "file": "assets/kombucha_run_1.png"
+    },
+    {
+      "name": "run_2",
+      "row": 0,
+      "col": 2,
+      "x": 640,
+      "y": 0,
+      "w": 320,
+      "h": 320,
+      "file": "assets/kombucha_run_2.png"
+    },
+    {
+      "name": "run_3",
+      "row": 0,
+      "col": 3,
+      "x": 960,
+      "y": 0,
+      "w": 320,
+      "h": 320,
+      "file": "assets/kombucha_run_3.png"
+    },
+    {
+      "name": "run_4",
+      "row": 1,
+      "col": 0,
+      "x": 0,
+      "y": 320,
+      "w": 320,
+      "h": 320,
+      "file": "assets/kombucha_run_4.png"
+    },
+    {
+      "name": "jump_launch",
+      "row": 1,
+      "col": 1,
+      "x": 320,
+      "y": 320,
+      "w": 320,
+      "h": 320,
+      "file": "assets/kombucha_jump_launch.png"
+    },
+    {
+      "name": "jump_air",
+      "row": 1,
+      "col": 2,
+      "x": 640,
+      "y": 320,
+      "w": 320,
+      "h": 320,
+      "file": "assets/kombucha_jump_air.png"
+    },
+    {
+      "name": "double_jump",
+      "row": 1,
+      "col": 3,
+      "x": 960,
+      "y": 320,
+      "w": 320,
+      "h": 320,
+      "file": "assets/kombucha_double_jump.png"
+    },
+    {
+      "name": "landing",
+      "row": 2,
+      "col": 0,
+      "x": 0,
+      "y": 640,
+      "w": 320,
+      "h": 320,
+      "file": "assets/kombucha_landing.png"
+    },
+    {
+      "name": "hurt",
+      "row": 2,
+      "col": 1,
+      "x": 320,
+      "y": 640,
+      "w": 320,
+      "h": 320,
+      "file": "assets/kombucha_hurt.png"
+    },
+    {
+      "name": "collect",
+      "row": 2,
+      "col": 2,
+      "x": 640,
+      "y": 640,
+      "w": 320,
+      "h": 320,
+      "file": "assets/kombucha_collect.png"
+    },
+    {
+      "name": "game_over",
+      "row": 2,
+      "col": 3,
+      "x": 960,
+      "y": 640,
+      "w": 320,
+      "h": 320,
+      "file": "assets/kombucha_game_over.png"
+    }
+  ],
+  "order": [
+    "idle",
+    "run_1",
+    "run_2",
+    "run_3",
+    "run_4",
+    "jump_launch",
+    "jump_air",
+    "double_jump",
+    "landing",
+    "hurt",
+    "collect",
+    "game_over"
+  ],
+  "notes": "Transparent sprite sheet for Kombucha. Side-facing right. 4x3 grid, ready for slicing and integration into browser runner."
+}

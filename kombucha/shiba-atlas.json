@@ -1,0 +1,136 @@
+{
+  "image": "shiba-atlas.png",
+  "frameWidth": 320,
+  "frameHeight": 320,
+  "columns": 4,
+  "rows": 3,
+  "frames": {
+    "idle": {
+      "x": 0,
+      "y": 0,
+      "w": 320,
+      "h": 320,
+      "source": "sprites/idle.png",
+      "duration_ms": 240
+    },
+    "run_1": {
+      "x": 320,
+      "y": 0,
+      "w": 320,
+      "h": 320,
+      "source": "sprites/run_1.png",
+      "duration_ms": 100
+    },
+    "run_2": {
+      "x": 640,
+      "y": 0,
+      "w": 320,
+      "h": 320,
+      "source": "sprites/run_2.png",
+      "duration_ms": 100
+    },
+    "run_3": {
+      "x": 960,
+      "y": 0,
+      "w": 320,
+      "h": 320,
+      "source": "sprites/run_3.png",
+      "duration_ms": 100
+    },
+    "run_4": {
+      "x": 0,
+      "y": 320,
+      "w": 320,
+      "h": 320,
+      "source": "sprites/run_4.png",
+      "duration_ms": 100
+    },
+    "jump_launch": {
+      "x": 320,
+      "y": 320,
+      "w": 320,
+      "h": 320,
+      "source": "sprites/jump_launch.png",
+      "duration_ms": 110
+    },
+    "jump_air": {
+      "x": 640,
+      "y": 320,
+      "w": 320,
+      "h": 320,
+      "source": "sprites/jump_air.png",
+      "duration_ms": 120
+    },
+    "double_jump": {
+      "x": 960,
+      "y": 320,
+      "w": 320,
+      "h": 320,
+      "source": "sprites/double_jump.png",
+      "duration_ms": 430
+    },
+    "landing": {
+      "x": 0,
+      "y": 640,
+      "w": 320,
+      "h": 320,
+      "source": "sprites/landing.png",
+      "duration_ms": 120
+    },
+    "hurt": {
+      "x": 320,
+      "y": 640,
+      "w": 320,
+      "h": 320,
+      "source": "sprites/hurt.png",
+      "duration_ms": 250
+    },
+    "collect": {
+      "x": 640,
+      "y": 640,
+      "w": 320,
+      "h": 320,
+      "source": "sprites/collect.png",
+      "duration_ms": 280
+    },
+    "game_over": {
+      "x": 960,
+      "y": 640,
+      "w": 320,
+      "h": 320,
+      "source": "sprites/game_over.png",
+      "duration_ms": 800
+    }
+  },
+  "animations": {
+    "idle": [
+      "idle"
+    ],
+    "run": [
+      "run_1",
+      "run_2",
+      "run_3",
+      "run_4"
+    ],
+    "jump": [
+      "jump_launch",
+      "jump_air"
+    ],
+    "double_jump": [
+      "double_jump"
+    ],
+    "landing": [
+      "landing"
+    ],
+    "hurt": [
+      "hurt"
+    ],
+    "collect": [
+      "collect"
+    ],
+    "game_over": [
+      "game_over"
+    ]
+  },
+  "notes": "Facing right. 320x320 transparent sprites; ground anchor approximately x=160 y=258. Game engine controls jump height and spin."
+}
