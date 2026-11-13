@@ -1,0 +1,63 @@
+name: Sync Kombucha game
+
+on:
+  workflow_dispatch:
+  schedule:
+    # GitHub schedules may run late; changes appear on the next successful run.
+    - cron: '7,22,37,52 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sync-kombucha.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-kombucha-to-weirdflex
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Weirdflex
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Fetch current public Kombucha
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --branch main https://github.com/djrozzo-glitch/kombucha.git "$RUNNER_TEMP/kombucha-source"
+          test -s "$RUNNER_TEMP/kombucha-source/index.html"
+          test -s "$RUNNER_TEMP/kombucha-source/kombucha-atlas.png"
+          test -s "$RUNNER_TEMP/kombucha-source/assets/kombucha-logo.png"
+          test -s "$RUNNER_TEMP/kombucha-source/skins/blackcurrant-juniper-atlas.webp"
+          test -s "$RUNNER_TEMP/kombucha-source/skins/tarragon-cedar-atlas.webp"
+          test -s "$RUNNER_TEMP/kombucha-source/skins/raspberry-mint-atlas.webp"
+          git -C "$RUNNER_TEMP/kombucha-source" rev-parse HEAD > "$RUNNER_TEMP/kombucha-sha"
+      - name: Sync only /kombucha/ directory
+        run: |
+          set -euo pipefail
+          mkdir -p kombucha
+          rsync -a --delete \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='.DS_Store' \
+            "$RUNNER_TEMP/kombucha-source/" kombucha/
+          cp "$RUNNER_TEMP/kombucha-sha" kombucha/.source-commit
+          test -s kombucha/index.html
+          test -s kombucha/skins/raspberry-mint-atlas.webp
+      - name: Commit only Kombucha updates
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- kombucha/
+          if git diff --cached --quiet; then
+            echo "Kombucha is already up to date."
+            exit 0
+          fi
+          git commit -m "Sync Kombucha game from djrozzo-glitch/kombucha"
+          git pull --rebase origin main
+          git push origin HEAD:main
