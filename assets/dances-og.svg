@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+<defs><linearGradient id="bg" x2="0" y2="1"><stop stop-color="#111114"/><stop offset="1" stop-color="#242027"/></linearGradient><radialGradient id="glow"><stop stop-color="#d9a5ba" stop-opacity=".3"/><stop offset="1" stop-color="#111114" stop-opacity="0"/></radialGradient></defs>
+<rect width="1200" height="630" fill="url(#bg)"/><ellipse cx="830" cy="420" rx="370" ry="260" fill="url(#glow)"/>
+<g font-family="Arial,Helvetica,sans-serif" font-weight="900" fill="#f5eff1"><text x="64" y="155" font-size="92" letter-spacing="-5">EVERYBODY</text><text x="64" y="245" font-size="92" letter-spacing="-5">DANCES<tspan fill="#ff3c39">.</tspan></text></g>
+<text x="70" y="316" font-family="Arial,Helvetica,sans-serif" font-size="22" letter-spacing="5" fill="#bfb1b8">CREATE YOUR OWN CONTEMPORARY DANCE</text>
+<text x="70" y="555" font-family="Arial,Helvetica,sans-serif" font-size="23" letter-spacing="3" fill="#e6b7cc">MOVE · COMPOSE · SHARE</text>
+<g transform="translate(884 310) rotate(-14)" fill="none" stroke="#f1e9e9" stroke-linecap="round" stroke-linejoin="round">
+<ellipse cx="0" cy="-135" rx="33" ry="45" fill="#f1e9e9" stroke="none"/>
+<path d="M0 -88 Q-16 -48 -2 35 M-2 35 Q-10 72 -38 144 L-100 207 M-2 35 Q30 65 58 133 L120 158 M-5 -68 Q-53 -53 -96 -4 L-152 -18 M8 -68 Q64 -58 107 -105 L154 -125" stroke-width="33"/>
+<path d="M-105 207 L-126 216 M120 158 L144 158 M-152 -18 L-177 -22 M154 -125 L180 -145" stroke-width="20"/>
+</g>
+<g fill="#ff38ae"><circle cx="883" cy="175" r="8"/><circle cx="836" cy="250" r="8"/><circle cx="951" cy="214" r="8"/><circle cx="782" cy="322" r="8"/><circle cx="1037" cy="246" r="8"/><circle cx="884" cy="344" r="8"/><circle cx="845" cy="454" r="8"/><circle cx="1001" cy="445" r="8"/></g>
+</svg>
