@@ -512,9 +512,12 @@ function cityTheme(which,opacity){
   // Far panorama stays behind the skyline; foreground shops pass faster.
   const farHeight=Math.max(ground+20,320);
   tiledPanorama(far,.075,0,farHeight);
-  const streetHeight=Math.min(ground*.68,410*scale);
-  const nearTop=ground-streetHeight+24*scale;
-  tiledPanorama(near,.32,nearTop,streetHeight,36,470);
+  // Tokyo foreground panorama now fills the full vertical play area.
+  // Its previous 68%-height positioning exposed a sharp horizontal seam
+  // between the upper sky and the street layer on desktop/wide viewports.
+  // Keep the lower edge slightly below the ground line for clean cropping.
+  const streetHeight=ground+24*scale;
+  tiledPanorama(near,.32,0,streetHeight,36,470);
   ctx.restore();
 }
 function drawSakura(){
