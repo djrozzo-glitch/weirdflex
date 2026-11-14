@@ -1,5 +1,5 @@
 // Return a crawler-friendly social card while redirecting real visitors to playback.
-const IMAGE='https://weirdflex.online/assets/dances-og.svg';
+const IMAGE='https://weirdflex.online/dances/assets/branding/social-preview-1200x630.png';
 function esc(s){return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
 export async function onRequestGet({request}) {
   const url=new URL(request.url);
