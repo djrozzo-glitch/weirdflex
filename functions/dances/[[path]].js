@@ -18,6 +18,7 @@ export async function onRequest({request}) {
   if (!suffix || suffix === 'index.html') {
     let html = await result.text();
     html = html.replace("const DANCE_API_BASE='"+WORKER_API+"';", "const DANCE_API_BASE=location.origin;");
+    if (!html.includes('property="og:title"')) html = html.replace('</head>', "<meta name=\"description\" content=\"Create a contemporary dance, watch your choreography come alive, and share your performance with friends.\"><meta property=\"og:type\" content=\"website\"><meta property=\"og:site_name\" content=\"EVERYBODY DANCES\"><meta property=\"og:title\" content=\"EVERYBODY DANCES — Create a dance\"><meta property=\"og:description\" content=\"One body. Infinite questionable decisions. Create, perform and share your own contemporary dance.\"><meta property=\"og:image\" content=\"https://weirdflex.online/assets/dances-og.svg\"><meta property=\"og:image:alt\" content=\"EVERYBODY DANCES — contemporary dance game\"><meta name=\"twitter:card\" content=\"summary_large_image\">"+'</head>');
     headers.delete('content-length');
     headers.set('Content-Type','text/html; charset=utf-8');
     return new Response(html,{status:200,headers});
