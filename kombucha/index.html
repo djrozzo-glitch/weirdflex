@@ -1,67 +1,67 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#091927">
-<title>Kombucha Christmas Run</title>
-<meta name="description" content="An endless Christmas run. Jump over obstacles and collect kombucha bottles in three snowy landscapes.">
+<title>Новогодний забег за комбучей</title>
+<meta name="description" content="Новогодний забег: перепрыгивай препятствия, собирай бутылочки комбучи и поборись за место в таблице рекордов.">
 <link rel="icon" href="ui/favicon.ico">
 <link rel="apple-touch-icon" href="ui/app-icon-192.png">
 <link rel="manifest" href="christmas/app.webmanifest">
-<link rel="stylesheet" href="christmas/style.css?v=20261115e">
+<link rel="stylesheet" href="christmas/style.css?v=20261115ru1">
 </head>
 <body>
 <main>
-  <canvas id="trail" aria-label="Snowy caribou running trail"></canvas>
+  <canvas id="trail" aria-label="Снежная трасса для оленя"></canvas>
   <div id="hud" hidden>
-    <output id="score" aria-label="Score"><img src="assets/kombucha-bottle.webp" alt=""><span>0</span></output>
-    <button id="pause" class="icon" aria-label="Pause"><img src="ui/pause.png" alt=""></button>
+    <output id="score" aria-label="Очки"><img src="assets/kombucha-bottle.webp" alt=""><span>0</span></output>
+    <button id="pause" class="icon" aria-label="Пауза"><img src="ui/pause.png" alt=""></button>
   </div>
-  <button id="sound" class="icon" aria-label="Sound" aria-pressed="true"><img src="ui/sound-on.png" alt=""></button>
-  <section id="screen" data-view="start" aria-label="Kombucha Christmas Run">
+  <button id="sound" class="icon" aria-label="Звук" aria-pressed="true"><img src="ui/sound-on.png" alt=""></button>
+  <section id="screen" data-view="start" aria-label="Новогодний забег за комбучей">
     <div class="panel" id="start">
       <img class="garland" src="ui/garland.png" alt="">
-      <h1 class="wordmark"><img src="assets/kombucha-logo.png" alt="Kombucha Christmas Run"></h1>
-      <p>Collect bottles. Jump over obstacles. Beat the high score.</p>
-      <button id="play" class="primary action"><img src="ui/play.png" alt="">Start run</button>
-      <button class="secondary board">Leaderboard</button>
-      <small>Tap, Space or ↑ to jump. Twice to double jump.</small>
+      <h1 class="wordmark"><img src="assets/kombucha-logo.png" alt="Новогодний забег за комбучей"></h1>
+      <p>Собирай комбучу, перепрыгивай препятствия и побей рекорд!</p>
+      <button id="play" class="primary action"><img src="ui/play.png" alt="">Вперёд!</button>
+      <button class="secondary board">Таблица рекордов</button>
+      <small>Коснись экрана или нажми пробел либо ↑, чтобы прыгнуть. Два нажатия — двойной прыжок.</small>
       <p id="start-status" class="status" role="status"></p>
     </div>
     <div class="panel" id="paused" hidden>
       <img class="trophy" src="ui/bell.png" alt="">
-      <h2>Paused</h2>
-      <button id="resume" class="primary">Resume</button>
-      <button id="quit" class="secondary">Main menu</button>
+      <h2>Пауза</h2>
+      <button id="resume" class="primary">Продолжить</button>
+      <button id="quit" class="secondary">В главное меню</button>
     </div>
     <div class="panel" id="result" hidden>
       <img class="result-caribou" src="assets/kombucha_game_over.png" alt="">
-      <h2>Run complete</h2>
-      <p class="big-score"><span id="final">0</span> pts</p>
+      <h2>Забег окончен!</h2>
+      <p class="big-score"><span id="final">0</span> очков</p>
       <p id="details"></p>
       <form id="submit-score" hidden>
-        <label for="nickname">Leaderboard name</label>
-        <input id="nickname" name="nickname" type="text" maxlength="24" autocomplete="nickname" placeholder="Nickname" required>
-        <label for="email">Email (only used to contact the winner)</label>
+        <label for="nickname">Имя в таблице рекордов</label>
+        <input id="nickname" name="nickname" type="text" maxlength="24" autocomplete="nickname" placeholder="Как тебя зовут?" required>
+        <label for="email">Электронная почта (только для связи с победителем)</label>
         <input id="email" name="email" type="email" maxlength="254" autocomplete="email" placeholder="you@example.com" required>
-        <p class="privacy-note">By submitting, you agree to us storing your email and score for this contest. Your email will never appear on the leaderboard.</p>
-        <button class="primary" type="submit">Join leaderboard</button>
+        <p class="privacy-note">Отправляя результат, ты соглашаешься на хранение почты и очков для проведения конкурса. Твой адрес никто не увидит в таблице рекордов.</p>
+        <button class="primary" type="submit">В таблицу рекордов</button>
       </form>
       <p id="save-status" class="status" role="status"></p>
-      <button id="retry" class="primary action"><img src="ui/replay.png" alt="">Run again</button>
-      <button class="secondary board">Leaderboard</button>
+      <button id="retry" class="primary action"><img src="ui/replay.png" alt="">Ещё раз!</button>
+      <button class="secondary board">Таблица рекордов</button>
       <p id="retry-status" class="status" role="status"></p>
     </div>
     <div class="panel" id="leaderboard" hidden>
       <img class="trophy" src="ui/trophy.png" alt="">
-      <h2>Leaderboard</h2>
+      <h2>Таблица рекордов</h2>
       <p id="board-status" class="status" role="status"></p>
       <ol id="leaders"></ol>
-      <button id="back" class="secondary">Back</button>
+      <button id="back" class="secondary">Назад</button>
     </div>
   </section>
 </main>
-<script type="module" src="christmas/game.mjs?v=20261115f"></script>
+<script type="module" src="christmas/game.mjs?v=20261115ru1"></script>
 </body>
 </html>
