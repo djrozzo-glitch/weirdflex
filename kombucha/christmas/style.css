@@ -81,3 +81,8 @@ html body main input, html body main textarea {
 #submit-score label { font-size:.85rem; }
 #submit-score input { min-height:42px; }
 #submit-score .privacy-note { font-size:.75rem; line-height:1.4; color:#d8e5ed; margin:2px 0; }
+
+/* Cyrillic text and longer Russian button labels. */
+.panel { overflow-wrap:break-word; }
+.primary,.secondary { line-height:1.25; white-space:normal; }
+@media (max-width:390px) { .panel { padding:16px; } h2 { font-size:clamp(25px,7vw,34px); } #start small { font-size:.8rem; } }
