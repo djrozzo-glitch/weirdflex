@@ -58,3 +58,8 @@ html,body,main,#trail,#screen,#hud,button,img { -webkit-user-select:none; user-s
 #trail { -webkit-tap-highlight-color:transparent; touch-action:none; }
 button { -webkit-tap-highlight-color:transparent; }
 input { -webkit-user-select:text; user-select:text; -webkit-touch-callout:default; }
+
+/* iOS Safari: disable selection handles on images and interactive game UI. */
+html,body { -webkit-touch-callout:none !important; -webkit-user-select:none !important; user-select:none !important; overscroll-behavior:none; }
+img,canvas,button { -webkit-user-drag:none; -webkit-touch-callout:none !important; -webkit-user-select:none !important; user-select:none !important; }
+input { -webkit-user-select:text !important; user-select:text !important; }
