@@ -48,7 +48,9 @@ function fx(name) {
 }
 
 function show(next) {
+  const oldMode=mode;
   mode=next;
+  if(next==='paused'&&oldMode==='playing') draw();
   if(next!=='playing') queued=false;
   if(next!=='leaderboard') boardRequest++;
   $('screen').hidden=next==='playing'||next==='impact';
@@ -61,7 +63,7 @@ function show(next) {
 function resize() {
   width=canvas.clientWidth;
   height=canvas.clientHeight;
-  const dpr=Math.min(devicePixelRatio||1,2);
+  const dpr=Math.min(devicePixelRatio||1,matchMedia('(pointer:coarse)').matches?1.5:2);
   canvas.width=Math.round(width*dpr);
   canvas.height=Math.round(height*dpr);
   ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -161,11 +163,10 @@ function draw() {
     if(item.bottle) {
       const y=ground-item.y*scale;
       const radius=22*scale;
-      const glow=ctx.createRadialGradient(x,y,2,x,y,radius);
-      glow.addColorStop(0,'#ffcc7766');
-      glow.addColorStop(1,'#ffcc7700');
-      ctx.fillStyle=glow;
-      ctx.fillRect(x-radius,y-radius,radius*2,radius*2);
+      ctx.fillStyle='#ffcc7728';
+      ctx.beginPath();
+      ctx.arc(x,y,radius*.7,0,Math.PI*2);
+      ctx.fill();
       const h=BOTTLE_HEIGHT*scale;
       const w=h*bottle.naturalWidth/bottle.naturalHeight;
       ctx.drawImage(bottle,x-w/2,y-h/2,w,h);
@@ -197,7 +198,7 @@ function draw() {
 }
 
 function animate(now) {
-  const elapsed=last?Math.min(100,now-last):0;
+  const elapsed=last?Math.min(66,now-last):0;
   last=now;
   if(mode==='playing') {
     lag+=elapsed;
@@ -223,14 +224,15 @@ function animate(now) {
       setTimeout(finish,180);
     }
   }
-  if(mode==='playing'||mode==='paused') draw();
+  if(mode==='playing') draw();
   requestAnimationFrame(animate);
 }
 
 function jump() {
   if(mode==='playing') queued=true;
 }
-canvas.addEventListener('pointerdown',jump);
+canvas.addEventListener('pointerdown',e=>{ e.preventDefault(); jump(); },{passive:false});
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('keydown',e=>{
   if(e.repeat||e.target instanceof HTMLInputElement) return;
   if(mode==='playing'&&['Space','ArrowUp'].includes(e.code)) {
