@@ -2,7 +2,7 @@ import {createRun,step,score,HERO,RATE,BOTTLE_HEIGHT,obstacles} from './engine.m
 import {scoreOrigin} from './config.mjs';
 
 const $=id=>document.getElementById(id);
-const canvas=$('trail'), ctx=canvas.getContext('2d');
+const canvas=$('trail'), ctx=canvas.getContext('2d',{alpha:false});
 const root=new URL('../',import.meta.url);
 const img=path=>{
   const image=new Image();
@@ -63,7 +63,7 @@ function show(next) {
 function resize() {
   width=canvas.clientWidth;
   height=canvas.clientHeight;
-  const dpr=Math.min(devicePixelRatio||1,matchMedia('(pointer:coarse)').matches?1.5:2);
+  const dpr=Math.min(devicePixelRatio||1,matchMedia('(pointer:coarse)').matches?1.25:2);
   canvas.width=Math.round(width*dpr);
   canvas.height=Math.round(height*dpr);
   ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -162,11 +162,6 @@ function draw() {
     if(x<-90||x>width+90) continue;
     if(item.bottle) {
       const y=ground-item.y*scale;
-      const radius=22*scale;
-      ctx.fillStyle='#ffcc7728';
-      ctx.beginPath();
-      ctx.arc(x,y,radius*.7,0,Math.PI*2);
-      ctx.fill();
       const h=BOTTLE_HEIGHT*scale;
       const w=h*bottle.naturalWidth/bottle.naturalHeight;
       ctx.drawImage(bottle,x-w/2,y-h/2,w,h);
@@ -206,7 +201,7 @@ function animate(now) {
     while(lag>=1000/RATE&&!run.over) {
       if(queued&&run.jumps<2) {
         inputs.push(run.tick);
-        fx(run.jumps?'double':'jump');
+        if(!matchMedia('(pointer:coarse)').matches) fx(run.jumps?'double':'jump');
       }
       step(run,queued);
       queued=false;
@@ -233,6 +228,9 @@ function jump() {
 }
 canvas.addEventListener('pointerdown',e=>{ e.preventDefault(); jump(); },{passive:false});
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('selectstart',e=>{if(e.target instanceof Element&&!e.target.closest('input,textarea'))e.preventDefault();});
+document.addEventListener('contextmenu',e=>{if(e.target instanceof Element&&!e.target.closest('input,textarea'))e.preventDefault();});
+document.addEventListener('touchstart',e=>{if(e.target instanceof Element&&!e.target.closest('input,textarea')&&e.cancelable)e.preventDefault();},{passive:false});
 window.addEventListener('keydown',e=>{
   if(e.repeat||e.target instanceof HTMLInputElement) return;
   if(mode==='playing'&&['Space','ArrowUp'].includes(e.code)) {
