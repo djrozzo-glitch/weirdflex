@@ -1,6 +1,6 @@
 {
-  "name": "Kombucha Christmas Run",
-  "short_name": "Kombucha",
+  "name": "Новогодний забег за комбучей",
+  "short_name": "Комбуча",
   "start_url": "../",
   "scope": "../",
   "display": "standalone",
