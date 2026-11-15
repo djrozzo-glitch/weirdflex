@@ -126,10 +126,17 @@ function tile(image,offset,y,w,h) {
 
 function landscape(image,offset) {
   if(!image.naturalWidth) return;
-  const ratio=image.naturalWidth/image.naturalHeight;
-  const h=Math.max(ground+height*.07,width/ratio);
-  const w=Math.round(h*ratio);
-  if(w>0) tile(image,offset,0,w,h);
+  // Cover the sky area without stretching or repeating a narrow slice on phones.
+  const iw=image.naturalWidth, ih=image.naturalHeight;
+  const targetHeight=ground+4;
+  const zoom=Math.max(width/iw,targetHeight/ih);
+  const sourceWidth=Math.min(iw,width/zoom);
+  const sourceHeight=Math.min(ih,targetHeight/zoom);
+  // Keep the horizon stable while gently panning across the original artwork.
+  const maxX=iw-sourceWidth;
+  const pan=maxX>0 ? (Math.sin(offset/2400)*.5+.5)*maxX : 0;
+  const sourceY=Math.max(0,ih-sourceHeight);
+  ctx.drawImage(image,pan,sourceY,sourceWidth,sourceHeight,0,0,width,targetHeight);
 }
 
 function draw() {
