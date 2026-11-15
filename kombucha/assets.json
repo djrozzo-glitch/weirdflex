@@ -85,8 +85,8 @@
       960
     ],
     "assets/kombucha-bottle.webp": [
-      161,
-      256
+      76,
+      300
     ],
     "obstacles/gift.png": [
       256,
@@ -203,6 +203,54 @@
     "ui/app-icon-512.png": [
       512,
       512
+    ],
+    "obstacles/snowman.webp": [
+      159,
+      192
+    ],
+    "obstacles/frozen-synth.webp": [
+      192,
+      105
+    ],
+    "obstacles/gift-ufo.webp": [
+      192,
+      86
+    ],
+    "obstacles/penguin-skate.webp": [
+      139,
+      192
+    ],
+    "obstacles/fallen-skis.webp": [
+      192,
+      64
+    ],
+    "obstacles/snow-globe.webp": [
+      171,
+      192
+    ],
+    "obstacles/snowy-mailbox.webp": [
+      192,
+      126
+    ],
+    "obstacles/ornament-crate.webp": [
+      192,
+      99
+    ],
+    "obstacles/disco-ball.webp": [
+      192,
+      179
+    ],
+    "obstacles/ice-phone.webp": [
+      192,
+      126
+    ],
+    "obstacles/frozen-toast.webp": [
+      192,
+      120
+    ],
+    "obstacles/knitted-octopus.webp": [
+      192,
+      161
     ]
   }
 }

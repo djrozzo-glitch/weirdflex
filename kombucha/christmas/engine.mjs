@@ -4,20 +4,32 @@ export const HERO = 104;
 export const POINTS = 10;
 // Crop the transparent margins so each silhouette sits on the snow.
 export const obstacles = [
-  {name:'gift', crop:[3,4,250,208], width:43},
-  {name:'birch-log', crop:[3,3,251,149], width:50},
-  {name:'fir-branch', crop:[3,2,251,158], width:48},
-  {name:'sled', crop:[3,48,250,185], width:50}
+  {file:'gift.png', crop:[3,4,250,208], width:43},
+  {file:'birch-log.png', crop:[3,3,251,149], width:50},
+  {file:'fir-branch.png', crop:[3,2,251,158], width:48},
+  {file:'sled.png', crop:[3,48,250,185], width:50},
+  {file:'disco-ball.webp', crop:[0,0,192,179], width:38},
+  {file:'fallen-skis.webp', crop:[0,0,192,64], width:58},
+  {file:'frozen-synth.webp', crop:[0,0,192,105], width:58},
+  {file:'frozen-toast.webp', crop:[0,0,192,120], width:56},
+  {file:'gift-ufo.webp', crop:[0,0,192,86], width:58},
+  {file:'ice-phone.webp', crop:[0,0,192,126], width:53},
+  {file:'knitted-octopus.webp', crop:[0,0,192,161], width:42},
+  {file:'ornament-crate.webp', crop:[0,0,192,99], width:58},
+  {file:'penguin-skate.webp', crop:[0,0,139,192], width:25},
+  {file:'snow-globe.webp', crop:[0,0,171,192], width:31},
+  {file:'snowman.webp', crop:[0,0,159,192], width:29},
+  {file:'snowy-mailbox.webp', crop:[0,0,192,126], width:53}
 ].map(obstacle=>({
   ...obstacle,
   height:obstacle.width*obstacle.crop[3]/obstacle.crop[2]
 }));
-export const BOTTLE_HEIGHT = 28;
+export const BOTTLE_HEIGHT = 36;
 const jumps = [-8.35,-7.3];
 const bottleArc = [[-35,30],[0,44],[35,30]];
 const HIGH_ARC_CHANCE = .25;
 // The lowest bottle in a high arc sits above the reach of a single jump.
-const HIGH_ARC_LIFT = 94;
+const HIGH_ARC_MIN_HEIGHT = 152;
 const BASE_SPEED = 4.05;
 const SPEED_GAIN_PER_MINUTE = .2;
 const MAX_SPEED_MULTIPLIER = 1.8;
@@ -43,9 +55,10 @@ function spawn(run) {
   const {height} = obstacles[kind];
   const highArc = random(run)<HIGH_ARC_CHANCE;
   const variation = Math.floor(random(run)*13);
-  const arcLift = variation + (highArc ? HIGH_ARC_LIFT : 0);
+  const arcBase = highArc ? HIGH_ARC_MIN_HEIGHT - bottleArc[0][1] : height;
+  const arcLift = arcBase + variation;
   for (const [offset,lift] of bottleArc) {
-    run.objects.push({x:x+offset, y:height+lift+arcLift, bottle:true});
+    run.objects.push({x:x+offset, y:lift+arcLift, bottle:true});
   }
   run.objects.push({x, kind});
   run.next += speedAtTick(run.tick)*(91+Math.floor(random(run)*34));

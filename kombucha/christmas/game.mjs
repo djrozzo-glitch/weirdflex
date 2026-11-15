@@ -16,7 +16,7 @@ const bottle=img('assets/kombucha-bottle.webp');
 const spark=img('effects/pickup-spark.png');
 const puff=img('effects/snow-puff.png');
 const snowflake=img('effects/snowflake.png');
-const obstacleArt=obstacles.map(({name})=>img('obstacles/'+name+'.png'));
+const obstacleArt=obstacles.map(({file})=>img('obstacles/'+file));
 const essentialArt=Promise.all([...panoramas,atlas,terrain,bottle,...obstacleArt].map(image=>image.decode())).then(()=>true,()=>false);
 const sceneTicks=15*RATE;
 const transitionTicks=2*RATE;
@@ -160,11 +160,12 @@ function draw() {
     if(x<-90||x>width+90) continue;
     if(item.bottle) {
       const y=ground-item.y*scale;
-      const glow=ctx.createRadialGradient(x,y,2,x,y,17*scale);
+      const radius=22*scale;
+      const glow=ctx.createRadialGradient(x,y,2,x,y,radius);
       glow.addColorStop(0,'#ffcc7766');
       glow.addColorStop(1,'#ffcc7700');
       ctx.fillStyle=glow;
-      ctx.fillRect(x-17*scale,y-17*scale,34*scale,34*scale);
+      ctx.fillRect(x-radius,y-radius,radius*2,radius*2);
       const h=BOTTLE_HEIGHT*scale;
       const w=h*bottle.naturalWidth/bottle.naturalHeight;
       ctx.drawImage(bottle,x-w/2,y-h/2,w,h);

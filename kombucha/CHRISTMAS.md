@@ -18,4 +18,4 @@ Run the same Node process behind an HTTPS reverse proxy on a host with persisten
 
 The server signs each run, replays the jump inputs, calculates the score and records each run once. The first submitted run wins a tie. The public board shows the ten highest runs with nicknames and scores. Practice runs remain available when the service is unreachable. For awarding a prize, use campaign rules with an explicit cutoff and a way for the winner to claim the result. Replay verification checks that a run is possible under the game rules. It cannot establish that every input came from a person.
 
-Artwork follows the assembled Christmas asset pack. The bottle label and game title are provisional. SFX and background audio are reused from the previous version.
+Artwork follows the assembled Christmas asset pack. The collectible is based on the Caribou Kombucha Christmas Brut bottle. The course features 16 obstacle designs. SFX and background audio are reused from the previous version.
