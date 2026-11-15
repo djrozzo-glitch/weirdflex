@@ -148,5 +148,9 @@
     "collect",
     "game_over"
   ],
-  "notes": "Transparent sprite sheet for Kombucha. Side-facing right. 4x3 grid, ready for slicing and integration into browser runner."
+  "notes": "Christmas caribou, facing right. Frame size 320, foot reference y=258. Double jump reuses the tucked gallop artwork.",
+  "anchor": [
+    160,
+    258
+  ]
 }

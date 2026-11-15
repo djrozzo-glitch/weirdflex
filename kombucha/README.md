@@ -1,14 +1,20 @@
-# Ozzy: The Hunt for Syrniki — World Obstacle Art Pack v2.0
+# Kombucha Christmas Run
 
-17 standalone 512×512 RGBA PNG sprites, consistent thick outlines and safe margins. All objects have been normalized from the supplied source art and are ready for integration / iteration.
+Рождественский бесконечный раннер с одним карибу. Бутылочка приносит 10 очков, столкновение заканчивает забег. Как запустить игру и подключить общий топ, описано в [CHRISTMAS.md](CHRISTMAS.md).
+`previews/runner.webp` — короткая демонстрация галопа, прокрутки и переходов между сценами.
+`previews/*-mobile.webp` — тестовые портретные кадры в пропорциях 9:16.
 
-IMPORTANT: This is an ART PACK, NOT a replacement for the whole game. The graphics are not yet wired into index.html. No files in your repository were changed.
+| Папка или файл | Содержимое |
+| --- | --- |
+| `kombucha-atlas.png`, `kombucha-atlas.json` | Герой. 12 состояний в сетке 4 × 3, ячейки 320 × 320, нулевая координата опоры 258 px от верха ячейки. Кадр двойного прыжка использует позу сгруппированного галопа. |
+| `assets/` | Кадры героя отдельно, логотип и бутылочка с условной этикеткой. |
+| `backgrounds/` | Лес с огнями, северная деревня и замёрзшее озеро. Каждая панорама горизонтально зациклена зеркальным повтором, граничные столбцы совпадают. |
+| `terrain/` | Снег с прозрачным краем и бесшовным повтором по горизонтали. |
+| `obstacles/` | Подарок, берёзовое бревно, еловая ветка и санки. |
+| `effects/` | Вспышка подбора, облачко снега и снежинка. |
+| `ui/` | Обложки для вертикального и широкого экранов, фон для результатов и топа, кнопки, кубок, подиум, гирлянда, колокольчик и иконки сайта. |
+| `assets.json` | Размеры файлов и параметры перехода между сценами. |
 
-Implementation notes:
-- Display each sprite preserving its aspect ratio. The 512×512 artboard itself is square, but the illustrated object occupies a centered subset.
-- Object baseline is placed around y=480 in every source PNG. For robust in-game sizing, base geometry on an alpha trim rectangle or use per-item collision boxes, not the full artboard.
-- Do not crop based on the original historical hard-coded 256×256 rectangles.
-- Avoid any color-based background removal, because light details and internal holes have been damaged before.
-- Test on bright/dark backgrounds and on iPhone before release.
-- For collectibles, use assets/syrnik.png from the current game; this pack contains obstacles only.
-- preview-contact-sheet.jpg is a visual index; manifest.json includes current concepts and city-life alternatives to food stereotypes.
+Панорамы идут по кругу. Во время двухсекундного перехода обе продолжают прокручиваться. Игра накладывает следующую панораму на текущую и рисует снег, препятствия, бутылочки и героя поверх.
+
+Рабочее название на обложке — **Kombucha Christmas Run**. Логотип, бутылочка и элементы интерфейса лежат отдельно, чтобы их можно было заменить при финальном брендировании.
