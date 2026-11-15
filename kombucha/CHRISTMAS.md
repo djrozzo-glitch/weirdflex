@@ -1,6 +1,6 @@
 # Kombucha Christmas Run
 
-The game runs at `/kombucha/` on the existing Pages mirror. Start a run, tap or press Space/Up to jump, and collect bottles for 10 points each. Three bottles form an arc above each obstacle. Running speed increases continuously by 20% of the starting speed per minute, up to 180% at four minutes. A collision ends the run. The track loops through three winter scenes. This edition has one caribou and no locations or shop to select.
+The game runs at `/kombucha/` on the existing Pages mirror. Start a run, tap or press Space/Up to jump, and collect bottles for 10 points each. Three bottles form an arc at a random height above each obstacle. About one in four arcs is high enough to require a double jump. Running speed increases continuously by 20% of the starting speed per minute, up to 180% at four minutes. A collision ends the run. The track loops through three winter scenes. This edition has one caribou and no locations or shop to select.
 
 ## Run locally with the leaderboard
 

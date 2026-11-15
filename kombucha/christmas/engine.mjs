@@ -15,6 +15,9 @@ export const obstacles = [
 export const BOTTLE_HEIGHT = 28;
 const jumps = [-8.35,-7.3];
 const bottleArc = [[-35,30],[0,44],[35,30]];
+const HIGH_ARC_CHANCE = .25;
+// The lowest bottle in a high arc sits above the reach of a single jump.
+const HIGH_ARC_LIFT = 94;
 const BASE_SPEED = 4.05;
 const SPEED_GAIN_PER_MINUTE = .2;
 const MAX_SPEED_MULTIPLIER = 1.8;
@@ -38,8 +41,11 @@ function spawn(run) {
   const x = run.next;
   const kind = Math.floor(random(run)*obstacles.length);
   const {height} = obstacles[kind];
+  const highArc = random(run)<HIGH_ARC_CHANCE;
+  const variation = Math.floor(random(run)*13);
+  const arcLift = variation + (highArc ? HIGH_ARC_LIFT : 0);
   for (const [offset,lift] of bottleArc) {
-    run.objects.push({x:x+offset, y:height+lift, bottle:true});
+    run.objects.push({x:x+offset, y:height+lift+arcLift, bottle:true});
   }
   run.objects.push({x, kind});
   run.next += speedAtTick(run.tick)*(91+Math.floor(random(run)*34));
