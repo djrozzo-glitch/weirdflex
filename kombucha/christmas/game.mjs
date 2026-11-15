@@ -1,4 +1,4 @@
-import {createRun,step,score,HERO,RATE,obstacleSizes} from './engine.mjs';
+import {createRun,step,score,HERO,RATE,BOTTLE_HEIGHT,obstacles} from './engine.mjs';
 import {scoreOrigin} from './config.mjs';
 
 const $=id=>document.getElementById(id);
@@ -16,8 +16,8 @@ const bottle=img('assets/kombucha-bottle.webp');
 const spark=img('effects/pickup-spark.png');
 const puff=img('effects/snow-puff.png');
 const snowflake=img('effects/snowflake.png');
-const obstacles=['gift','birch-log','fir-branch','sled'].map(name=>img('obstacles/'+name+'.png'));
-const essentialArt=Promise.all([...panoramas,atlas,terrain,bottle,...obstacles].map(image=>image.decode())).then(()=>true,()=>false);
+const obstacleArt=obstacles.map(({name})=>img('obstacles/'+name+'.png'));
+const essentialArt=Promise.all([...panoramas,atlas,terrain,bottle,...obstacleArt].map(image=>image.decode())).then(()=>true,()=>false);
 const sceneTicks=15*RATE;
 const transitionTicks=2*RATE;
 const gallopFrames=[4,2,1,3];
@@ -160,20 +160,22 @@ function draw() {
     if(x<-90||x>width+90) continue;
     if(item.bottle) {
       const y=ground-item.y*scale;
-      const glow=ctx.createRadialGradient(x,y,2,x,y,23*scale);
+      const glow=ctx.createRadialGradient(x,y,2,x,y,17*scale);
       glow.addColorStop(0,'#ffcc7766');
       glow.addColorStop(1,'#ffcc7700');
       ctx.fillStyle=glow;
-      ctx.fillRect(x-24*scale,y-24*scale,48*scale,48*scale);
-      if(bottle.naturalWidth) ctx.drawImage(bottle,x-12*scale,y-20*scale,24*scale,40*scale);
+      ctx.fillRect(x-17*scale,y-17*scale,34*scale,34*scale);
+      const h=BOTTLE_HEIGHT*scale;
+      const w=h*bottle.naturalWidth/bottle.naturalHeight;
+      ctx.drawImage(bottle,x-w/2,y-h/2,w,h);
     } else {
-      const [w,h]=obstacleSizes[item.kind].map(s=>s*scale);
-      const image=obstacles[item.kind];
-      if(image.naturalWidth) ctx.drawImage(image,x-w/2,ground-h,w,h);
+      const {crop,width,height}=obstacles[item.kind];
+      const w=width*scale, h=height*scale;
+      ctx.drawImage(obstacleArt[item.kind],...crop,x-w/2,ground-h,w,h);
     }
   }
   const size=HERO*1.52*scale;
-  let frame=gallopFrames[Math.floor(run.tick/5)%gallopFrames.length];
+  let frame=gallopFrames[Math.floor(run.distance/20)%gallopFrames.length];
   if(run.over) frame=9;
   else if(run.tick<5) frame=0;
   else if(run.jumps===2) frame=7;
