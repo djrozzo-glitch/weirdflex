@@ -95,7 +95,7 @@ async function start() {
   const [artReady,nextTicket]=await Promise.all([essentialArt,api('run',{}).catch(()=>null)]);
   $('play').disabled=$('retry').disabled=false;
   if(mode!==launchMenu||!artReady) {
-    if(mode===launchMenu) $(mode==='start'?'start-status':'retry-status').textContent='Could not load game art. Reload the page to try again.';
+    if(mode===launchMenu) $(mode==='start'?'start-status':'retry-status').textContent='Не удалось загрузить игру. Обнови страницу и попробуй снова.';
     syncAudio();
     return;
   }
@@ -107,15 +107,22 @@ async function start() {
   document.activeElement?.blur();
 }
 
+function russianPlural(n,one,few,many) {
+  const a=Math.abs(n)%100, b=a%10;
+  return a>=11&&a<=14?many:b===1?one:b>=2&&b<=4?few:many;
+}
+const bottleWord=n=>russianPlural(n,'бутылочка','бутылочки','бутылочек');
+const pointWord=n=>russianPlural(n,'очко','очка','очков');
+
 function finish() {
   const best=Math.max(Number(get('kombucha-christmas-best'))||0,score(run));
   set('kombucha-christmas-best',best);
   $('final').textContent=score(run);
-  $('details').textContent=run.bottles+' '+(run.bottles===1?'bottle':'bottles')+' · Personal best '+best+' pts';
+  $('details').textContent=run.bottles+' '+bottleWord(run.bottles)+' · Личный рекорд: '+best+' '+pointWord(best);
   $('nickname').value=get('kombucha-christmas-name')||'';
   $('email').value=get('kombucha-christmas-email')||'';
   $('submit-score').hidden=!ticket||!run.bottles;
-  $('save-status').textContent=ticket?'':'Practice run · Online leaderboard unavailable.';
+  $('save-status').textContent=ticket?'':'Тренировочный забег · Таблица рекордов пока недоступна.';
   show('result');
 }
 
@@ -267,13 +274,13 @@ for(const button of document.querySelectorAll('.board')) button.onclick=async()=
   show('leaderboard');
   const request=++boardRequest;
   $('leaders').replaceChildren();
-  $('board-status').textContent='Loading scores…';
+  $('board-status').textContent='Загружаем рекорды…';
   const data=await api('scores').catch(()=>null);
   if(request!==boardRequest) return;
-  $('board-status').textContent=data?(data.entries.length?'':'No scores yet.'):'Online leaderboard unavailable.';
+  $('board-status').textContent=data?(data.entries.length?'':'Пока ни одного рекорда. Будешь первым?'):'Не удалось загрузить таблицу рекордов.';
   for(const [index,entry] of (data?.entries||[]).entries()) {
     const li=document.createElement('li');
-    for(const value of [index+1,entry.name,entry.score+' pts']) {
+    for(const value of [index+1,entry.name,entry.score+' '+pointWord(entry.score)]) {
       const span=document.createElement('span');
       span.textContent=value;
       li.append(span);
@@ -282,7 +289,7 @@ for(const button of document.querySelectorAll('.board')) button.onclick=async()=
       const podium=document.createElement('img');
       podium.src=new URL('ui/podium.png',root);
       podium.className='rank-icon';
-      podium.alt='1st';
+      podium.alt='Первое место';
       li.firstElementChild.replaceChildren(podium);
     }
     $('leaders').append(li);
@@ -296,22 +303,22 @@ $('submit-score').onsubmit=async e=>{
   const name=$('nickname').value.trim().normalize('NFKC');
   const email=$('email').value.trim();
   if(!name||name.length>24||/[\p{Cc}\p{Cf}]/u.test(name)) {
-    $('save-status').textContent='Enter a valid name up to 24 characters.';
+    $('save-status').textContent='Укажи имя длиной до 24 символов.';
     return;
   }
-  if(!$('email').validity.valid||!email) { $('save-status').textContent='Enter a valid email address.'; return; }
+  if(!$('email').validity.valid||!email) { $('save-status').textContent='Проверь адрес электронной почты.'; return; }
   const resultTicket=ticket;
   button.disabled=true;
   $('retry').disabled=true;
-  $('save-status').textContent='Verifying run…';
+  $('save-status').textContent='Проверяем результат…';
   try {
     await api('scores',{token:resultTicket.token,inputs,endTick:run.tick,name,email});
     set('kombucha-christmas-name',name);
     set('kombucha-christmas-email',email);
     $('submit-score').hidden=true;
-    $('save-status').textContent='Score added to the leaderboard.';
+    $('save-status').textContent='Готово! Твой результат в таблице рекордов.';
   } catch {
-    $('save-status').textContent='Could not save this score. Try again.';
+    $('save-status').textContent='Не удалось сохранить результат. Попробуй ещё раз.';
   } finally {
     button.disabled=false;
     $('retry').disabled=false;
