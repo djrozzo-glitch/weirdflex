@@ -63,3 +63,16 @@ input { -webkit-user-select:text; user-select:text; -webkit-touch-callout:defaul
 html,body { -webkit-touch-callout:none !important; -webkit-user-select:none !important; user-select:none !important; overscroll-behavior:none; }
 img,canvas,button { -webkit-user-drag:none; -webkit-touch-callout:none !important; -webkit-user-select:none !important; user-select:none !important; }
 input { -webkit-user-select:text !important; user-select:text !important; }
+
+/* Apply selection suppression to every nested label and pseudo-element. */
+html body main, html body main *, html body main *::before, html body main *::after {
+  -webkit-user-select:none !important;
+  user-select:none !important;
+  -webkit-touch-callout:none !important;
+  -webkit-tap-highlight-color:transparent;
+}
+html body main input, html body main textarea {
+  -webkit-user-select:text !important;
+  user-select:text !important;
+  -webkit-touch-callout:default !important;
+}
