@@ -113,6 +113,7 @@ function finish() {
   $('final').textContent=score(run);
   $('details').textContent=run.bottles+' '+(run.bottles===1?'bottle':'bottles')+' · Personal best '+best+' pts';
   $('nickname').value=get('kombucha-christmas-name')||'';
+  $('email').value=get('kombucha-christmas-email')||'';
   $('submit-score').hidden=!ticket||!run.bottles;
   $('save-status').textContent=ticket?'':'Practice run · Online leaderboard unavailable.';
   show('result');
@@ -293,17 +294,20 @@ $('submit-score').onsubmit=async e=>{
   if(!ticket) return;
   const button=e.target.querySelector('button');
   const name=$('nickname').value.trim().normalize('NFKC');
+  const email=$('email').value.trim();
   if(!name||name.length>24||/[\p{Cc}\p{Cf}]/u.test(name)) {
     $('save-status').textContent='Enter a valid name up to 24 characters.';
     return;
   }
+  if(!$('email').validity.valid||!email) { $('save-status').textContent='Enter a valid email address.'; return; }
   const resultTicket=ticket;
   button.disabled=true;
   $('retry').disabled=true;
   $('save-status').textContent='Verifying run…';
   try {
-    await api('scores',{token:resultTicket.token,inputs,endTick:run.tick,name});
+    await api('scores',{token:resultTicket.token,inputs,endTick:run.tick,name,email});
     set('kombucha-christmas-name',name);
+    set('kombucha-christmas-email',email);
     $('submit-score').hidden=true;
     $('save-status').textContent='Score added to the leaderboard.';
   } catch {
