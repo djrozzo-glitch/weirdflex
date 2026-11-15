@@ -25,7 +25,7 @@ const audio=Object.fromEntries(['jump','double','bone','hit'].map(name=>[name,ne
 const music=new Audio(new URL('audio/caribou_theme.mp3',root));
 music.preload='metadata';
 music.loop=true;
-music.volume=.28;
+music.volume=.14;
 const legacySound=get('kombucha-christmas-sound');
 const musicKey='kombucha-christmas-music';
 const effectsKey='kombucha-christmas-effects';
@@ -50,7 +50,7 @@ function fx(name) {
   if(!effectsEnabled) return;
   const sound=audio[name];
   sound.currentTime=0;
-  sound.volume=.47;
+  sound.volume=.235;
   sound.play().catch(()=>{});
 }
 
