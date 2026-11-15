@@ -230,7 +230,7 @@ canvas.addEventListener('pointerdown',e=>{ e.preventDefault(); jump(); },{passiv
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('selectstart',e=>{if(e.target instanceof Element&&!e.target.closest('input,textarea'))e.preventDefault();});
 document.addEventListener('contextmenu',e=>{if(e.target instanceof Element&&!e.target.closest('input,textarea'))e.preventDefault();});
-document.addEventListener('touchstart',e=>{if(e.target instanceof Element&&!e.target.closest('input,textarea')&&e.cancelable)e.preventDefault();},{passive:false});
+document.querySelectorAll('img').forEach(image=>{image.draggable=false;});
 window.addEventListener('keydown',e=>{
   if(e.repeat||e.target instanceof HTMLInputElement) return;
   if(mode==='playing'&&['Space','ArrowUp'].includes(e.code)) {
