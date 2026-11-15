@@ -76,3 +76,8 @@ html body main input, html body main textarea {
   user-select:text !important;
   -webkit-touch-callout:default !important;
 }
+
+#submit-score { display:grid; gap:7px; margin:10px 0; text-align:left; }
+#submit-score label { font-size:.85rem; }
+#submit-score input { min-height:42px; }
+#submit-score .privacy-note { font-size:.75rem; line-height:1.4; color:#d8e5ed; margin:2px 0; }
