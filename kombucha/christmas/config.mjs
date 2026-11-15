@@ -1,3 +1,1 @@
-// Set to the public HTTPS origin of the score service for GitHub Pages.
-// Leave empty when serving the game and API on the same origin.
-export const scoreOrigin = '';
+// Public Cloudflare Worker API origin. No secret is stored in the game.\nexport const scoreOrigin = 'https://kombucha-leaderboard.djrozzo.workers.dev/';\n
