@@ -14,7 +14,7 @@ export const obstacles = [
 }));
 export const BOTTLE_HEIGHT = 28;
 const jumps = [-8.35,-7.3];
-const bottleArc = [[-28,20],[0,34],[28,20]];
+const bottleArc = [[-35,30],[0,44],[35,30]];
 const BASE_SPEED = 4.05;
 const SPEED_GAIN_PER_MINUTE = .2;
 const MAX_SPEED_MULTIPLIER = 1.8;
