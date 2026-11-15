@@ -9,7 +9,7 @@
 <link rel="icon" href="ui/favicon.ico">
 <link rel="apple-touch-icon" href="ui/app-icon-192.png">
 <link rel="manifest" href="christmas/app.webmanifest">
-<link rel="stylesheet" href="christmas/style.css?v=20261115ru1">
+<link rel="stylesheet" href="christmas/style.css">
 </head>
 <body>
 <main>
@@ -18,7 +18,10 @@
     <output id="score" aria-label="Очки"><img src="assets/kombucha-bottle.webp" alt=""><span>0</span></output>
     <button id="pause" class="icon" aria-label="Пауза"><img src="ui/pause.png" alt=""></button>
   </div>
-  <button id="sound" class="icon" aria-label="Звук" aria-pressed="true"><img src="ui/sound-on.png" alt=""></button>
+  <div id="audio-controls" role="group" aria-label="Настройки звука">
+    <button id="music-toggle" class="audio-toggle" type="button" aria-label="Музыка" aria-pressed="true">Музыка <span aria-hidden="true">Вкл</span></button>
+    <button id="effects-toggle" class="audio-toggle" type="button" aria-label="Эффекты" aria-pressed="true">Эффекты <span aria-hidden="true">Вкл</span></button>
+  </div>
   <section id="screen" data-view="start" aria-label="Новогодний забег за комбучей">
     <div class="panel" id="start">
       <img class="garland" src="ui/garland.png" alt="">
@@ -62,6 +65,6 @@
     </div>
   </section>
 </main>
-<script type="module" src="christmas/game.mjs?v=20261115ru1"></script>
+<script type="module" src="christmas/game.mjs"></script>
 </body>
 </html>

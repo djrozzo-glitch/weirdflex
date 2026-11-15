@@ -22,25 +22,33 @@ const sceneTicks=15*RATE;
 const transitionTicks=2*RATE;
 const gallopFrames=[4,2,1,3];
 const audio=Object.fromEntries(['jump','double','bone','hit'].map(name=>[name,new Audio(new URL('audio/'+name+'.wav',root))]));
-const music=new Audio(new URL('audio/bg_music_loop.mp3',root));
+const music=new Audio(new URL('audio/caribou_theme.mp3',root));
+music.preload='metadata';
 music.loop=true;
 music.volume=.28;
-let enabled=get('kombucha-christmas-sound')!=='off';
+const legacySound=get('kombucha-christmas-sound');
+const musicKey='kombucha-christmas-music';
+const effectsKey='kombucha-christmas-effects';
+let musicEnabled=(get(musicKey)??legacySound)!=='off';
+let effectsEnabled=(get(effectsKey)??legacySound)!=='off';
 let mode='start', previousMenu='start', run=createRun(123), ticket=null, inputs=[], queued=false;
+let launchMenu=null;
 let last=0, lag=0, width=0, height=0, scale=1, ground=0;
 let latestScore=0, snowTime=0, boardRequest=0;
 const snow=Array.from({length:42},(_,i)=>({x:(i*.6180339)%1,y:(i*.37797)%1,r:.7+(i%5)*.31}));
 
 function get(key) { try { return localStorage.getItem(key); } catch { return null; } }
 function set(key,value) { try { localStorage.setItem(key,value); } catch {} }
-function syncAudio() {
-  $('sound').setAttribute('aria-pressed',String(enabled));
-  $('sound').firstElementChild.src=new URL('ui/sound-'+(enabled?'on':'off')+'.png',root);
-  if(enabled&&mode==='playing') music.play().catch(()=>{});
+function syncMusic() {
+  if(musicEnabled&&(mode==='playing'||mode===launchMenu)) music.play().catch(()=>{});
   else music.pause();
 }
+function showAudioSetting(button,enabled) {
+  button.setAttribute('aria-pressed',String(enabled));
+  button.firstElementChild.textContent=enabled?'Вкл':'Выкл';
+}
 function fx(name) {
-  if(!enabled) return;
+  if(!effectsEnabled) return;
   const sound=audio[name];
   sound.currentTime=0;
   sound.volume=.47;
@@ -57,7 +65,7 @@ function show(next) {
   $('screen').dataset.view=next;
   $('hud').hidden=next!=='playing';
   for(const id of ['start','paused','result','leaderboard']) $(id).hidden=id!==next;
-  syncAudio();
+  syncMusic();
 }
 
 function resize() {
@@ -89,14 +97,17 @@ async function start() {
   $('play').disabled=$('retry').disabled=true;
   $('start-status').textContent='';
   $('retry-status').textContent='';
-  const launchMenu=mode;
+  const requestedFrom=mode;
+  launchMenu=requestedFrom;
   // Start audio in the click gesture, before waiting for the score service.
-  if(enabled) { music.currentTime=0; music.play().catch(()=>{}); }
+  music.currentTime=0;
+  syncMusic();
   const [artReady,nextTicket]=await Promise.all([essentialArt,api('run',{}).catch(()=>null)]);
+  launchMenu=null;
   $('play').disabled=$('retry').disabled=false;
-  if(mode!==launchMenu||!artReady) {
-    if(mode===launchMenu) $(mode==='start'?'start-status':'retry-status').textContent='Не удалось загрузить игру. Обнови страницу и попробуй снова.';
-    syncAudio();
+  if(mode!==requestedFrom||!artReady) {
+    if(mode===requestedFrom) $(mode==='start'?'start-status':'retry-status').textContent='Не удалось загрузить игру. Обнови страницу и попробуй снова.';
+    syncMusic();
     return;
   }
   ticket=nextTicket;
@@ -249,6 +260,7 @@ document.querySelectorAll('img').forEach(image=>{image.draggable=false;});
 window.addEventListener('keydown',e=>{
   if(e.repeat||e.target instanceof HTMLInputElement) return;
   if(mode==='playing'&&['Space','ArrowUp'].includes(e.code)) {
+    if(e.code==='Space'&&e.target instanceof HTMLButtonElement&&e.target.matches(':focus-visible')) return;
     e.preventDefault(); jump();
   }
   if(e.code==='Escape'&&(mode==='playing'||mode==='paused')) {
@@ -262,10 +274,20 @@ for(const id of ['play','retry']) $(id).onclick=start;
 $('pause').onclick=()=>show('paused');
 $('resume').onclick=()=>show('playing');
 $('quit').onclick=()=>show('start');
-$('sound').onclick=()=>{
-  enabled=!enabled;
-  set('kombucha-christmas-sound',enabled?'on':'off');
-  syncAudio();
+const musicToggle=$('music-toggle'), effectsToggle=$('effects-toggle');
+showAudioSetting(musicToggle,musicEnabled);
+showAudioSetting(effectsToggle,effectsEnabled);
+musicToggle.onclick=()=>{
+  musicEnabled=!musicEnabled;
+  set(musicKey,musicEnabled?'on':'off');
+  showAudioSetting(musicToggle,musicEnabled);
+  syncMusic();
+};
+effectsToggle.onclick=()=>{
+  effectsEnabled=!effectsEnabled;
+  set(effectsKey,effectsEnabled?'on':'off');
+  showAudioSetting(effectsToggle,effectsEnabled);
+  if(!effectsEnabled) for(const sound of Object.values(audio)) sound.pause();
 };
 $('back').onclick=()=>show(previousMenu);
 
