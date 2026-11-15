@@ -19,8 +19,30 @@
     <button id="pause" class="icon" aria-label="Пауза"><img src="ui/pause.png" alt=""></button>
   </div>
   <div id="audio-controls" role="group" aria-label="Настройки звука">
-    <button id="music-toggle" class="audio-toggle" type="button" aria-label="Музыка" aria-pressed="true">Музыка <span aria-hidden="true">Вкл</span></button>
-    <button id="effects-toggle" class="audio-toggle" type="button" aria-label="Эффекты" aria-pressed="true">Эффекты <span aria-hidden="true">Вкл</span></button>
+    <button id="music-toggle" class="icon audio-toggle" type="button" aria-label="Музыка" title="Музыка" aria-pressed="true">
+      <img src="ui/pause.png" alt="">
+      <svg class="music-symbol" viewBox="0 0 192 192" aria-hidden="true" focusable="false">
+        <defs>
+          <radialGradient id="music-face">
+            <stop offset=".74" stop-color="#142e20"/>
+            <stop offset=".93" stop-color="#142e20" stop-opacity=".97"/>
+            <stop offset="1" stop-color="#142e20" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="music-gold" x1="0" y1="0" x2=".8" y2="1" gradientUnits="objectBoundingBox">
+            <stop stop-color="#ffebaf"/>
+            <stop offset=".53" stop-color="#d4a55b"/>
+            <stop offset="1" stop-color="#a87935"/>
+          </linearGradient>
+        </defs>
+        <ellipse cx="96" cy="102" rx="46" ry="49" fill="url(#music-face)"/>
+        <path class="music-note" d="M96 119V70l29 10v14l-21-8v33c0 7-8 13-17 13-7 0-12-4-12-9s7-11 14-11c3 0 5 0 7 1z" fill="url(#music-gold)" stroke="#f0cb86" stroke-width="1.6" stroke-linejoin="round"/>
+        <path class="music-slash" d="m68 134 59-62" fill="none" stroke="#f0cb86" stroke-width="7" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <button id="effects-toggle" class="icon audio-toggle" type="button" aria-label="Эффекты" title="Эффекты" aria-pressed="true">
+      <img class="effects-on" src="ui/sound-on.png" alt="">
+      <img class="effects-off" src="ui/sound-off.png" alt="">
+    </button>
   </div>
   <section id="screen" data-view="start" aria-label="Новогодний забег за комбучей">
     <div class="panel" id="start">

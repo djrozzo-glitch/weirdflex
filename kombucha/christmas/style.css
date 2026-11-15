@@ -23,11 +23,17 @@ button:focus-visible,input:focus-visible { outline:2px solid #ffe2a3; outline-of
 .icon { display:grid; width:48px; height:48px; padding:0; place-items:center; border:0; background:none; }
 .icon img { width:100%; height:100%; }
 #audio-controls,#hud { position:fixed; z-index:1; top:max(9px,env(safe-area-inset-top)); }
-#audio-controls { right:max(10px,env(safe-area-inset-right)); display:flex; gap:6px; }
-.audio-toggle { width:76px; min-height:44px; padding:4px; border:1px solid #d9ac727f; border-radius:10px; background:#081b2be5; color:#ffe6bc; font-size:.78rem; font-weight:700; line-height:1.15; }
-.audio-toggle span { display:block; margin-top:2px; color:#ffd497; font-size:.68rem; }
-.audio-toggle[aria-pressed=false] span { color:#c4ced6; }
-#hud { left:max(10px,env(safe-area-inset-left)); right:calc(max(10px,env(safe-area-inset-right)) + 166px); display:flex; align-items:center; justify-content:space-between; pointer-events:none; }
+main { --hud-icon-size:48px; --hud-icon-gap:6px; }
+#audio-controls { right:max(10px,env(safe-area-inset-right)); display:flex; gap:var(--hud-icon-gap); }
+#audio-controls .icon,#pause { width:var(--hud-icon-size); height:var(--hud-icon-size); }
+.audio-toggle { position:relative; }
+.music-symbol { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+.music-note { filter:drop-shadow(0 2px 2px #09120c); }
+.music-slash,.audio-toggle .effects-off { display:none; }
+.audio-toggle[aria-pressed=false] .music-note { opacity:.52; }
+.audio-toggle[aria-pressed=false] .music-slash,.audio-toggle[aria-pressed=false] .effects-off { display:block; }
+.audio-toggle[aria-pressed=false] .effects-on { display:none; }
+#hud { left:max(10px,env(safe-area-inset-left)); right:calc(max(10px,env(safe-area-inset-right)) + 2 * (var(--hud-icon-size) + var(--hud-icon-gap))); display:flex; align-items:center; justify-content:space-between; pointer-events:none; }
 #screen { padding-top:calc(max(9px,env(safe-area-inset-top)) + 52px); }
 #hud button { pointer-events:auto; }
 #score { display:flex; align-items:center; gap:5px; min-width:82px; padding:4px 13px; border:1px solid #d9ac727f; border-radius:22px; background:#081b2be5; font-weight:800; font-variant-numeric:tabular-nums; }

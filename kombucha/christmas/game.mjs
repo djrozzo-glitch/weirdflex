@@ -45,7 +45,6 @@ function syncMusic() {
 }
 function showAudioSetting(button,enabled) {
   button.setAttribute('aria-pressed',String(enabled));
-  button.firstElementChild.textContent=enabled?'Вкл':'Выкл';
 }
 function fx(name) {
   if(!effectsEnabled) return;
