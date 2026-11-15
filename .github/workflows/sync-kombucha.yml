@@ -32,9 +32,10 @@ jobs:
           test -s "$RUNNER_TEMP/kombucha-source/index.html"
           test -s "$RUNNER_TEMP/kombucha-source/kombucha-atlas.png"
           test -s "$RUNNER_TEMP/kombucha-source/assets/kombucha-logo.png"
-          test -s "$RUNNER_TEMP/kombucha-source/skins/blackcurrant-juniper-atlas.webp"
-          test -s "$RUNNER_TEMP/kombucha-source/skins/tarragon-cedar-atlas.webp"
-          test -s "$RUNNER_TEMP/kombucha-source/skins/raspberry-mint-atlas.webp"
+          test -s "$RUNNER_TEMP/kombucha-source/christmas/game.mjs"
+          test -s "$RUNNER_TEMP/kombucha-source/backgrounds/woods.webp"
+          test -s "$RUNNER_TEMP/kombucha-source/backgrounds/village.webp"
+          test -s "$RUNNER_TEMP/kombucha-source/backgrounds/aurora.webp"
           git -C "$RUNNER_TEMP/kombucha-source" rev-parse HEAD > "$RUNNER_TEMP/kombucha-sha"
       - name: Sync only /kombucha/ directory
         run: |
@@ -44,10 +45,12 @@ jobs:
             --exclude='.git/' \
             --exclude='.github/' \
             --exclude='.DS_Store' \
+            --exclude='/.data/' \
+            --exclude='/server/' \
             "$RUNNER_TEMP/kombucha-source/" kombucha/
           cp "$RUNNER_TEMP/kombucha-sha" kombucha/.source-commit
           test -s kombucha/index.html
-          test -s kombucha/skins/raspberry-mint-atlas.webp
+          test -s kombucha/christmas/game.mjs
       - name: Commit only Kombucha updates
         run: |
           set -euo pipefail
