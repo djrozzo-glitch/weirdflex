@@ -128,11 +128,17 @@ h1 em { color: var(--amber); }
 .primary:hover { background: #f0bd74; }
 .primary:active { box-shadow: 1px 1px #84513a; }
 
-#openScores { margin: 8px auto 0; min-height: 28px; padding: 4px 12px; }
-#globalScores { width: min(90vw, 360px); max-height: 85dvh; overflow: auto; touch-action: pan-y; color: var(--paper); background: var(--panel); border: 1px solid var(--edge); padding: 18px; }
-#globalScores::backdrop { background: #0d1315da; }
-#globalScores h2 { font: 800 24px 'Barlow Condensed', Impact, sans-serif; }
+
+#globalScores, #shareFallback { width: min(90vw, 360px); max-height: 85dvh; overflow: auto; touch-action: pan-y; color: var(--paper); background: var(--panel); border: 1px solid var(--edge); padding: 18px; }
+#globalScores::backdrop, #shareFallback::backdrop { background: #0d1315da; }
+#globalScores h2, #shareFallback h2 { font: 800 24px 'Barlow Condensed', Impact, sans-serif; }
 #globalScores input { display: block; margin: 6px 0 10px; width: 100%; font: inherit; font-size: 16px; padding: 7px; color: var(--paper); background: var(--ink); border: 1px solid var(--edge); }
 #globalScores li { padding: 4px 0; overflow-wrap: anywhere; }
 
 #openScores[hidden] { display: none; }
+
+.game-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 9px auto 0; }
+.game-actions .release-link { min-height: 34px; padding: 4px 9px; cursor: pointer; letter-spacing: .065em; }
+#shareFeedback { color: var(--petrol); font-size: 10px; }
+#shareFeedback:not(:empty) { margin-top: 6px; }
+#shareText { display: block; width: 100%; margin: 8px 0 12px; padding: 8px; font: inherit; font-size: 16px; color: var(--paper); background: var(--ink); border: 1px solid var(--edge); }
