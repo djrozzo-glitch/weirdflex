@@ -1,6 +1,6 @@
 (()=>{'use strict';
 const cv=document.getElementById('game'),ctx=cv.getContext('2d'),W=480,H=800;
-const $=id=>document.getElementById(id);const ui={overlay:$('overlay'),kicker:$('overlayKicker'),title:$('overlayTitle'),text:$('overlayText'),result:$('result'),play:$('playBtn'),hint:$('overlayHint'),score:$('score'),best:$('best'),energy:$('energyVal'),bar:$('energyBar'),track:$('trackLabel'),sound:$('soundBtn'),music:$('musicBtn'),next:$('nextTrackBtn'),pause:$('pauseBtn'),audioInfo:$('audioInfo'),playbackStatus:$('playbackStatus'),loadTracks:$('loadTracksBtn'),audioFiles:$('audioFiles')};
+const $=id=>document.getElementById(id);const ui={overlay:$('overlay'),kicker:$('overlayKicker'),title:$('overlayTitle'),text:$('overlayText'),result:$('result'),play:$('playBtn'),hint:$('overlayHint'),score:$('score'),best:$('best'),energy:$('energyVal'),bar:$('energyBar'),track:$('trackLabel'),sound:$('soundBtn'),music:$('musicBtn'),next:$('nextTrackBtn'),pause:$('pauseBtn'),audioInfo:$('audioInfo'),playbackStatus:$('playbackStatus')};
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n)),mix=(a,b,t)=>a+(b-a)*t;
 let seed=54879;function rnd(){seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296}
 let state='menu',last=0,clock=0,travel=0,distSpawn=350,score=0,energy=100,combo=0,shields=0,speed=125,beat=0,beatFlash=0,shake=0,flash=0,playTime=0,best=Number(localStorage.getItem('grooveRaidBest')||0)||0;
@@ -19,7 +19,7 @@ const TRACK_PROFILES=[
  {color:'#ae8dff',fire:.74,pick:.18,pace:.99}
 ];function profile(){return TRACK_PROFILES[musicIndex%TRACK_PROFILES.length]||TRACK_PROFILES[0]}
 
-let lastBeat=-1,musicEnabled=localStorage.getItem('grooveRaidMusic')!=='off',musicTracks=[],musicIndex=0,shuffleBag=[],localMusicURLs=[],playlistIsLocal=false;
+let lastBeat=-1,musicEnabled=localStorage.getItem('grooveRaidMusic')!=='off',musicTracks=[],musicIndex=0,shuffleBag=[];
 let musicGraph=null,musicAnalyser=null,musicFrequency=null,musicBass=0,musicMid=0,trackStarted=false;
 const musicEl=new Audio();musicEl.crossOrigin='anonymous';musicEl.preload='auto';musicEl.volume=.72;musicEl.muted=!musicEnabled;
 function updateMusicButtons(){ui.music.classList.toggle('off',!musicEnabled);ui.music.classList.toggle('on',musicEnabled);ui.music.textContent=musicEnabled?'♫':'♪̸';ui.music.title=musicEnabled?'Music on · click to mute':'Music off · click to unmute';ui.music.setAttribute('aria-pressed',String(musicEnabled));}
@@ -43,18 +43,18 @@ const DEFAULT_TRACKS=[
   "lowQ –\u00a0Oldtimer.mp3"
 ];
 function sourceFilename(track){let raw=typeof track==='string'?track:(track.file||track.src||track.title||'');try{return decodeURIComponent(String(raw).split('/').pop())}catch{return String(raw).split('/').pop()}}
+const SOUNDTRACK_LABEL='SHIFTED.';
 function trackInfo(source){
  const raw=sourceFilename(source).replace(/\.(mp3|ogg|wav|m4a|aac|flac)$/i,'').trim();
  const match=raw.match(/^(.+?)\s*[-–]\s*(.+?)(?:\s*\[([^\]]+)\])?$/);
- if(match)return {artist:match[1].trim(),song:match[2].trim(),label:(match[3]||'Label not specified').trim()};
- return {artist:'rozzo',song:raw.replace(/\s*\[[^\]]+\]$/,'').trim(),label:raw.match(/\[([^\]]+)\]$/)?.[1]||'Label not specified'};
+ if(match)return {artist:match[1].trim(),song:match[2].trim(),label:SOUNDTRACK_LABEL};
+ return {artist:'rozzo',song:raw.replace(/\s*\[[^\]]+\]$/,'').trim(),label:SOUNDTRACK_LABEL};
 }
 function formatTrackTitle(filename){const t=trackInfo(filename);return `${t.artist} — ${t.song} — ${t.label}`}
 function fileUrl(name){return SOUNDTRACK_BASE+encodeURIComponent(name)}
 function normalizeTracks(list){return list.map(t=>{
  const src=typeof t==='string'?fileUrl(t):(t.src||fileUrl(t.file||''));
  const basis=sourceFilename(t), info=trackInfo(basis);
- // Preserve file-derived artist/label, even when a manifest has only a short display title.
  return {title:formatTrackTitle(basis),artist:info.artist,song:info.song,label:info.label,src,offset:typeof t==='string'?0:(Number(t.offset)||0)};
 }).filter(t=>t.src)}
 function refillShuffle(){shuffleBag=musicTracks.map((_,i)=>i).filter(i=>musicTracks.length<2||i!==musicIndex);for(let i=shuffleBag.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffleBag[i],shuffleBag[j]]=[shuffleBag[j],shuffleBag[i]]}}
@@ -72,7 +72,6 @@ function playMusic(){if(!musicTracks.length||state!=='playing'||!musicEnabled)re
 }
 // A playlist manifest can override title/beat offsets, but must never interrupt currently playing audio.
 fetch('audio/tracks.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('No manifest');return r.json()}).then(data=>{
- if(playlistIsLocal)return;
  const list=normalizeTracks(Array.isArray(data)?data:data.tracks||[]);
  if(!list.length)return;
  const old=musicTracks[musicIndex];
@@ -81,8 +80,6 @@ fetch('audio/tracks.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('No 
  if(match>=0)musicIndex=match;
  if(state==='menu'&&musicEl.paused)setTrack(musicIndex);
 }).catch(()=>{/* bundled playlist already works without JSON */});
-ui.loadTracks.onclick=()=>ui.audioFiles.click();
-ui.audioFiles.onchange=e=>{for(const url of localMusicURLs)URL.revokeObjectURL(url);const files=[...e.target.files].filter(f=>/\.(mp3|ogg|wav|m4a|aac|flac)$/i.test(f.name)||f.type.startsWith('audio/'));localMusicURLs=files.map(f=>URL.createObjectURL(f));if(!files.length)return;playlistIsLocal=true;musicTracks=normalizeTracks(files.map((f,i)=>({file:f.name,src:localMusicURLs[i],offset:0})));resetShuffle();setTrack(nextRandomIndex());musicStatus('LOCAL TRACKS LOADED · '+files.length);if(state==='playing'&&musicEnabled)playMusic();};
 ui.music.onclick=()=>{musicEnabled=!musicEnabled;localStorage.setItem('grooveRaidMusic',musicEnabled?'on':'off');musicEl.muted=!musicEnabled;updateMusicButtons();if(musicEnabled){if(state==='playing')playMusic();else musicStatus('MUSIC ON · PRESS PLAY');}else{musicEl.pause();trackStarted=false;musicStatus('MUSIC OFF');}};
 ui.next.onclick=()=>{if(!musicTracks.length)return;setTrack(nextRandomIndex());if(state==='playing'&&musicEnabled)playMusic();};
 musicEl.addEventListener('ended',()=>{if(musicTracks.length){setTrack(nextRandomIndex());if(state==='playing'&&musicEnabled)playMusic();}});

@@ -9,5 +9,5 @@
 ## Music and deployment
 
 - The built-in soundtrack has four lowQ tracks. Playback starts when the player starts the game with music enabled, and shuffles through the playlist without an immediate repeat.
-- The HUD displays artist, track and label. Unknown labels are marked "Label not specified".
+- The HUD credits the four lowQ tracks to SHIFTED. The game menu links to the Waves of Light single on album.link.
 - The built-in MP3s are served from the source `grooverider` repository at a pinned revision. `audio/tracks.json` uses its exact filenames and can override a track URL with `src`.
