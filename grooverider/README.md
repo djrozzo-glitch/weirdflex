@@ -1,4 +1,4 @@
-# GROOVE RAID v1.5 — Sprite & Shuffle Edition
+# Waves of Light
 
 - New truly transparent charge canister, replacing `assets/charge.webp`.
 - New transparent crystal-star enemy in `assets/enemy.webp` and `assets/enemy-needle.webp`.
