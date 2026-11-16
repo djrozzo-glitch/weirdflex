@@ -129,6 +129,44 @@ const b64=buffer=>btoa(String.fromCharCode(...new Uint8Array(buffer))).replace(/
 async function signature(secret,message){const key=await crypto.subtle.importKey('raw',bytes(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);return b64(await crypto.subtle.sign('HMAC',key,bytes(message)));}
 function validName(s){return typeof s==='string'&&s.trim().length>0&&s.trim().length<=24&&!/[\p{Cc}\p{Cf}]/u.test(s);}
 function validEmail(s){return typeof s==='string'&&s.length<=254&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);}
+async function wavesLeaderboard(request, env, path) {
+ const scores=path==='/api/waves-of-light/scores';
+ const run=path==='/api/waves-of-light/run';
+ if(scores&&request.method==='GET'){
+  const {results}=await env.db.prepare('SELECT nickname AS name, score FROM waves_scores ORDER BY score DESC, created_at ASC, run_id ASC LIMIT 10').all();
+  return json({entries:results});
+ }
+ if(request.method!=='POST'||(!run&&!scores))return json({error:'Not found'},404);
+ if(!env.RUN_SECRET)return json({error:'RUN_SECRET not configured'},503);
+ if(run){
+  const payload=['waves',Date.now(),crypto.randomUUID()].join('.');
+  return json({token:payload+'.'+await signature(env.RUN_SECRET,payload)});
+ }
+ let data;
+ if(Number(request.headers.get('content-length')||0)>1024)return json({error:'Payload too large'},413);
+ try{
+  const body=await request.text();
+  if(body.length>1024)return json({error:'Payload too large'},413);
+  data=JSON.parse(body);
+ }catch{return json({error:'Invalid submission'},400);}
+ const {name,score,token}=data||{};
+ if(!validName(name)||!Number.isSafeInteger(score)||score<1||score>10000000||typeof token!=='string')
+  return json({error:'Invalid submission'},400);
+ const parts=token.split('.');
+ if(parts.length!==4||parts[0]!=='waves'||await signature(env.RUN_SECRET,parts.slice(0,3).join('.'))!==parts[3])
+  return json({error:'Invalid run token'},403);
+ const seconds=(Date.now()-Number(parts[1]))/1000;
+ if(!Number.isFinite(seconds)||seconds<0||seconds>86400||score>10000+seconds*5000)
+  return json({error:'Invalid run duration or score'},400);
+ const result=await env.db.prepare('INSERT INTO waves_scores(run_id,nickname,score) VALUES(?,?,?) ON CONFLICT(run_id) DO NOTHING')
+  .bind(parts[2],name.trim(),score).run();
+ if(!result.meta.changes){
+  const saved=await env.db.prepare('SELECT nickname,score FROM waves_scores WHERE run_id=?').bind(parts[2]).first();
+  if(saved?.nickname!==name.trim()||saved?.score!==score)return json({error:'Run already submitted'},409);
+ }
+ return json({ok:true});
+}
+
 export default {
  async fetch(request,env){
   const origin=request.headers.get('Origin');
@@ -138,6 +176,7 @@ export default {
   const url=new URL(request.url);
   const path=url.pathname.replace(/\/$/,'');
   try{
+   if(path.startsWith('/api/waves-of-light/'))return await wavesLeaderboard(request,env,path);
    if(request.method==='GET'&&(path==='/api/kombucha/scores'||path==='/scores')){
     const {results}=await env.db.prepare('SELECT nickname AS name,best_score AS score FROM players WHERE best_score > 0 ORDER BY best_score DESC,updated_at ASC LIMIT 100').all();
     return json({entries:results});
