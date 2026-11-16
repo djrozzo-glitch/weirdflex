@@ -6,10 +6,8 @@
 - Retains v1.4 relative touch steering, auto-fire, playlists and game balance.
 - Service worker cache version updated and main scripts cache-busted.
 
-## Deploy
-Upload contents directly into `weirdflex/grooverider/`, replacing existing game files.
-**Do not remove the existing `audio/` folder:** there are no MP3s or audio folder in this ZIP.
+## Music and deployment
 
-- Shuffled nine-song playback, no immediate repeat; reshuffle after the full cycle.
-- Full track credit shown in HUD: artist — track — label. Unknown labels marked "Label not specified".
-- Next-track control follows the same shuffled order.
+- The built-in soundtrack has four lowQ tracks. Playback starts when the player starts the game with music enabled, and shuffles through the playlist without an immediate repeat.
+- The HUD displays artist, track and label. Unknown labels are marked "Label not specified".
+- The built-in MP3s are served from the source `grooverider` repository at a pinned revision. `audio/tracks.json` uses its exact filenames and can override a track URL with `src`.

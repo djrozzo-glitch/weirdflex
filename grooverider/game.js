@@ -6,22 +6,22 @@ let seed=54879;function rnd(){seed=(Math.imul(seed,1664525)+1013904223)>>>0;retu
 let state='menu',last=0,clock=0,travel=0,distSpawn=350,score=0,energy=100,combo=0,shields=0,speed=125,beat=0,beatFlash=0,shake=0,flash=0,playTime=0,best=Number(localStorage.getItem('grooveRaidBest')||0)||0;
 let entities=[],bullets=[],enemyBullets=[],sparks=[],waves=[],ghosts=[],floaters=[];const input={left:false,right:false,up:false,down:false,fire:false};const player={x:240,y:616,tilt:0,cool:0,inv:0,vx:0,vy:0};let audio=null,sound=true,phase=0;let currentSection='',bossMeter=1800,nextBossAt=4200,bossActive=false;let sectionFlash=0;let scoreTick=0;let powerUntil=0,powerType='',lastPowerAt=-300;let hitStop=0;const BASE_BOSS_HP=16;let lastTrackIndex=-1;let touchSteerActive=false,touchSteerX=240,touchSteerY=616,touchId=null;let touchStartClientX=0,touchStartClientY=0,touchStartPlayerX=240,touchStartPlayerY=616;let directTouchControl=('ontouchstart' in window)||(navigator.maxTouchPoints>0);
 const BPM=124,beatInterval=60/BPM;
-// Distinct arrangements for each track. All remain 124 BPM; modifiers affect encounters, not audio speed.
+// Encounter modifiers rotate with the playlist. The game clock uses BPM above.
 const TRACK_PROFILES=[
- {name:'FADING AWAY',color:'#79e7ed',fire:.56,pick:.2,pace:.96},
- {name:'MURALLA',color:'#fb6397',fire:.72,pick:.17,pace:.98},
- {name:'THE PROMISE',color:'#f4b877',fire:.62,pick:.22,pace:.95},
- {name:'IN_OUT LOVE',color:'#d888f7',fire:.6,pick:.23,pace:.97},
- {name:'NO BUT NO',color:'#f674b0',fire:.78,pick:.16,pace:1},
- {name:'SUNNY SIDE',color:'#ffca84',fire:.52,pick:.25,pace:.93},
- {name:'GO GO GO',color:'#ff6e7e',fire:.84,pick:.15,pace:1.02},
- {name:'LE MARTINI',color:'#88f4e1',fire:.64,pick:.22,pace:.96},
- {name:'SPOOKY FEELING',color:'#ae8dff',fire:.74,pick:.18,pace:.99}
+ {color:'#79e7ed',fire:.56,pick:.2,pace:.96},
+ {color:'#fb6397',fire:.72,pick:.17,pace:.98},
+ {color:'#f4b877',fire:.62,pick:.22,pace:.95},
+ {color:'#d888f7',fire:.6,pick:.23,pace:.97},
+ {color:'#f674b0',fire:.78,pick:.16,pace:1},
+ {color:'#ffca84',fire:.52,pick:.25,pace:.93},
+ {color:'#ff6e7e',fire:.84,pick:.15,pace:1.02},
+ {color:'#88f4e1',fire:.64,pick:.22,pace:.96},
+ {color:'#ae8dff',fire:.74,pick:.18,pace:.99}
 ];function profile(){return TRACK_PROFILES[musicIndex%TRACK_PROFILES.length]||TRACK_PROFILES[0]}
 
 let lastBeat=-1,musicEnabled=localStorage.getItem('grooveRaidMusic')!=='off',musicTracks=[],musicIndex=0,shuffleBag=[],localMusicURLs=[],playlistIsLocal=false;
 let musicGraph=null,musicAnalyser=null,musicFrequency=null,musicBass=0,musicMid=0,trackStarted=false;
-const musicEl=new Audio();musicEl.preload='auto';musicEl.volume=.72;musicEl.muted=!musicEnabled;
+const musicEl=new Audio();musicEl.crossOrigin='anonymous';musicEl.preload='auto';musicEl.volume=.72;musicEl.muted=!musicEnabled;
 function updateMusicButtons(){ui.music.classList.toggle('off',!musicEnabled);ui.music.classList.toggle('on',musicEnabled);ui.music.textContent=musicEnabled?'♫':'♪̸';ui.music.title=musicEnabled?'Music on · click to mute':'Music off · click to unmute';ui.music.setAttribute('aria-pressed',String(musicEnabled));}
 function musicStatus(label,problem=false){ui.audioInfo.textContent=label;ui.playbackStatus.textContent=label;ui.playbackStatus.classList.toggle('problem',problem)}
 updateMusicButtons();
@@ -35,16 +35,12 @@ function getAudioContext(){try{audio=audio||new(window.AudioContext||window.webk
 function setupMusicGraph(){if(musicGraph)return;const ac=getAudioContext();if(!ac)return;try{const source=ac.createMediaElementSource(musicEl);const analyser=ac.createAnalyser();analyser.fftSize=1024;analyser.smoothingTimeConstant=.76;source.connect(analyser);analyser.connect(ac.destination);musicGraph=source;musicAnalyser=analyser;musicFrequency=new Uint8Array(analyser.frequencyBinCount)}catch(e){console.warn('Audio visualization unavailable',e)}}
 function sampleMusic(){if(!musicAnalyser||musicEl.paused||musicEl.readyState<2){musicBass*=.92;musicMid*=.92;return}musicAnalyser.getByteFrequencyData(musicFrequency);let b=0,m=0;for(let i=1;i<9;i++)b+=musicFrequency[i];for(let i=9;i<49;i++)m+=musicFrequency[i];musicBass+=(b/(8*255)-musicBass)*.25;musicMid+=(m/(40*255)-musicMid)*.2;}
 function musicTime(){const offset=musicTracks[musicIndex]?.offset||0;return trackStarted&&musicEl.readyState>0?Math.max(0,musicEl.currentTime-offset):playTime;}
+const SOUNDTRACK_BASE="https://raw.githubusercontent.com/djrozzo-glitch/grooverider/60cfe216b5ad557cd4a7f8df31fae0a19bae4a5a/audio/";
 const DEFAULT_TRACKS=[
-  'rozzo - Fading Away [Minar Records].mp3',
-  'rozzo - Muralla [Minar Records].mp3',
-  'rozzo - The Promise [Minar Records].mp3',
-  'rozzo – in_out love.mp3',
-  'rozzo – no but no [See the Sea Records].mp3',
-  'rozzo – sunny side.mp3',
-  'rozzo – go go go [See the Sea Records].mp3',
-  'rozzo – le martini [See the Sea Records].mp3',
-  'rozzo – spooky feeling [See the Sea Records].mp3'
+  "lowQ –\u00a0Waves of light.mp3",
+  "lowQ –\u00a0Humble game.mp3",
+  "lowQ –\u00a0Moody vibe.mp3",
+  "lowQ –\u00a0Oldtimer.mp3"
 ];
 function sourceFilename(track){let raw=typeof track==='string'?track:(track.file||track.src||track.title||'');try{return decodeURIComponent(String(raw).split('/').pop())}catch{return String(raw).split('/').pop()}}
 function trackInfo(source){
@@ -54,7 +50,7 @@ function trackInfo(source){
  return {artist:'rozzo',song:raw.replace(/\s*\[[^\]]+\]$/,'').trim(),label:raw.match(/\[([^\]]+)\]$/)?.[1]||'Label not specified'};
 }
 function formatTrackTitle(filename){const t=trackInfo(filename);return `${t.artist} — ${t.song} — ${t.label}`}
-function fileUrl(name){return 'audio/'+name.split('/').map(encodeURIComponent).join('/')}
+function fileUrl(name){return SOUNDTRACK_BASE+encodeURIComponent(name)}
 function normalizeTracks(list){return list.map(t=>{
  const src=typeof t==='string'?fileUrl(t):(t.src||fileUrl(t.file||''));
  const basis=sourceFilename(t), info=trackInfo(basis);
@@ -141,7 +137,7 @@ function destroy(e,index){entities.splice(index,1);if(e.boss)bossActive=false;co
 
 function update(dt){if(state!=='playing')return;dt=Math.min(.04,dt);clock+=dt;playTime+=dt;sampleMusic();let k=Math.floor(musicTime()/beatInterval);if(k!==lastBeat){lastBeat=k;beat=k%4;beatFlash=1;if(k%4===0){waves.push({x:groove(travel+360),y:H-360,r:8,life:.38,color:'#ef62de'});}if(sound&&(!musicTracks.length||!trackStarted)){tone(k%4===0?82:110,k%4===0?.13:.045,'sine',k%4===0?.038:.013,.57);if(k%4===2)tone(860,.027,'triangle',.008,.75)}}beatFlash=Math.max(0,beatFlash-dt*4);flash=Math.max(0,flash-dt*2.8);shake*=Math.exp(-dt*9);player.cool-=dt;player.inv=Math.max(0,player.inv-dt);const targetSpeed=(128+Math.min(28,travel/220)+(beatFlash>0&&beat===0?6*beatFlash:0))*profile().pace;speed=mix(speed,targetSpeed+musicBass*7,dt*1.9);travel+=speed*dt;score+=Math.floor(dt*speed*.2);const cruiseDrain=1.24+Math.min(.28,travel/8000)+Math.max(0,(speed-142)/85)*.3+musicBass*.05;energy-=dt*cruiseDrain;if(energy<=0){energy=0;overlay('dead');return}
  if(travel<1800)triggerSection('THE RUN-IN'); else if(travel<3800)triggerSection('DUST & STATIC'); else if(travel<6500)triggerSection('BASS PRESSURE'); else triggerSection('THE INNER GROOVE');
- if(travel>nextBossAt&&!bossActive){spawnBoss();nextBossAt+=5200+rnd()*900;}if(lastTrackIndex!==musicIndex){lastTrackIndex=musicIndex;addFloater(profile().name+' / 124 BPM',240,205,profile().color,2.2)}if(powerType&&clock>=powerUntil){powerType='';powerUntil=0;}
+ if(travel>nextBossAt&&!bossActive){spawnBoss();nextBossAt+=5200+rnd()*900;}if(lastTrackIndex!==musicIndex){lastTrackIndex=musicIndex;addFloater(musicTracks[musicIndex]?.song || 'SIDE A',240,205,profile().color,2.2)}if(powerType&&clock>=powerUntil){powerType='';powerUntil=0;}
  const dx=(input.right?1:0)-(input.left?1:0), dy=(input.down?1:0)-(input.up?1:0);if(touchSteerActive){player.vx=0;player.vy=0;player.x=mix(player.x,touchSteerX,.72);player.y=mix(player.y,touchSteerY,.66);}else{player.vx=mix(player.vx,dx*205,dt*7.5);player.vy=mix(player.vy,dy*205,dt*7.5);player.x+=player.vx*dt;player.y+=player.vy*dt;}player.y=clamp(player.y,170,H-86);const tiltDir=touchSteerActive?clamp((touchSteerX-player.x)/58,-1,1):(dx||player.vx/180);player.tilt=mix(player.tilt,tiltDir*.24,dt*9);shoot();let [l,r]=banks(travel+H-player.y);if(player.x<l+13||player.x>r-13){player.x=clamp(player.x,l+10,r-10);hit(12)}spawn();
  for(let i=bullets.length-1;i>=0;i--){let b=bullets[i];b.y+=b.vy*dt;b.x+=(b.vx||0)*dt;b.life-=dt;if(b.y<-30||b.life<=0){bullets.splice(i,1);continue}for(let j=entities.length-1;j>=0;j--){let e=entities[j];if(!e.hp)continue;let ey=H-(e.z-travel),hitRadius=e.kind==='jelly'?e.r+12:e.r+8;if(Math.hypot(b.x-e.x,b.y-ey)<hitRadius){e.hp--;addSparks(b.x,b.y,e.boss?'#fff3c8':'#f4b6d7',e.boss?12:5,e.boss?110:65);if(e.boss)waves.push({x:b.x,y:b.y,r:4,life:.17,color:'#ffdfad'});bullets.splice(i,1);if(e.hp<=0)destroy(e,j);else tone(260,.06,'square',.025,1.4);break}}}
  
