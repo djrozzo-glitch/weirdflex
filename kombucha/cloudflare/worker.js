@@ -91,8 +91,8 @@ function step(run, jump = false) {
       continue;
     }
     const {width,height} = obstacles[item.kind];
-    const hitWidth=item.tall ? Math.max(width*1.35,68) : width;
-    const hitHeight=item.tall ? Math.max(height*1.8,112) : height;
+    const hitWidth=item.tall ? width*1.2 : width;
+    const hitHeight=item.tall ? height*1.2 : height;
     if(Math.abs(dx)<15+hitWidth*.35 && jumpHeight+5<hitHeight*.82) {
       run.over=true;
       break;
