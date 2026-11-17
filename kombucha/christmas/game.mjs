@@ -217,7 +217,25 @@ function draw() {
       const {crop,width,height}=obstacles[item.kind];
       const w=(item.tall ? Math.max(width*1.35,68) : width)*scale;
       const h=(item.tall ? Math.max(height*1.8,112) : height)*scale;
-      ctx.drawImage(obstacleArt[item.kind],...crop,x-w/2,ground-h,w,h);
+      const art=obstacleArt[item.kind];
+      // Always render a visible obstacle, even if an asset is still loading.
+      // A subtle snow shadow anchors small sprites to the running surface.
+      ctx.save();
+      ctx.fillStyle='rgba(7,20,32,.48)';
+      ctx.beginPath();
+      ctx.ellipse(x,ground-2*scale,Math.max(14,w*.46),Math.max(3,5*scale),0,0,Math.PI*2);
+      ctx.fill();
+      if(art?.complete && art.naturalWidth>0) {
+        ctx.drawImage(art,...crop,x-w/2,ground-h,w,h);
+      } else {
+        ctx.fillStyle='#a4d3df';
+        ctx.strokeStyle='#24445a';
+        ctx.lineWidth=Math.max(2,3*scale);
+        ctx.beginPath();
+        ctx.roundRect(x-w/2,ground-h,w,h,Math.min(12,w*.18));
+        ctx.fill(); ctx.stroke();
+      }
+      ctx.restore();
     }
   }
   const size=HERO*1.52*scale;
