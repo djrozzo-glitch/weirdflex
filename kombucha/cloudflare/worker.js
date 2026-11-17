@@ -62,7 +62,8 @@ function spawn(run) {
   for (const [offset,lift] of bottleArc) {
     run.objects.push({x:x+offset, y:lift+arcLift, bottle:true});
   }
-  // High bottle arcs guard a larger obstacle: a double jump is required.\n  run.objects.push({x, kind, tall:highArc});
+  // High bottle arcs guard a larger obstacle: a double jump is required.
+  run.objects.push({x, kind, tall:highArc});
   run.next += speedAtTick(run.tick)*(91+Math.floor(random(run)*34));
 }
 
