@@ -10,12 +10,18 @@ const img=path=>{
   return image;
 };
 const panoramas=['woods','village','aurora'].map(name=>img('backgrounds/'+name+'.webp'));
-// Scenery catalog: original + three sparse single-easter-egg variants; legacy crowded panoramas excluded. Missing assets fall back safely.
+// Scenery families: each image has at most one Easter egg.
+// Village opens with three consecutive versions of the same winter cottage.
 const sceneryCatalog=[
   ['backgrounds/woods.webp','backgrounds/variants/C_forest_3_santa_courier.webp','backgrounds/variants/C_forest_4_green_santa.webp','backgrounds/variants/C_forest_5_reindeer_sweater.webp'],
-  ['backgrounds/village.webp','backgrounds/variants/B_village_3_suitcase.webp','backgrounds/variants/B_village_4_mailbox.webp','backgrounds/variants/B_village_5_scarf_raven.webp'],
+  ['backgrounds/variants/B_village_0_cottage.webp','backgrounds/variants/B_village_1_putin_window.webp','backgrounds/variants/B_village_2_home_alone_window.webp','backgrounds/variants/B_village_3_suitcase.webp','backgrounds/variants/B_village_4_mailbox.webp','backgrounds/variants/B_village_5_scarf_raven.webp'],
   ['backgrounds/aurora.webp','backgrounds/variants/A_lake_3_red_balloon.webp','backgrounds/variants/A_lake_4_snow_boat.webp','backgrounds/variants/A_lake_5_smoke_heart.webp']
 ].map(paths=>paths.map(img));
+const sceneOrder=[
+  ...[0,1,2,3].map(variant=>({family:0,variant})),
+  ...[0,1,2,3,4,5].map(variant=>({family:1,variant})),
+  ...[0,1,2,3].map(variant=>({family:2,variant}))
+];
 // The SVG composites relied on external images, blocked in canvas on mobile.
 // Always draw the verified WebP panorama first.
 const atlas=img('kombucha-atlas.png');
@@ -190,11 +196,9 @@ function draw() {
   // Reliable baseline: paint the original scenery first.
   // Optional complete WebP artwork may replace a scene only after decoding.
   const sceneImage=index=>{
-    const family=Math.floor(index/4)%3;
-    // Cycle through four scenes per setting (one original + three sparse variants).
-    // Do not use incomplete/failed image resources in Canvas.
-    const variantIndex=index%sceneryCatalog[family].length;
-    const candidate=sceneryCatalog[family][variantIndex];
+    const {family,variant}=sceneOrder[((index%sceneOrder.length)+sceneOrder.length)%sceneOrder.length];
+    const candidate=sceneryCatalog[family][variant];
+    // Avoid blank frames while optional images load or if deployment is delayed.
     return candidate?.complete && candidate.naturalWidth>0 ? candidate : panoramas[family];
   };
   landscape(sceneImage(zone),travel);
