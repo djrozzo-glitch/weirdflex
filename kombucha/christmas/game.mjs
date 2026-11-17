@@ -19,7 +19,8 @@ const snowflake=img('effects/snowflake.png');
 const obstacleArt=obstacles.map(({file})=>img('obstacles/'+file));
 const essentialArt=Promise.all([...panoramas,atlas,terrain,bottle,...obstacleArt].map(image=>image.decode())).then(()=>true,()=>false);
 const sceneTicks=15*RATE;
-const easterEggs=['🏠😱','📺🎄','🥗🐟','🎅💚','🛸☃️','🪩🐧'];
+const easterEggs=['window-boy.svg','tv-address.svg','salad.svg','green-santa.svg'];
+const eggArt=easterEggs.map(name=>img('backgrounds/easter/'+name));
 const eggPeriod=25*RATE, eggDuration=3*RATE;
 const transitionTicks=2*RATE;
 const gallopFrames=[4,2,1,3];
@@ -183,15 +184,22 @@ function draw() {
     else ctx.fillRect(x,y,flake.r,flake.r);
   }
   ctx.globalAlpha=1;
+  // Background cameos appear only within the landscape, never as UI icons.
   const eggCycle=Math.floor(run.tick/eggPeriod), eggOffset=run.tick%eggPeriod;
   if(eggCycle>0&&eggOffset<eggDuration) {
-    const label=easterEggs[(eggCycle*7+Math.floor(run.seed%13))%easterEggs.length];
-    const fade=Math.min(1,eggOffset/22,(eggDuration-eggOffset)/22);
-    ctx.save(); ctx.globalAlpha=Math.max(0,fade)*.9;
-    ctx.font=Math.round(Math.max(24,Math.min(48,width*.09)))+'px system-ui';
-    ctx.textAlign='center'; ctx.shadowColor='#f9d992'; ctx.shadowBlur=15;
-    ctx.fillText(label,width*.76,Math.min(ground-100,height*.43));
-    ctx.restore();
+    const index=(eggCycle*7+Math.floor(run.seed%13))%eggArt.length;
+    const picture=eggArt[index];
+    if(picture.naturalWidth) {
+      const fade=Math.max(0,Math.min(1,eggOffset/24,(eggDuration-eggOffset)/24));
+      const w=Math.min(width*.24,110), h=w*picture.naturalHeight/picture.naturalWidth;
+      // Place at the distant building/treeline, safely above the play surface.
+      const x=index===3?width*.15:width*.73;
+      const y=Math.max(ground*.38,ground-h-70);
+      ctx.save();
+      ctx.globalAlpha=fade*.85;
+      ctx.drawImage(picture,x-w/2,y,w,h);
+      ctx.restore();
+    }
   }
   const heroX=Math.min(250,width*.24);
   for(const item of run.objects) {
