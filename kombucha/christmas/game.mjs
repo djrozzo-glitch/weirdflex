@@ -10,6 +10,7 @@ const img=path=>{
   return image;
 };
 const panoramas=['woods','village','aurora'].map(name=>img('backgrounds/'+name+'.webp'));
+const easterPanoramas=['woods','village','aurora'].map(name=>img('backgrounds/easter/'+name+'_easter.webp'));
 // The SVG composites relied on external images, blocked in canvas on mobile.
 // Always draw the verified WebP panorama first.
 const atlas=img('kombucha-atlas.png');
