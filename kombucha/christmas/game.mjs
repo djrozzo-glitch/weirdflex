@@ -10,6 +10,7 @@ const img=path=>{
   return image;
 };
 const panoramas=['woods','village','aurora'].map(name=>img('backgrounds/'+name+'.webp'));
+const easterPanoramas=['woods','village','aurora'].map(name=>img('backgrounds/easter/'+name+'_easter.svg'));
 const atlas=img('kombucha-atlas.png');
 const terrain=img('terrain/snow.webp');
 const bottle=img('assets/kombucha-bottle.webp');
@@ -18,7 +19,7 @@ const puff=img('effects/snow-puff.png');
 const snowflake=img('effects/snowflake.png');
 const obstacleArt=obstacles.map(({file})=>img('obstacles/'+file));
 const essentialArt=Promise.all([...panoramas,atlas,terrain,bottle,...obstacleArt].map(image=>image.decode())).then(()=>true,()=>false);
-const sceneTicks=15*RATE;
+const sceneTicks=12*RATE;
 const easterEggs=['window-boy.svg','tv-address.svg','salad.svg','green-santa.svg'];
 const eggArt=easterEggs.map(name=>img('backgrounds/easter/'+name));
 const transitionTicks=2*RATE;
@@ -172,19 +173,10 @@ function draw() {
     const first=-((travel%stripWidth+stripWidth)%stripWidth);
     ctx.globalAlpha=alpha;
     for(let x=first-stripWidth,i=Math.floor(travel/stripWidth)-1;x<width;x+=stripWidth,i++) {
-      ctx.drawImage(image,x,0,stripWidth+.5,targetHeight);
-      if(i<0||i%3!==2) continue;
-      const layouts=[
-        [[3,.22,.46,.16],[2,.65,.65,.18]],
-        [[0,.47,.43,.16],[1,.72,.50,.16],[2,.85,.67,.13]],
-        [[3,.31,.47,.14],[1,.69,.55,.15]]
-      ];
-      for(const [index,rx,ry,rw] of layouts[scene%3]) {
-        const art=eggArt[index];
-        if(!art?.naturalWidth) continue;
-        const w=stripWidth*rw,h=w*art.naturalHeight/art.naturalWidth;
-        ctx.drawImage(art,x+stripWidth*rx-w/2,targetHeight*ry-h/2,w,h);
-      }
+      const variant=easterPanoramas[scene%3];
+      const chosen=(scene%2===1 && variant.naturalWidth)?variant:image;
+      ctx.drawImage(chosen,x,0,stripWidth+.5,targetHeight);
+
     }
   }
   scenery(zone,1);
