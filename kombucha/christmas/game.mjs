@@ -215,8 +215,8 @@ function draw() {
       ctx.drawImage(bottle,x-w/2,y-h/2,w,h);
     } else {
       const {crop,width,height}=obstacles[item.kind];
-      const w=(item.tall ? Math.max(width*1.35,68) : width)*scale;
-      const h=(item.tall ? Math.max(height*1.8,112) : height)*scale;
+      const w=(item.tall ? width*1.2 : width)*scale;
+      const h=(item.tall ? height*1.2 : height)*scale;
       const art=obstacleArt[item.kind];
       // Always render a visible obstacle, even if an asset is still loading.
       // A subtle snow shadow anchors small sprites to the running surface.
