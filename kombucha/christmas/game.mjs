@@ -155,12 +155,16 @@ function tile(image,offset,y,w,h) {
 function landscape(image,offset) {
   if(!image.naturalWidth) return;
   // A continuously scrolling scenery strip; decorative objects share its camera.
+  // Preserve the native image aspect ratio. The old Math.max(width,...)
+  // stretched narrow panorama variants horizontally on wide screens.
+  // Scale by height, repeat horizontally, and keep the snowline aligned.
   const targetHeight=ground+4;
   const ratio=targetHeight/image.naturalHeight;
-  const stripWidth=Math.max(width,image.naturalWidth*ratio);
+  const stripWidth=image.naturalWidth*ratio;
+  if(!Number.isFinite(stripWidth)||stripWidth<=0) return;
   const x0=-((offset%stripWidth+stripWidth)%stripWidth);
   for(let x=x0-stripWidth;x<width;x+=stripWidth)
-    ctx.drawImage(image,x,0,stripWidth,targetHeight);
+    ctx.drawImage(image,x,0,stripWidth+.5,targetHeight);
 }
 
 function draw() {
