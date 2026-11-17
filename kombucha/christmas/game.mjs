@@ -10,11 +10,11 @@ const img=path=>{
   return image;
 };
 const panoramas=['woods','village','aurora'].map(name=>img('backgrounds/'+name+'.webp'));
-// Scenery catalog: base + single-easter-egg variants. Missing assets fall back safely.
+// Scenery catalog: original + three sparse single-easter-egg variants; legacy crowded panoramas excluded. Missing assets fall back safely.
 const sceneryCatalog=[
-  ['backgrounds/woods.webp','backgrounds/easter/woods_easter.webp','backgrounds/variants/C_forest_3_santa_courier.webp','backgrounds/variants/C_forest_4_green_santa.webp','backgrounds/variants/C_forest_5_reindeer_sweater.webp'],
-  ['backgrounds/village.webp','backgrounds/easter/village_easter.webp','backgrounds/variants/B_village_3_suitcase.webp','backgrounds/variants/B_village_4_mailbox.webp','backgrounds/variants/B_village_5_scarf_raven.webp'],
-  ['backgrounds/aurora.webp','backgrounds/easter/aurora_easter.webp','backgrounds/variants/A_lake_3_red_balloon.webp','backgrounds/variants/A_lake_4_snow_boat.webp','backgrounds/variants/A_lake_5_smoke_heart.webp']
+  ['backgrounds/woods.webp','backgrounds/variants/C_forest_3_santa_courier.webp','backgrounds/variants/C_forest_4_green_santa.webp','backgrounds/variants/C_forest_5_reindeer_sweater.webp'],
+  ['backgrounds/village.webp','backgrounds/variants/B_village_3_suitcase.webp','backgrounds/variants/B_village_4_mailbox.webp','backgrounds/variants/B_village_5_scarf_raven.webp'],
+  ['backgrounds/aurora.webp','backgrounds/variants/A_lake_3_red_balloon.webp','backgrounds/variants/A_lake_4_snow_boat.webp','backgrounds/variants/A_lake_5_smoke_heart.webp']
 ].map(paths=>paths.map(img));
 // The SVG composites relied on external images, blocked in canvas on mobile.
 // Always draw the verified WebP panorama first.
@@ -174,7 +174,7 @@ function draw() {
   // Optional complete WebP artwork may replace a scene only after decoding.
   const sceneImage=index=>{
     const family=index%3;
-    // Cycle through five distinct scenes per setting, one easter egg at most.
+    // Cycle through four scenes per setting (one original + three sparse variants).
     // Do not use incomplete/failed image resources in Canvas.
     const variantIndex=Math.floor(index/3)%sceneryCatalog[family].length;
     const candidate=sceneryCatalog[family][variantIndex];
