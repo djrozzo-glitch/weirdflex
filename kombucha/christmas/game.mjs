@@ -160,28 +160,14 @@ function tile(image,offset,y,w,h) {
 
 function landscape(image,offset) {
   if(!image.naturalWidth) return;
-  // A continuously scrolling scenery strip; decorative objects share its camera.
-  // Preserve the native image aspect ratio. The old Math.max(width,...)
-  // stretched narrow panorama variants horizontally on wide screens.
-  // Scale by height, repeat horizontally, and keep the snowline aligned.
+  // Fit every panorama to the full scenery height with uniform scaling.
+  // No artificial sky strip and no vertical or horizontal distortion.
   const targetHeight=ground+4;
-  // The new 3:1 panoramas were composed for a shallower scenery strip.
-  // Fitting them to the entire viewport height makes characters gigantic.
-  // Render by intended world scale instead, bottom-aligned with a soft sky
-  // extension above. This keeps characters and trees at a natural size.
-  const isVariant=image.src.includes('/backgrounds/variants/');
-  const drawHeight=isVariant ? targetHeight*.76 : targetHeight;
+  const drawHeight=targetHeight;
   const stripWidth=image.naturalWidth*drawHeight/image.naturalHeight;
   if(!Number.isFinite(stripWidth)||stripWidth<=0) return;
-  const y=targetHeight-drawHeight;
+  const y=0;
   const x0=-((offset%stripWidth+stripWidth)%stripWidth);
-  if(isVariant) {
-    const sky=ctx.createLinearGradient(0,0,0,y+25);
-    sky.addColorStop(0,'#071b30');
-    sky.addColorStop(1,'#102b43');
-    ctx.fillStyle=sky;
-    ctx.fillRect(0,0,width,y+25);
-  }
   for(let x=x0-stripWidth;x<width;x+=stripWidth)
     ctx.drawImage(image,x,y,stripWidth+.5,drawHeight);
 }
