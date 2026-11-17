@@ -21,7 +21,6 @@ const essentialArt=Promise.all([...panoramas,atlas,terrain,bottle,...obstacleArt
 const sceneTicks=15*RATE;
 const easterEggs=['window-boy.svg','tv-address.svg','salad.svg','green-santa.svg'];
 const eggArt=easterEggs.map(name=>img('backgrounds/easter/'+name));
-const eggPeriod=25*RATE, eggDuration=3*RATE;
 const transitionTicks=2*RATE;
 const gallopFrames=[4,2,1,3];
 const audio=Object.fromEntries(['jump','double','bone','hit'].map(name=>[name,new Audio(new URL('audio/'+name+'.wav',root))]));
@@ -163,9 +162,33 @@ function draw() {
   const travel=run.distance*scale*.46;
   ctx.fillStyle='#132d48';
   ctx.fillRect(0,0,width,height);
-  landscape(panoramas[zone%3],travel);
-  ctx.globalAlpha=blend*blend*(3-2*blend);
-  landscape(panoramas[(zone+1)%3],travel);
+  // Decorative art is positioned inside each panorama tile, and scrolls
+  // with that tile. It never fades or moves independently of the background.
+  function scenery(scene,alpha) {
+    const image=panoramas[scene%3];
+    if(!image.naturalWidth) return;
+    const targetHeight=ground+4;
+    const stripWidth=Math.max(width,image.naturalWidth*targetHeight/image.naturalHeight);
+    const first=-((travel%stripWidth+stripWidth)%stripWidth);
+    ctx.globalAlpha=alpha;
+    for(let x=first-stripWidth,i=Math.floor(travel/stripWidth)-1;x<width;x+=stripWidth,i++) {
+      ctx.drawImage(image,x,0,stripWidth+.5,targetHeight);
+      if(i<0||i%3!==2) continue;
+      const layouts=[
+        [[3,.22,.46,.16],[2,.65,.65,.18]],
+        [[0,.47,.43,.16],[1,.72,.50,.16],[2,.85,.67,.13]],
+        [[3,.31,.47,.14],[1,.69,.55,.15]]
+      ];
+      for(const [index,rx,ry,rw] of layouts[scene%3]) {
+        const art=eggArt[index];
+        if(!art?.naturalWidth) continue;
+        const w=stripWidth*rw,h=w*art.naturalHeight/art.naturalWidth;
+        ctx.drawImage(art,x+stripWidth*rx-w/2,targetHeight*ry-h/2,w,h);
+      }
+    }
+  }
+  scenery(zone,1);
+  scenery(zone+1,blend*blend*(3-2*blend));
   ctx.globalAlpha=1;
   ctx.fillStyle='#b1cfe6';
   ctx.fillRect(0,ground+2,width,height-ground);
@@ -180,21 +203,6 @@ function draw() {
     else ctx.fillRect(x,y,flake.r,flake.r);
   }
   ctx.globalAlpha=1;
-  // Easter eggs are fixed scenery objects in world space. They enter from the
-  // right and leave to the left with the same parallax camera as the landscape.
-  // No timer-based disappearance or screen-space overlay.
-  const currentCycle=Math.floor(run.tick/eggPeriod);
-  for(let cycle=Math.max(1,currentCycle-3);cycle<=currentCycle+1;cycle++) {
-    const worldX=cycle*eggPeriod*4.05*1.35+420;
-    const x=width+100+(worldX-run.distance)*scale*.46;
-    if(x< -160||x>width+160) continue;
-    const index=(cycle*7+Math.floor(run.seed%13))%eggArt.length;
-    const picture=eggArt[index];
-    if(!picture.naturalWidth) continue;
-    const w=Math.min(width*.25,105), h=w*picture.naturalHeight/picture.naturalWidth;
-    const y=Math.max(ground*.35,ground-h-65);
-    ctx.drawImage(picture,x-w/2,y,w,h);
-  }
   const heroX=Math.min(250,width*.24);
   for(const item of run.objects) {
     const x=heroX+(item.x-run.distance)*scale;
