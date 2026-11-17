@@ -147,17 +147,13 @@ function tile(image,offset,y,w,h) {
 
 function landscape(image,offset) {
   if(!image.naturalWidth) return;
-  // Cover the sky area without stretching or repeating a narrow slice on phones.
-  const iw=image.naturalWidth, ih=image.naturalHeight;
+  // A continuously scrolling scenery strip; decorative objects share its camera.
   const targetHeight=ground+4;
-  const zoom=Math.max(width/iw,targetHeight/ih);
-  const sourceWidth=Math.min(iw,width/zoom);
-  const sourceHeight=Math.min(ih,targetHeight/zoom);
-  // Keep the horizon stable while gently panning across the original artwork.
-  const maxX=iw-sourceWidth;
-  const pan=maxX>0 ? (Math.sin(offset/2400)*.5+.5)*maxX : 0;
-  const sourceY=Math.max(0,ih-sourceHeight);
-  ctx.drawImage(image,pan,sourceY,sourceWidth,sourceHeight,0,0,width,targetHeight);
+  const ratio=targetHeight/image.naturalHeight;
+  const stripWidth=Math.max(width,image.naturalWidth*ratio);
+  const x0=-((offset%stripWidth+stripWidth)%stripWidth);
+  for(let x=x0-stripWidth;x<width;x+=stripWidth)
+    ctx.drawImage(image,x,0,stripWidth,targetHeight);
 }
 
 function draw() {
@@ -184,22 +180,20 @@ function draw() {
     else ctx.fillRect(x,y,flake.r,flake.r);
   }
   ctx.globalAlpha=1;
-  // Background cameos appear only within the landscape, never as UI icons.
-  const eggCycle=Math.floor(run.tick/eggPeriod), eggOffset=run.tick%eggPeriod;
-  if(eggCycle>0&&eggOffset<eggDuration) {
-    const index=(eggCycle*7+Math.floor(run.seed%13))%eggArt.length;
+  // Easter eggs are fixed scenery objects in world space. They enter from the
+  // right and leave to the left with the same parallax camera as the landscape.
+  // No timer-based disappearance or screen-space overlay.
+  const currentCycle=Math.floor(run.tick/eggPeriod);
+  for(let cycle=Math.max(1,currentCycle-3);cycle<=currentCycle+1;cycle++) {
+    const worldX=cycle*eggPeriod*4.05*1.35+420;
+    const x=width+100+(worldX-run.distance)*scale*.46;
+    if(x< -160||x>width+160) continue;
+    const index=(cycle*7+Math.floor(run.seed%13))%eggArt.length;
     const picture=eggArt[index];
-    if(picture.naturalWidth) {
-      const fade=Math.max(0,Math.min(1,eggOffset/24,(eggDuration-eggOffset)/24));
-      const w=Math.min(width*.24,110), h=w*picture.naturalHeight/picture.naturalWidth;
-      // Place at the distant building/treeline, safely above the play surface.
-      const x=index===3?width*.15:width*.73;
-      const y=Math.max(ground*.38,ground-h-70);
-      ctx.save();
-      ctx.globalAlpha=fade*.85;
-      ctx.drawImage(picture,x-w/2,y,w,h);
-      ctx.restore();
-    }
+    if(!picture.naturalWidth) continue;
+    const w=Math.min(width*.25,105), h=w*picture.naturalHeight/picture.naturalWidth;
+    const y=Math.max(ground*.35,ground-h-65);
+    ctx.drawImage(picture,x-w/2,y,w,h);
   }
   const heroX=Math.min(250,width*.24);
   for(const item of run.objects) {
