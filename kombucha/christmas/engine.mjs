@@ -31,8 +31,8 @@ const HIGH_ARC_CHANCE = .25;
 // The lowest bottle in a high arc sits above the reach of a single jump.
 const HIGH_ARC_MIN_HEIGHT = 152;
 const BASE_SPEED = 4.05;
-const SPEED_GAIN_PER_MINUTE = 5/3;
-const MAX_SPEED_MULTIPLIER = 6;
+const SPEED_GAIN_PER_MINUTE = .75;
+const MAX_SPEED_MULTIPLIER = 3.2;
 
 export function speedAtTick(tick) {
   const minutes = tick / (RATE*60);
@@ -62,7 +62,17 @@ function spawn(run) {
   }
   // High bottle arcs guard a larger obstacle: a double jump is required.
   run.objects.push({x, kind, tall:highArc});
-  run.next += speedAtTick(run.tick)*(91+Math.floor(random(run)*34));
+  // Vary time-to-next-obstacle instead of relying on extreme scrolling speed.
+  // Minimum 76 ticks allows a full single jump and landing before the next obstacle.
+  // Short gaps become more frequent over the first three minutes, with occasional breathers.
+  const progress=Math.min(1,run.tick/(RATE*180));
+  const roll=random(run);
+  const gapTicks=roll < .18+.34*progress
+    ? 76+Math.floor(random(run)*22)    // tight pair: 76–97 ticks
+    : roll < .82+.10*progress
+      ? 105+Math.floor(random(run)*34) // medium: 105–138 ticks
+      : 155+Math.floor(random(run)*48); // breather: 155–202 ticks
+  run.next += speedAtTick(run.tick)*gapTicks;
 }
 
 export function step(run, jump = false) {
