@@ -31,8 +31,8 @@ const HIGH_ARC_CHANCE = .25;
 // The lowest bottle in a high arc sits above the reach of a single jump.
 const HIGH_ARC_MIN_HEIGHT = 152;
 const BASE_SPEED = 4.05;
-const SPEED_GAIN_PER_MINUTE = .775;
-const MAX_SPEED_MULTIPLIER = 2.6875;
+const SPEED_GAIN_PER_MINUTE = 5/3;
+const MAX_SPEED_MULTIPLIER = 6;
 
 export function speedAtTick(tick) {
   const minutes = tick / (RATE*60);
@@ -60,7 +60,7 @@ function spawn(run) {
   for (const [offset,lift] of bottleArc) {
     run.objects.push({x:x+offset, y:lift+arcLift, bottle:true});
   }
-  run.objects.push({x, kind});
+  // High bottle arcs guard a larger obstacle: a double jump is required.\n  run.objects.push({x, kind, tall:highArc});
   run.next += speedAtTick(run.tick)*(91+Math.floor(random(run)*34));
 }
 
@@ -88,7 +88,9 @@ export function step(run, jump = false) {
       continue;
     }
     const {width,height} = obstacles[item.kind];
-    if(Math.abs(dx)<15+width*.35 && jumpHeight+5<height*.82) {
+    const hitWidth=item.tall ? Math.max(width*1.35,68) : width;
+    const hitHeight=item.tall ? Math.max(height*1.8,112) : height;
+    if(Math.abs(dx)<15+hitWidth*.35 && jumpHeight+5<hitHeight*.82) {
       run.over=true;
       break;
     }
