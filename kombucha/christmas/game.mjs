@@ -26,7 +26,7 @@ const puff=img('effects/snow-puff.png');
 const snowflake=img('effects/snowflake.png');
 const obstacleArt=obstacles.map(({file})=>img('obstacles/'+file));
 const essentialArt=Promise.all([...panoramas,atlas,terrain,bottle,...obstacleArt].map(image=>image.decode())).then(()=>true,()=>false);
-const sceneTicks=12*RATE;
+const sceneTicks=8*RATE;
 const easterEggs=['window-boy.svg','tv-address.svg','salad.svg','green-santa.svg'];
 const eggArt=easterEggs.map(name=>img('backgrounds/easter/'+name));
 const transitionTicks=2*RATE;
@@ -190,10 +190,10 @@ function draw() {
   // Reliable baseline: paint the original scenery first.
   // Optional complete WebP artwork may replace a scene only after decoding.
   const sceneImage=index=>{
-    const family=index%3;
+    const family=Math.floor(index/4)%3;
     // Cycle through four scenes per setting (one original + three sparse variants).
     // Do not use incomplete/failed image resources in Canvas.
-    const variantIndex=Math.floor(index/3)%sceneryCatalog[family].length;
+    const variantIndex=index%sceneryCatalog[family].length;
     const candidate=sceneryCatalog[family][variantIndex];
     return candidate?.complete && candidate.naturalWidth>0 ? candidate : panoramas[family];
   };
