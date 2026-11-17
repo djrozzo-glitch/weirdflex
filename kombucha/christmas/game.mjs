@@ -27,6 +27,7 @@ const sceneOrder=[
 const atlas=img('kombucha-atlas.png');
 const terrain=img('terrain/snow.webp');
 const bottle=img('assets/kombucha-bottle.webp');
+const spark=img('effects/pickup-spark.png');
 const puff=img('effects/snow-puff.png');
 const snowflake=img('effects/snowflake.png');
 const obstacleArt=obstacles.map(({file})=>img('obstacles/'+file));
@@ -37,6 +38,25 @@ const eggArt=easterEggs.map(name=>img('backgrounds/easter/'+name));
 const transitionTicks=2*RATE;
 const gallopFrames=[4,2,1,3];
 const audio=Object.fromEntries(['jump','double','bone','hit'].map(name=>[name,new Audio(new URL('audio/'+name+'.wav',root))]));
+ // Decode the frequent bottle pickup once; never invoke HTMLAudioElement.play() per bottle.
+const PickupAudioContext=window.AudioContext||window.webkitAudioContext;
+let pickupContext=null, pickupBuffer=null;
+if(PickupAudioContext) {
+  try {
+    pickupContext=new PickupAudioContext();
+    fetch(new URL('audio/bone.wav',root))
+      .then(response=>{if(!response.ok) throw Error('Pickup audio unavailable');return response.arrayBuffer();})
+      .then(bytes=>pickupContext.decodeAudioData(bytes))
+      .then(buffer=>{pickupBuffer=buffer;})
+      .catch(()=>{pickupBuffer=null;});
+  } catch { pickupContext=null; }
+}
+function unlockPickupAudio() {
+  if(pickupContext?.state==='suspended') pickupContext.resume().catch(()=>{});
+}
+document.addEventListener('pointerdown',unlockPickupAudio,{passive:true});
+document.addEventListener('keydown',unlockPickupAudio);
+
 const music=new Audio(new URL('audio/caribou_theme.mp3',root));
 music.preload='metadata';
 music.loop=true;
@@ -63,6 +83,17 @@ function showAudioSetting(button,enabled) {
 }
 function fx(name) {
   if(!effectsEnabled) return;
+  if(name==='bone') {
+    // Fire-and-forget Web Audio buffer: no media-element seek or decode on the game frame.
+    if(!pickupContext||!pickupBuffer||pickupContext.state!=='running') return;
+    const source=pickupContext.createBufferSource();
+    const gain=pickupContext.createGain();
+    source.buffer=pickupBuffer;
+    gain.gain.value=.235;
+    source.connect(gain).connect(pickupContext.destination);
+    source.start();
+    return;
+  }
   const sound=audio[name];
   sound.currentTime=0;
   sound.volume=.235;
@@ -251,6 +282,11 @@ function draw() {
     ctx.save(); ctx.translate(cx,cy); ctx.rotate(spin);
     ctx.drawImage(atlas,(frame%4)*320,Math.floor(frame/4)*320,320,320,-size/2,-size/2,size,size);
     ctx.restore();
+  }
+  if(run.tick-run.picked<15&&spark.naturalWidth) {
+    ctx.globalAlpha=Math.max(0,1-(run.tick-run.picked)/15);
+    ctx.drawImage(spark,heroX+8*scale,ground+(run.y-70)*scale,54*scale,54*scale);
+    ctx.globalAlpha=1;
   }
   if(run.tick-run.landed<12&&puff.naturalWidth) {
     ctx.globalAlpha=.7*(1-(run.tick-run.landed)/12);
