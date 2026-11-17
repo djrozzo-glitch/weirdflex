@@ -215,7 +215,8 @@ function draw() {
       ctx.drawImage(bottle,x-w/2,y-h/2,w,h);
     } else {
       const {crop,width,height}=obstacles[item.kind];
-      const w=width*scale, h=height*scale;
+      const w=(item.tall ? Math.max(width*1.35,68) : width)*scale;
+      const h=(item.tall ? Math.max(height*1.8,112) : height)*scale;
       ctx.drawImage(obstacleArt[item.kind],...crop,x-w/2,ground-h,w,h);
     }
   }
