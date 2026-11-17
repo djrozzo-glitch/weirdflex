@@ -19,6 +19,8 @@ const snowflake=img('effects/snowflake.png');
 const obstacleArt=obstacles.map(({file})=>img('obstacles/'+file));
 const essentialArt=Promise.all([...panoramas,atlas,terrain,bottle,...obstacleArt].map(image=>image.decode())).then(()=>true,()=>false);
 const sceneTicks=15*RATE;
+const easterEggs=['🏠😱','📺🎄','🥗🐟','🎅💚','🛸☃️','🪩🐧'];
+const eggPeriod=25*RATE, eggDuration=3*RATE;
 const transitionTicks=2*RATE;
 const gallopFrames=[4,2,1,3];
 const audio=Object.fromEntries(['jump','double','bone','hit'].map(name=>[name,new Audio(new URL('audio/'+name+'.wav',root))]));
@@ -181,6 +183,16 @@ function draw() {
     else ctx.fillRect(x,y,flake.r,flake.r);
   }
   ctx.globalAlpha=1;
+  const eggCycle=Math.floor(run.tick/eggPeriod), eggOffset=run.tick%eggPeriod;
+  if(eggCycle>0&&eggOffset<eggDuration) {
+    const label=easterEggs[(eggCycle*7+Math.floor(run.seed%13))%easterEggs.length];
+    const fade=Math.min(1,eggOffset/22,(eggDuration-eggOffset)/22);
+    ctx.save(); ctx.globalAlpha=Math.max(0,fade)*.9;
+    ctx.font=Math.round(Math.max(24,Math.min(48,width*.09)))+'px system-ui';
+    ctx.textAlign='center'; ctx.shadowColor='#f9d992'; ctx.shadowBlur=15;
+    ctx.fillText(label,width*.76,Math.min(ground-100,height*.43));
+    ctx.restore();
+  }
   const heroX=Math.min(250,width*.24);
   for(const item of run.objects) {
     const x=heroX+(item.x-run.distance)*scale;
@@ -204,8 +216,13 @@ function draw() {
   else if(run.jumps) frame=run.vy<-5?5:6;
   else if(run.tick-run.landed<6) frame=8;
   else if(run.tick-run.picked<6) frame=10;
-  if(atlas.naturalWidth) ctx.drawImage(atlas,(frame%4)*320,Math.floor(frame/4)*320,320,320,
-    heroX-size/2,ground+run.y*scale-size*258/320,size,size);
+  if(atlas.naturalWidth) {
+    const spin=run.jumps===2 ? Math.max(0,run.tick-(run.flipStart??run.tick))/25*Math.PI*2 : 0;
+    const cx=heroX, cy=ground+run.y*scale-size*258/320+size/2;
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(spin);
+    ctx.drawImage(atlas,(frame%4)*320,Math.floor(frame/4)*320,320,320,-size/2,-size/2,size,size);
+    ctx.restore();
+  }
   if(run.tick-run.picked<15&&spark.naturalWidth) {
     ctx.globalAlpha=1-(run.tick-run.picked)/15;
     ctx.drawImage(spark,heroX+8*scale,ground+(run.y-70)*scale,54*scale,54*scale);
@@ -228,6 +245,7 @@ function animate(now) {
         inputs.push(run.tick);
         if(!matchMedia('(pointer:coarse)').matches) fx(run.jumps?'double':'jump');
       }
+      if(queued&&run.jumps===1) run.flipStart=run.tick;
       step(run,queued);
       queued=false;
       lag-=1000/RATE;
