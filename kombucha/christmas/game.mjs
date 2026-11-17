@@ -220,7 +220,8 @@ function draw() {
     }
   }
   const size=HERO*1.52*scale;
-  let frame=gallopFrames[Math.floor(run.distance/20)%gallopFrames.length];
+  // Fixed 10 FPS gallop: game speed changes travel, not leg animation cadence.
+  let frame=gallopFrames[Math.floor(run.tick/(RATE/10))%gallopFrames.length];
   if(run.over) frame=9;
   else if(run.tick<5) frame=0;
   else if(run.jumps===2) frame=7;
