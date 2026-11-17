@@ -10,7 +10,8 @@ const img=path=>{
   return image;
 };
 const panoramas=['woods','village','aurora'].map(name=>img('backgrounds/'+name+'.webp'));
-const easterPanoramas=['woods','village','aurora'].map(name=>img('backgrounds/easter/'+name+'_easter.svg'));
+// The SVG composites relied on external images, blocked in canvas on mobile.
+// Always draw the verified WebP panorama first.
 const atlas=img('kombucha-atlas.png');
 const terrain=img('terrain/snow.webp');
 const bottle=img('assets/kombucha-bottle.webp');
@@ -173,9 +174,20 @@ function draw() {
     const first=-((travel%stripWidth+stripWidth)%stripWidth);
     ctx.globalAlpha=alpha;
     for(let x=first-stripWidth,i=Math.floor(travel/stripWidth)-1;x<width;x+=stripWidth,i++) {
-      const variant=easterPanoramas[scene%3];
-      const chosen=(scene%2===1 && variant.naturalWidth)?variant:image;
-      ctx.drawImage(chosen,x,0,stripWidth+.5,targetHeight);
+      ctx.drawImage(image,x,0,stripWidth+.5,targetHeight);
+      if(scene%2===1 && i>=0 && i%3===2) {
+        const layouts=[
+          [[3,.22,.47,.12],[2,.66,.61,.14]],
+          [[0,.48,.49,.12],[1,.74,.52,.12],[2,.86,.65,.11]],
+          [[3,.31,.47,.12],[1,.70,.55,.12]]
+        ];
+        for(const [index,rx,ry,rw] of layouts[scene%3]) {
+          const art=eggArt[index];
+          if(!art?.naturalWidth) continue;
+          const w=stripWidth*rw,h=w*art.naturalHeight/art.naturalWidth;
+          ctx.drawImage(art,x+stripWidth*rx-w/2,targetHeight*ry-h/2,w,h);
+        }
+      }
 
     }
   }
