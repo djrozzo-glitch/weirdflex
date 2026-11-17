@@ -174,21 +174,11 @@ function draw() {
     const first=-((travel%stripWidth+stripWidth)%stripWidth);
     ctx.globalAlpha=alpha;
     for(let x=first-stripWidth,i=Math.floor(travel/stripWidth)-1;x<width;x+=stripWidth,i++) {
-      ctx.drawImage(image,x,0,stripWidth+.5,targetHeight);
-      if(scene%2===1 && i>=0 && i%3===2) {
-        const layouts=[
-          [[3,.22,.47,.12],[2,.66,.61,.14]],
-          [[0,.48,.49,.12],[1,.74,.52,.12],[2,.86,.65,.11]],
-          [[3,.31,.47,.12],[1,.70,.55,.12]]
-        ];
-        for(const [index,rx,ry,rw] of layouts[scene%3]) {
-          const art=eggArt[index];
-          if(!art?.naturalWidth) continue;
-          const w=stripWidth*rw,h=w*art.naturalHeight/art.naturalWidth;
-          ctx.drawImage(art,x+stripWidth*rx-w/2,targetHeight*ry-h/2,w,h);
-        }
-      }
-
+      // Never render detached vector stickers. Use a fully painted panorama,
+      // and fall back to the original if the new image is not yet deployed.
+      const variant=easterPanoramas[scene%3];
+      const useVariant=scene%2===1 && variant.complete && variant.naturalWidth>0;
+      ctx.drawImage(useVariant?variant:image,x,0,stripWidth+.5,targetHeight);
     }
   }
   scenery(zone,1);
