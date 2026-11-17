@@ -164,25 +164,16 @@ function draw() {
   const travel=run.distance*scale*.46;
   ctx.fillStyle='#132d48';
   ctx.fillRect(0,0,width,height);
-  // Decorative art is positioned inside each panorama tile, and scrolls
-  // with that tile. It never fades or moves independently of the background.
-  function scenery(scene,alpha) {
-    const image=panoramas[scene%3];
-    if(!image.naturalWidth) return;
-    const targetHeight=ground+4;
-    const stripWidth=Math.max(width,image.naturalWidth*targetHeight/image.naturalHeight);
-    const first=-((travel%stripWidth+stripWidth)%stripWidth);
-    ctx.globalAlpha=alpha;
-    for(let x=first-stripWidth,i=Math.floor(travel/stripWidth)-1;x<width;x+=stripWidth,i++) {
-      // Never render detached vector stickers. Use a fully painted panorama,
-      // and fall back to the original if the new image is not yet deployed.
-      const variant=easterPanoramas[scene%3];
-      const useVariant=scene%2===1 && variant.complete && variant.naturalWidth>0;
-      ctx.drawImage(useVariant?variant:image,x,0,stripWidth+.5,targetHeight);
-    }
-  }
-  scenery(zone,1);
-  scenery(zone+1,blend*blend*(3-2*blend));
+  // Reliable baseline: paint the original scenery first.
+  // Optional complete WebP artwork may replace a scene only after decoding.
+  const sceneImage=index=>{
+    const base=panoramas[index%3];
+    const variant=easterPanoramas[index%3];
+    return index%2===1 && variant?.naturalWidth>0 ? variant : base;
+  };
+  landscape(sceneImage(zone),travel);
+  ctx.globalAlpha=blend*blend*(3-2*blend);
+  landscape(sceneImage(zone+1),travel);
   ctx.globalAlpha=1;
   ctx.fillStyle='#b1cfe6';
   ctx.fillRect(0,ground+2,width,height-ground);
