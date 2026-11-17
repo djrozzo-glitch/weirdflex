@@ -31,8 +31,8 @@ const HIGH_ARC_CHANCE = .25;
 // The lowest bottle in a high arc sits above the reach of a single jump.
 const HIGH_ARC_MIN_HEIGHT = 152;
 const BASE_SPEED = 4.05;
-const SPEED_GAIN_PER_MINUTE = .2;
-const MAX_SPEED_MULTIPLIER = 1.8;
+const SPEED_GAIN_PER_MINUTE = .62;
+const MAX_SPEED_MULTIPLIER = 2.35;
 
 export function speedAtTick(tick) {
   const minutes = tick / (RATE*60);
