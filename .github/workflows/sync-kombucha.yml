@@ -45,7 +45,7 @@ jobs:
             --exclude='.git/' \
             --exclude='.github/' \
             --exclude='.DS_Store' \
-            --exclude='/.data/'
+            --exclude='/.data/' \
             --exclude='/backgrounds/woods.webp' \
             --exclude='/backgrounds/village.webp' \
             --exclude='/backgrounds/aurora.webp' \
