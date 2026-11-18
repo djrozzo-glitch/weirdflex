@@ -33,6 +33,7 @@ const snowflake=img('effects/snowflake.png');
 const obstacleArt=obstacles.map(({file})=>img('obstacles/'+file));
 const essentialArt=Promise.all([...panoramas,atlas,terrain,bottle,...obstacleArt].map(image=>image.decode())).then(()=>true,()=>false);
 const sceneTicks=8*RATE;
+// Decorative background surprises, independent from the verified run physics.
 const easterEggs=['window-boy.svg','tv-address.svg','salad.svg','green-santa.svg'];
 const eggArt=easterEggs.map(name=>img('backgrounds/easter/'+name));
 const transitionTicks=2*RATE;
@@ -234,6 +235,7 @@ function draw() {
     else ctx.fillRect(x,y,flake.r,flake.r);
   }
   ctx.globalAlpha=1;
+  // One short background cameo every 20–30 seconds.
   const heroX=Math.min(250,width*.24);
   for(const item of run.objects) {
     const x=heroX+(item.x-run.distance)*scale;
@@ -277,9 +279,12 @@ function draw() {
   else if(run.jumps) frame=run.vy<-5?5:6;
   else if(run.tick-run.landed<6) frame=8;
   if(atlas.naturalWidth) {
-    const spin=run.jumps===2 ? Math.max(0,run.tick-(run.flipStart??run.tick))/25*Math.PI*2 : 0;
+    // A full playful somersault during the second jump, without altering collision physics.
+    const spin=run.jumps===2 ? (Math.max(0,run.tick-(run.flipStart??run.tick))/25)*Math.PI*2 : 0;
     const cx=heroX, cy=ground+run.y*scale-size*258/320+size/2;
-    ctx.save(); ctx.translate(cx,cy); ctx.rotate(spin);
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(spin);
     ctx.drawImage(atlas,(frame%4)*320,Math.floor(frame/4)*320,320,320,-size/2,-size/2,size,size);
     ctx.restore();
   }

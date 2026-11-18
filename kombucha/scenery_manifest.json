@@ -1,0 +1,23 @@
+{
+  "woods": [
+    "backgrounds/woods.webp",
+    "backgrounds/easter/woods_easter.webp",
+    "backgrounds/variants/C_forest_3_santa_courier.webp",
+    "backgrounds/variants/C_forest_4_green_santa.webp",
+    "backgrounds/variants/C_forest_5_reindeer_sweater.webp"
+  ],
+  "village": [
+    "backgrounds/village.webp",
+    "backgrounds/easter/village_easter.webp",
+    "backgrounds/variants/B_village_3_suitcase.webp",
+    "backgrounds/variants/B_village_4_mailbox.webp",
+    "backgrounds/variants/B_village_5_scarf_raven.webp"
+  ],
+  "aurora": [
+    "backgrounds/aurora.webp",
+    "backgrounds/easter/aurora_easter.webp",
+    "backgrounds/variants/A_lake_3_red_balloon.webp",
+    "backgrounds/variants/A_lake_4_snow_boat.webp",
+    "backgrounds/variants/A_lake_5_smoke_heart.webp"
+  ]
+}
