@@ -14,7 +14,7 @@ const panoramas=['woods','village','aurora'].map(name=>img('backgrounds/'+name+'
 // Village opens with three consecutive versions of the same winter cottage.
 const sceneryCatalog=[
   ['backgrounds/woods.webp','backgrounds/variants/C_forest_3_santa_courier.webp','backgrounds/variants/C_forest_4_green_santa.webp','backgrounds/variants/C_forest_5_reindeer_sweater.webp'],
-  ['backgrounds/variants/B_village_0_cottage.webp','backgrounds/variants/B_village_1_putin_window.webp','backgrounds/variants/B_village_2_home_alone_window.webp','backgrounds/variants/B_village_3_suitcase.webp','backgrounds/variants/B_village_4_mailbox.webp','backgrounds/variants/B_village_5_scarf_raven.webp'],
+  ['backgrounds/variants/B_village_0_cottage.webp','backgrounds/variants/B_village_1_grandma_window.webp','backgrounds/variants/B_village_2_home_alone_window.webp','backgrounds/variants/B_village_3_suitcase.webp','backgrounds/variants/B_village_4_mailbox.webp','backgrounds/variants/B_village_5_scarf_raven.webp'],
   ['backgrounds/aurora.webp','backgrounds/variants/A_lake_3_red_balloon.webp','backgrounds/variants/A_lake_4_snow_boat.webp','backgrounds/variants/A_lake_5_smoke_heart.webp']
 ].map(paths=>paths.map(img));
 const sceneOrder=[
