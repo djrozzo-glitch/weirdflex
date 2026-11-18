@@ -33,9 +33,9 @@ jobs:
           test -s "$RUNNER_TEMP/kombucha-source/kombucha-atlas.png"
           test -s "$RUNNER_TEMP/kombucha-source/assets/kombucha-logo.png"
           test -s "$RUNNER_TEMP/kombucha-source/christmas/game.mjs"
-          test -s "$RUNNER_TEMP/kombucha-source/backgrounds/woods.webp"
-          test -s "$RUNNER_TEMP/kombucha-source/backgrounds/village.webp"
-          test -s "$RUNNER_TEMP/kombucha-source/backgrounds/aurora.webp"
+          test -s "$RUNNER_TEMP/kombucha-source/backgrounds/variants/C_forest_3_santa_courier.webp"
+          test -s "$RUNNER_TEMP/kombucha-source/backgrounds/variants/B_village_0_cottage.webp"
+          test -s "$RUNNER_TEMP/kombucha-source/backgrounds/variants/A_lake_3_red_balloon.webp"
           git -C "$RUNNER_TEMP/kombucha-source" rev-parse HEAD > "$RUNNER_TEMP/kombucha-sha"
       - name: Sync only /kombucha/ directory
         run: |
@@ -45,7 +45,10 @@ jobs:
             --exclude='.git/' \
             --exclude='.github/' \
             --exclude='.DS_Store' \
-            --exclude='/.data/' \
+            --exclude='/.data/'
+            --exclude='/backgrounds/woods.webp' \
+            --exclude='/backgrounds/village.webp' \
+            --exclude='/backgrounds/aurora.webp' \
             --exclude='/server/' \
             "$RUNNER_TEMP/kombucha-source/" kombucha/
           cp "$RUNNER_TEMP/kombucha-sha" kombucha/.source-commit
