@@ -197,10 +197,26 @@ function landscape(image,offset) {
   const drawHeight=targetHeight;
   const stripWidth=image.naturalWidth*drawHeight/image.naturalHeight;
   if(!Number.isFinite(stripWidth)||stripWidth<=0) return;
-  const y=0;
-  const x0=-((offset%stripWidth+stripWidth)%stripWidth);
-  for(let x=x0-stripWidth;x<width;x+=stripWidth)
-    ctx.drawImage(image,x,y,stripWidth+.5,drawHeight);
+  // Feather the edges of each repeating panorama instead of joining
+  // mismatched left/right edges with a visible hard cut.
+  const overlap=Math.min(stripWidth*.12,Math.max(36,width*.12));
+  const advance=stripWidth-overlap;
+  const x0=-((offset%advance+advance)%advance);
+  const slices=12;
+  for(let x=x0-advance;x<width;x+=advance) {
+    const sourceOverlap=overlap*image.naturalWidth/stripWidth;
+    ctx.drawImage(image,sourceOverlap,0,image.naturalWidth-sourceOverlap,image.naturalHeight,
+      x+overlap,0,stripWidth-overlap,drawHeight);
+    const sceneAlpha=ctx.globalAlpha;
+    for(let i=0;i<slices;i++) {
+      const left=overlap*i/slices, right=overlap*(i+1)/slices;
+      ctx.globalAlpha=sceneAlpha*(i+.5)/slices;
+      ctx.drawImage(image,left*image.naturalWidth/stripWidth,0,
+        (right-left)*image.naturalWidth/stripWidth,image.naturalHeight,
+        x+left,0,right-left+.5,drawHeight);
+    }
+    ctx.globalAlpha=sceneAlpha;
+  }
 }
 
 function draw() {
