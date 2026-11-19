@@ -241,13 +241,14 @@
 const dog=document.querySelector('.shiba-walker'),sprite=dog&&dog.querySelector('.shiba-png');if(!sprite)return;
 const root='/assets/shiba/',frames=['idle','walk_1','walk_2','sniff','bite','leg_lift','jump','sit'];const walkFrames=Array.from({length:8},(_,i)=>'walk_'+String(i+1).padStart(2,'0'));const cache={};
 let walk=0,frameTimer,walkReady=false,lifeTick=0,lastLifeState='';const lifeFrames={look:Array.from({length:6},(_,i)=>'look_'+String(i+1).padStart(2,'0')),sit:Array.from({length:4},(_,i)=>'sit_'+String(i+1).padStart(2,'0')),scratch:Array.from({length:8},(_,i)=>'scratch_'+String(i+1).padStart(2,'0'))};const lifeReady={look:false,sit:false,scratch:false};
+function pingPong(t,length){if(length<=1)return 0;const period=2*(length-1),p=t%period;return p<length?p:period-p}
 function setFrame(name){if(cache[name]&&sprite.src!==cache[name].src)sprite.src=cache[name].src}
 function begin(){if(frameTimer)clearInterval(frameTimer);dog.classList.add('has-png');setFrame(walkReady?walkFrames[0]:'walk_1');frameTimer=setInterval(()=>{
  const lifeState=dog.classList.contains('is-scratching')?'scratch':dog.classList.contains('is-sitting')?'sit':dog.classList.contains('is-looking')?'look':'walk';
  if(lifeState!==lastLifeState){lifeTick=0;lastLifeState=lifeState;}
- if(dog.classList.contains('is-scratching')){const seq=lifeFrames.scratch;setFrame(lifeReady.scratch?seq[(p=>p<seq.length?p:2*(seq.length-1)-p)(Math.floor(lifeTick++/3)%(2*(seq.length-1)))]: 'sit')}
- else if(dog.classList.contains('is-sitting')){const seq=lifeFrames.sit;setFrame(lifeReady.sit?seq[Math.min(seq.length-1,Math.floor(lifeTick++/5))]:'sit')}
- else if(dog.classList.contains('is-looking')){const seq=lifeFrames.look;setFrame(lifeReady.look?seq[Math.min(seq.length-1,Math.floor(lifeTick++/4))]:'idle')}
+ if(dog.classList.contains('is-scratching')){const seq=lifeFrames.scratch;setFrame(lifeReady.scratch?seq[pingPong(Math.floor(lifeTick++/2),seq.length)]:'sit')}
+ else if(dog.classList.contains('is-sitting')){const seq=lifeFrames.sit;setFrame(lifeReady.sit?seq[pingPong(Math.floor(lifeTick++/2),seq.length)]:'sit')}
+ else if(dog.classList.contains('is-looking')){const seq=lifeFrames.look;setFrame(lifeReady.look?seq[pingPong(Math.floor(lifeTick++/3),seq.length)]:'idle')}
  else if(dog.classList.contains('is-peeing'))setFrame('leg_lift');
  else if(dog.classList.contains('is-sniffing'))setFrame('sniff');
  else if(dog.classList.contains('is-biting'))setFrame('bite');
