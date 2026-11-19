@@ -43,6 +43,7 @@
 @keyframes shiba-walk-step{0%{transform:translateY(1px) rotate(-1.4deg) scaleX(.985) scaleY(.985)}100%{transform:translateY(-4px) rotate(1.4deg) scaleX(1.015) scaleY(1.015)}}
 @keyframes shiba-shadow-step{0%{transform:scaleX(1);opacity:.7}100%{transform:scaleX(.8);opacity:.4}}
 @media(prefers-reduced-motion:reduce){.shiba-walker.has-png .shiba-png,.shiba-walker.has-png::after{animation:none!important}}
+.shiba-walker.has-png.is-approaching .shiba-png{animation:shiba-walk-step .22s ease-in-out infinite alternate!important}
 </style></head><body><div class="wrap"><header class="top"><a class="logo" href="/" aria-label="WeirdFlex home">weird<span>flex.</span></a><nav aria-label="Main navigation"><a href="#services">Services</a><a href="#work">Games</a><a href="#about">About</a><a href="#contact">Contact &rarr;</a></nav></header><main><div class="hero"><div class="eyebrow">Independent playable studio · Creative technology & music</div><h1>Ideas worth<br><em>playing.</em></h1><div class="hero-bottom"><p class="lead">We make browser games, interactive campaigns and music experiences people actually want to spend time with.</p></div></div>
 <section id="services" class="offerings"><div class="section-head"><h2>What we<br>make.</h2><p>Four ways to turn a good idea into something people can actually play.</p></div>
 <article class="offering" id="brand-games"><div class="offer-index">01 / FOR BRANDS</div><div class="offer-main"><h3>Brand<br>games<span class="period">.</span></h3><p>Mobile-first mini-games built around your brand, product launch or campaign. Designed for replay, sharing and measurable actions.</p><div class="chips"><span>Branded arcade</span><span>Leaderboards</span><span>Prizes &amp; CTAs</span></div><a class="offer-link" href="mailto:djrozzo@gmail.com?subject=Brand%20game%20brief">Discuss a brand game <span>&rarr;</span></a></div><a class="offer-preview" href="/shibarun/" aria-label="Play an example arcade runner"><img src="/shibarun/assets/ozzy-logo.webp" alt="Example mobile arcade runner" loading="lazy"><span>PLAY AN EXAMPLE &nearr;</span></a></article>
@@ -109,11 +110,27 @@
    dog.style.animation='none';
    const dx=x-dogRect.left;
    try{
-     const approach=dog.animate([{transform:'translate(0,0)'},{transform:'translate('+dx+'px,0)'},{transform:'translate('+dx+'px,'+(-rise)+'px)'}],{duration:950,easing:'ease-in-out',fill:'forwards'});
+     // Travel at a consistent walking speed instead of teleporting to the target.
+     // Keep walk frames playing during approach; freeze only for the interaction.
+     dog.classList.add('is-approaching');
+     dog.style.setProperty('--shiba-face',dx<0?'1':'-1');
+     const duration=Math.max(700,Math.abs(dx)/105*1000);
+     const approach=dog.animate([
+       {transform:'translate(0px,0px)'},
+       {transform:'translate('+dx+'px,0px)'}
+     ],{duration,easing:'linear',fill:'forwards'});
      await approach.finished;
-     dog.style.left=x+'px';dog.style.bottom='max(5px,env(safe-area-inset-bottom))';
-     dog.style.transform='translateY('+(-rise)+'px)';
+     dog.style.left=x+'px';
+     dog.style.transform='translate(0px,0px)';
      approach.cancel();
+     // Move up to the visible content only after reaching its horizontal position.
+     if(rise>0){
+       const climb=dog.animate([{transform:'translateY(0px)'},{transform:'translateY('+(-rise)+'px)'}],{duration:Math.max(500,rise/170*1000),easing:'ease-in-out',fill:'forwards'});
+       await climb.finished;
+       dog.style.transform='translateY('+(-rise)+'px)';
+       climb.cancel();
+     }
+     dog.classList.remove('is-approaching');
      const cls=chosen.kind==='sniff'?'is-sniffing':chosen.kind==='bite'?'is-biting':'is-peeing';
      dog.classList.add(cls);
      if(chosen.kind==='bite'){
@@ -130,7 +147,7 @@
      const retreat=dog.animate([{transform:'translateY('+(-rise)+'px)'},{transform:'translateY(0)'}],{duration:450,easing:'ease-in',fill:'forwards'});
      await retreat.finished;retreat.cancel();
    }catch(e){}
-   dog.classList.remove('is-playing','is-sniffing','is-biting','is-peeing');
+   dog.classList.remove('is-playing','is-approaching','is-sniffing','is-biting','is-peeing');
    dog.style.removeProperty('left');dog.style.removeProperty('bottom');dog.style.removeProperty('transform');dog.style.removeProperty('animation');
    busy=false;
  }
@@ -147,7 +164,7 @@ function begin(){dog.classList.add('has-png');setFrame('walk_1');frameTimer=setI
  if(dog.classList.contains('is-peeing'))setFrame('leg_lift');
  else if(dog.classList.contains('is-sniffing'))setFrame('sniff');
  else if(dog.classList.contains('is-biting'))setFrame('bite');
- else if(dog.classList.contains('is-playing'))setFrame('idle');
+ else if(dog.classList.contains('is-playing')&&!dog.classList.contains('is-approaching'))setFrame('idle');
  else {walk^=1;setFrame(walk?'walk_1':'walk_2')}
 },140)}
 let done=0,failed=false;frames.forEach(name=>{const im=new Image();im.onload=()=>{cache[name]=im;if(++done===frames.length&&!failed)begin()};im.onerror=()=>{failed=true};im.src=root+name+'.png'}); 
