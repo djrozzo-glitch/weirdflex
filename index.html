@@ -161,7 +161,8 @@
      }else if(chosen.kind==='pee'){
        const body=dog.getBoundingClientRect();
        // Puddle belongs to the raised rear leg, at the dog's actual screen position.
-       const hindX=facing===1?body.right-body.width*.22:body.left+body.width*.22;
+       // PNG artwork faces left: unflipped rear is on the right, mirrored rear on the left.
+       const hindX=facing===1?body.left+body.width*.22:body.right-body.width*.22;
        pop(hindX,body.bottom-body.height*.18,'puddle');
      }else{
        pop(x+dogW*.5,innerHeight-rise-dogH-15,'♡');
