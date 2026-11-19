@@ -24,7 +24,8 @@
 .shiba-walker.is-sniffing svg{animation:shiba-sniff .35s ease-in-out 4 alternate}.shiba-walker.is-peeing .shiba-leg-b{transform:rotate(-48deg)}.shiba-walker.is-biting svg{animation:shiba-nip .18s ease-in-out 6 alternate}
 @keyframes shiba-sniff{to{transform:translateY(5px) rotate(6deg)}}@keyframes shiba-nip{to{transform:translateY(-7px) rotate(-7deg)}}
 .shiba-reaction{position:fixed;z-index:39;pointer-events:none;user-select:none;font-size:13px;font-weight:900;letter-spacing:.03em;color:var(--accent);animation:shiba-reaction-out 1.3s ease-out forwards}
-.shiba-reaction.puddle{width:24px;height:7px;background:var(--accent);border-radius:50%;opacity:.7;filter:blur(1px)}
+.shiba-reaction.puddle{width:24px;height:7px;background:var(--accent);border-radius:50%;opacity:.7;filter:blur(1px);transform-origin:center;animation:shiba-puddle-stay 2.7s ease-out forwards}
+@keyframes shiba-puddle-stay{0%{opacity:0;transform:scale(.45)}15%{opacity:.75;transform:scale(1)}70%{opacity:.75;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
 @keyframes shiba-reaction-out{0%{opacity:0;transform:scale(.5) translateY(4px)}25%{opacity:1;transform:scale(1)}75%{opacity:.8}100%{opacity:0;transform:scale(1.3) translateY(-12px)}}
 .shiba-nibbled{animation:shiba-text-nibble .15s ease-in-out 5 alternate}
 @keyframes shiba-text-nibble{to{transform:translateX(3px) rotate(-1deg)}}@media(prefers-reduced-motion:reduce){.shiba-reaction,.shiba-nibbled{animation:none}}
@@ -107,7 +108,7 @@
    if(type!=='puddle')el.textContent=type;
    el.style.left=Math.max(4,Math.min(innerWidth-35,x))+'px';
    el.style.top=Math.max(15,Math.min(innerHeight-22,y))+'px';
-   document.body.append(el);setTimeout(()=>el.remove(),1400);
+   document.body.append(el);setTimeout(()=>el.remove(),type==='puddle'?2800:1400);
  }
  async function play(){
    if(busy||document.hidden||Date.now()-last<14000)return;
@@ -167,7 +168,7 @@
      }else{
        pop(x+dogW*.5,innerHeight-rise-dogH-15,'♡');
      }
-     await wait(chosen.kind==='sniff'?1400:1100);
+     await wait(chosen.kind==='pee'?2100:chosen.kind==='sniff'?1400:1100);
      target.classList.remove('shiba-nibbled');
      dog.classList.remove(cls);
      const retreat=dog.animate([{transform:'translateY('+(-rise)+'px) scaleX('+facing+')'},{transform:'translateY(0) scaleX('+facing+')'}],{duration:450,easing:'ease-in',fill:'forwards'});
