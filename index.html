@@ -32,9 +32,9 @@
 
 /* Shiba quiet moments: static gaze, seated breathing and a gentle ear-scratch. */
 .shiba-walker.is-resting .shiba-png{animation:none}
-.shiba-walker.is-looking .shiba-png{animation:shiba-look 2.4s ease-in-out both}
-.shiba-walker.is-sitting .shiba-png{animation:shiba-sit-breathe 1.6s ease-in-out infinite alternate}
-.shiba-walker.is-scratching .shiba-png{animation:shiba-ear-scratch .26s ease-in-out infinite alternate;transform-origin:50% 42%}
+.shiba-walker.is-looking .shiba-png{animation:none}
+.shiba-walker.is-sitting .shiba-png{animation:none}
+.shiba-walker.is-scratching .shiba-png{animation:none}
 @keyframes shiba-look{0%,100%{transform:scale(1)}40%,75%{transform:scale(1.035) translateY(-1px)}}
 @keyframes shiba-sit-breathe{to{transform:scale(1.015) translateY(-1px)}}
 @keyframes shiba-ear-scratch{to{transform:rotate(3deg) translateY(-2px)}}
@@ -240,12 +240,13 @@
 </script><script>(function(){
 const dog=document.querySelector('.shiba-walker'),sprite=dog&&dog.querySelector('.shiba-png');if(!sprite)return;
 const root='/assets/shiba/',frames=['idle','walk_1','walk_2','sniff','bite','leg_lift','jump','sit'];const walkFrames=Array.from({length:8},(_,i)=>'walk_'+String(i+1).padStart(2,'0'));const cache={};
-let walk=0,frameTimer,walkReady=false,lifeTick=0;const lifeFrames={look:Array.from({length:6},(_,i)=>'look_'+String(i+1).padStart(2,'0')),sit:Array.from({length:4},(_,i)=>'sit_'+String(i+1).padStart(2,'0')),scratch:Array.from({length:8},(_,i)=>'scratch_'+String(i+1).padStart(2,'0'))};const lifeReady={look:false,sit:false,scratch:false};
-function setFrame(name){if(cache[name])sprite.src=cache[name].src}
+let walk=0,frameTimer,walkReady=false,lifeTick=0,lastLifeState='';const lifeFrames={look:Array.from({length:6},(_,i)=>'look_'+String(i+1).padStart(2,'0')),sit:Array.from({length:4},(_,i)=>'sit_'+String(i+1).padStart(2,'0')),scratch:Array.from({length:8},(_,i)=>'scratch_'+String(i+1).padStart(2,'0'))};const lifeReady={look:false,sit:false,scratch:false};
+function setFrame(name){if(cache[name]&&sprite.src!==cache[name].src)sprite.src=cache[name].src}
 function begin(){if(frameTimer)clearInterval(frameTimer);dog.classList.add('has-png');setFrame(walkReady?walkFrames[0]:'walk_1');frameTimer=setInterval(()=>{
- if(!dog.classList.contains('is-resting'))lifeTick=0;
- if(dog.classList.contains('is-scratching')){const seq=lifeFrames.scratch;setFrame(lifeReady.scratch?seq[Math.floor(lifeTick++/3)%seq.length]:'sit')}
- else if(dog.classList.contains('is-sitting')){const seq=lifeFrames.sit;setFrame(lifeReady.sit?seq[Math.floor(lifeTick++/7)%seq.length]:'sit')}
+ const lifeState=dog.classList.contains('is-scratching')?'scratch':dog.classList.contains('is-sitting')?'sit':dog.classList.contains('is-looking')?'look':'walk';
+ if(lifeState!==lastLifeState){lifeTick=0;lastLifeState=lifeState;}
+ if(dog.classList.contains('is-scratching')){const seq=lifeFrames.scratch;setFrame(lifeReady.scratch?seq[Math.floor(lifeTick++/2)%seq.length]:'sit')}
+ else if(dog.classList.contains('is-sitting')){const seq=lifeFrames.sit;setFrame(lifeReady.sit?seq[Math.min(seq.length-1,Math.floor(lifeTick++/4))]:'sit')}
  else if(dog.classList.contains('is-looking')){const seq=lifeFrames.look;setFrame(lifeReady.look?seq[Math.min(seq.length-1,Math.floor(lifeTick++/4))]:'idle')}
  else if(dog.classList.contains('is-peeing'))setFrame('leg_lift');
  else if(dog.classList.contains('is-sniffing'))setFrame('sniff');
@@ -254,7 +255,7 @@ function begin(){if(frameTimer)clearInterval(frameTimer);dog.classList.add('has-
  else {walk=(walk+1)%(walkReady?8:2);setFrame(walkReady?walkFrames[walk]:(walk?'walk_1':'walk_2'))}
 },walkReady?105:140)}
 let done=0,failed=false;frames.forEach(name=>{const im=new Image();im.onload=()=>{cache[name]=im;if(++done===frames.length&&!failed)begin()};im.onerror=()=>{failed=true};im.src=root+name+'.png'}); 
-Object.entries(lifeFrames).forEach(([kind,seq])=>Promise.all(seq.map(name=>new Promise(resolve=>{const im=new Image();im.onload=()=>{cache[name]=im;resolve(true)};im.onerror=()=>resolve(false);im.src=root+name+'.png?v=1'}))).then(results=>{lifeReady[kind]=results.every(Boolean)}));
-Promise.all(walkFrames.map(name=>new Promise(resolve=>{const im=new Image();im.onload=()=>{cache[name]=im;resolve(true)};im.onerror=()=>resolve(false);im.src=root+name+'.png?v=2'}))).then(results=>{if(results.every(Boolean)){walkReady=true;if(dog.classList.contains('has-png'))begin()}});
+Object.entries(lifeFrames).forEach(([kind,seq])=>Promise.all(seq.map(name=>new Promise(resolve=>{const im=new Image();im.onload=()=>{cache[name]=im;resolve(true)};im.onerror=()=>resolve(false);im.src=root+name+'.png?v=3'}))).then(results=>{lifeReady[kind]=results.every(Boolean)}));
+Promise.all(walkFrames.map(name=>new Promise(resolve=>{const im=new Image();im.onload=()=>{cache[name]=im;resolve(true)};im.onerror=()=>resolve(false);im.src=root+name+'.png?v=3'}))).then(results=>{if(results.every(Boolean)){walkReady=true;if(dog.classList.contains('has-png'))begin()}});
 document.addEventListener('visibilitychange',()=>{if(frameTimer){clearInterval(frameTimer);frameTimer=null;if(!document.hidden)begin()}});
 })();</script></body></html>
