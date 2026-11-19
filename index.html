@@ -200,27 +200,27 @@
    busy=true;
    if(roam){roam.cancel();roam=null;}
    dog.classList.add('is-playing','is-resting');
-   dog.dataset.lifeTick='0';
    dog.style.left=rect.left+'px';
    dog.style.transform='scaleX('+facing+')';
    dog.style.animation='none';
    try{
-     // Most pauses are a brief look; occasionally the dog sits and scratches.
-     const sit=Math.random()<.42;
-     if(sit){
-       dog.classList.add('is-sitting');
-       await wait(1700);
-       if(Math.random()<.65){
-         dog.classList.add('is-scratching');
-         await wait(1900);
-         dog.classList.remove('is-scratching');
-       }
-       await wait(800);
-       dog.classList.remove('is-sitting');
-     }else{
+     // Let each quiet activity breathe. Sitting is held, scratching is a
+     // separate occasional action, and the dog resumes from this position.
+     const activity=Math.random();
+     if(activity<.38){
        dog.classList.add('is-looking');
-       await wait(2400);
+       await wait(3200+Math.random()*1800);
        dog.classList.remove('is-looking');
+     }else{
+       dog.classList.add('is-sitting');
+       await wait(4200+Math.random()*2600);
+       if(activity>.63){
+         dog.classList.add('is-scratching');
+         await wait(3800+Math.random()*1700);
+         dog.classList.remove('is-scratching');
+         await wait(2200+Math.random()*1800);
+       }
+       dog.classList.remove('is-sitting');
      }
    }finally{
      dog.classList.remove('is-looking','is-sitting','is-scratching','is-resting','is-playing');
@@ -245,8 +245,8 @@ function setFrame(name){if(cache[name]&&sprite.src!==cache[name].src)sprite.src=
 function begin(){if(frameTimer)clearInterval(frameTimer);dog.classList.add('has-png');setFrame(walkReady?walkFrames[0]:'walk_1');frameTimer=setInterval(()=>{
  const lifeState=dog.classList.contains('is-scratching')?'scratch':dog.classList.contains('is-sitting')?'sit':dog.classList.contains('is-looking')?'look':'walk';
  if(lifeState!==lastLifeState){lifeTick=0;lastLifeState=lifeState;}
- if(dog.classList.contains('is-scratching')){const seq=lifeFrames.scratch;setFrame(lifeReady.scratch?seq[Math.floor(lifeTick++/2)%seq.length]:'sit')}
- else if(dog.classList.contains('is-sitting')){const seq=lifeFrames.sit;setFrame(lifeReady.sit?seq[Math.min(seq.length-1,Math.floor(lifeTick++/4))]:'sit')}
+ if(dog.classList.contains('is-scratching')){const seq=lifeFrames.scratch;setFrame(lifeReady.scratch?seq[(p=>p<seq.length?p:2*(seq.length-1)-p)(Math.floor(lifeTick++/3)%(2*(seq.length-1)))]: 'sit')}
+ else if(dog.classList.contains('is-sitting')){const seq=lifeFrames.sit;setFrame(lifeReady.sit?seq[Math.min(seq.length-1,Math.floor(lifeTick++/5))]:'sit')}
  else if(dog.classList.contains('is-looking')){const seq=lifeFrames.look;setFrame(lifeReady.look?seq[Math.min(seq.length-1,Math.floor(lifeTick++/4))]:'idle')}
  else if(dog.classList.contains('is-peeing'))setFrame('leg_lift');
  else if(dog.classList.contains('is-sniffing'))setFrame('sniff');
