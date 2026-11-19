@@ -14,7 +14,7 @@
 .shiba-walker svg{display:block;width:100%;height:100%;overflow:visible;animation:shiba-bob .32s ease-in-out infinite alternate}
 .shiba-leg-a{transform-origin:35px 57px;animation:shiba-step .32s ease-in-out infinite alternate}.shiba-leg-b{transform-origin:61px 57px;animation:shiba-step .32s ease-in-out infinite alternate-reverse}
 .shiba-tail{transform-origin:77px 37px;animation:shiba-wag .38s ease-in-out infinite alternate}
-@keyframes shiba-cross{0%{transform:translateX(calc(100vw + 105px)) scaleX(-1)}48%{transform:translateX(-105px) scaleX(-1)}50%{transform:translateX(-105px) scaleX(1)}98%{transform:translateX(calc(100vw + 105px)) scaleX(1)}100%{transform:translateX(calc(100vw + 105px)) scaleX(-1)}}
+@keyframes shiba-cross{0%{transform:translateX(calc(100vw + 105px)) scaleX(1)}48%{transform:translateX(-105px) scaleX(1)}50%{transform:translateX(-105px) scaleX(-1)}98%{transform:translateX(calc(100vw + 105px)) scaleX(-1)}100%{transform:translateX(calc(100vw + 105px)) scaleX(1)}}
 @keyframes shiba-bob{from{transform:translateY(0)}to{transform:translateY(-3px)}}@keyframes shiba-step{from{transform:rotate(-17deg)}to{transform:rotate(17deg)}}@keyframes shiba-wag{from{transform:rotate(-9deg)}to{transform:rotate(12deg)}}
 @media(max-width:750px){.shiba-walker{width:66px;height:56px;bottom:max(3px,env(safe-area-inset-bottom))}}
 @media(prefers-reduced-motion:reduce){.shiba-walker{animation:none;left:auto;right:10px;transform:none}.shiba-walker svg,.shiba-leg-a,.shiba-leg-b,.shiba-tail{animation:none}}
@@ -113,21 +113,21 @@
      // Travel at a consistent walking speed instead of teleporting to the target.
      // Keep walk frames playing during approach; freeze only for the interaction.
      dog.classList.add('is-approaching');
-     dog.style.setProperty('--shiba-face',dx<0?'1':'-1');
+     const facing=dx<0?1:-1;
      const duration=Math.max(700,Math.abs(dx)/105*1000);
      const approach=dog.animate([
-       {transform:'translate(0px,0px)'},
-       {transform:'translate('+dx+'px,0px)'}
+       {transform:'translate(0px,0px) scaleX('+facing+')'},
+       {transform:'translate('+dx+'px,0px) scaleX('+facing+')'}
      ],{duration,easing:'linear',fill:'forwards'});
      await approach.finished;
      dog.style.left=x+'px';
-     dog.style.transform='translate(0px,0px)';
+     dog.style.transform='scaleX('+facing+')';
      approach.cancel();
      // Move up to the visible content only after reaching its horizontal position.
      if(rise>0){
-       const climb=dog.animate([{transform:'translateY(0px)'},{transform:'translateY('+(-rise)+'px)'}],{duration:Math.max(500,rise/170*1000),easing:'ease-in-out',fill:'forwards'});
+       const climb=dog.animate([{transform:'translateY(0px) scaleX('+facing+')'},{transform:'translateY('+(-rise)+'px) scaleX('+facing+')'}],{duration:Math.max(500,rise/170*1000),easing:'ease-in-out',fill:'forwards'});
        await climb.finished;
-       dog.style.transform='translateY('+(-rise)+'px)';
+       dog.style.transform='translateY('+(-rise)+'px) scaleX('+facing+')';
        climb.cancel();
      }
      dog.classList.remove('is-approaching');
@@ -144,7 +144,7 @@
      await wait(chosen.kind==='sniff'?1400:1100);
      target.classList.remove('shiba-nibbled');
      dog.classList.remove(cls);
-     const retreat=dog.animate([{transform:'translateY('+(-rise)+'px)'},{transform:'translateY(0)'}],{duration:450,easing:'ease-in',fill:'forwards'});
+     const retreat=dog.animate([{transform:'translateY('+(-rise)+'px) scaleX('+facing+')'},{transform:'translateY(0) scaleX('+facing+')'}],{duration:450,easing:'ease-in',fill:'forwards'});
      await retreat.finished;retreat.cancel();
    }catch(e){}
    dog.classList.remove('is-playing','is-approaching','is-sniffing','is-biting','is-peeing');
@@ -157,16 +157,17 @@
 })();
 </script><script>(function(){
 const dog=document.querySelector('.shiba-walker'),sprite=dog&&dog.querySelector('.shiba-png');if(!sprite)return;
-const root='/assets/shiba/',frames=['idle','walk_1','walk_2','sniff','bite','leg_lift','jump','sit'];const cache={};
-let walk=0,frameTimer;
+const root='/assets/shiba/',frames=['idle','walk_1','walk_2','sniff','bite','leg_lift','jump','sit'];const walkFrames=Array.from({length:8},(_,i)=>'walk_'+String(i+1).padStart(2,'0'));const cache={};
+let walk=0,frameTimer,walkReady=false;
 function setFrame(name){if(cache[name])sprite.src=cache[name].src}
-function begin(){dog.classList.add('has-png');setFrame('walk_1');frameTimer=setInterval(()=>{
+function begin(){if(frameTimer)clearInterval(frameTimer);dog.classList.add('has-png');setFrame(walkReady?walkFrames[0]:'walk_1');frameTimer=setInterval(()=>{
  if(dog.classList.contains('is-peeing'))setFrame('leg_lift');
  else if(dog.classList.contains('is-sniffing'))setFrame('sniff');
  else if(dog.classList.contains('is-biting'))setFrame('bite');
  else if(dog.classList.contains('is-playing')&&!dog.classList.contains('is-approaching'))setFrame('idle');
- else {walk^=1;setFrame(walk?'walk_1':'walk_2')}
-},140)}
+ else {walk=(walk+1)%(walkReady?8:2);setFrame(walkReady?walkFrames[walk]:(walk?'walk_1':'walk_2'))}
+},walkReady?105:140)}
 let done=0,failed=false;frames.forEach(name=>{const im=new Image();im.onload=()=>{cache[name]=im;if(++done===frames.length&&!failed)begin()};im.onerror=()=>{failed=true};im.src=root+name+'.png'}); 
+Promise.all(walkFrames.map(name=>new Promise(resolve=>{const im=new Image();im.onload=()=>{cache[name]=im;resolve(true)};im.onerror=()=>resolve(false);im.src=root+name+'.png?v=2'}))).then(results=>{if(results.every(Boolean)){walkReady=true;if(dog.classList.contains('has-png'))begin()}});
 document.addEventListener('visibilitychange',()=>{if(frameTimer){clearInterval(frameTimer);frameTimer=null;if(!document.hidden)begin()}});
 })();</script></body></html>
