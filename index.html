@@ -169,11 +169,7 @@
        target.classList.add('shiba-nibbled');
        pop(x+dogW*.3,innerHeight-rise-dogH-14,'✦');
      }else if(chosen.kind==='pee'){
-       const body=dog.getBoundingClientRect();
-       // Puddle belongs to the raised rear leg, at the dog's actual screen position.
-       // PNG artwork faces left: unflipped rear is on the right, mirrored rear on the left.
-       const hindX=facing===1?body.left+body.width*.22:body.right-body.width*.22;
-       pop(hindX,body.bottom-body.height*.18,'puddle');
+       // Puddle is part of the sprite itself.
      }else{
        pop(x+dogW*.5,innerHeight-rise-dogH-15,'♡');
      }
@@ -212,18 +208,25 @@
        await wait(3200+Math.random()*1800);
        dog.classList.remove('is-looking');
      }else{
+       dog.dataset.sitPhase='enter';
        dog.classList.add('is-sitting');
-       await wait(4200+Math.random()*2600);
+       await wait(850);
+       dog.dataset.sitPhase='hold';
+       await wait(3500+Math.random()*2500);
        if(activity>.63){
          dog.classList.add('is-scratching');
-         await wait(3800+Math.random()*1700);
+         await wait(3600+Math.random()*1500);
          dog.classList.remove('is-scratching');
          await wait(2200+Math.random()*1800);
        }
+       dog.dataset.sitPhase='exit';
+       await wait(850);
        dog.classList.remove('is-sitting');
+       delete dog.dataset.sitPhase;
      }
    }finally{
      dog.classList.remove('is-looking','is-sitting','is-scratching','is-resting','is-playing');
+     delete dog.dataset.sitPhase;
      resumeWalking(rect.left,facing);
      busy=false;
    }
@@ -240,14 +243,15 @@
 </script><script>(function(){
 const dog=document.querySelector('.shiba-walker'),sprite=dog&&dog.querySelector('.shiba-png');if(!sprite)return;
 const root='/assets/shiba/',frames=['idle','walk_1','walk_2','sniff','bite','leg_lift','jump','sit'];const walkFrames=Array.from({length:8},(_,i)=>'walk_'+String(i+1).padStart(2,'0'));const cache={};
-let walk=0,frameTimer,walkReady=false,lifeTick=0,lastLifeState='';const lifeFrames={look:Array.from({length:6},(_,i)=>'look_'+String(i+1).padStart(2,'0')),sit:Array.from({length:4},(_,i)=>'sit_'+String(i+1).padStart(2,'0')),scratch:Array.from({length:8},(_,i)=>'scratch_'+String(i+1).padStart(2,'0'))};const lifeReady={look:false,sit:false,scratch:false};
+let walk=0,frameTimer,walkReady=false,lifeTick=0,lastLifeState='',lastSitPhase='';const lifeFrames={look:Array.from({length:6},(_,i)=>'look_'+String(i+1).padStart(2,'0')),sit:Array.from({length:4},(_,i)=>'sit_'+String(i+1).padStart(2,'0')),scratch:Array.from({length:8},(_,i)=>'scratch_'+String(i+1).padStart(2,'0'))};const lifeReady={look:false,sit:false,scratch:false};
 function pingPong(t,length){if(length<=1)return 0;const period=2*(length-1),p=t%period;return p<length?p:period-p}
 function setFrame(name){if(cache[name]&&sprite.src!==cache[name].src)sprite.src=cache[name].src}
 function begin(){if(frameTimer)clearInterval(frameTimer);dog.classList.add('has-png');setFrame(walkReady?walkFrames[0]:'walk_1');frameTimer=setInterval(()=>{
  const lifeState=dog.classList.contains('is-scratching')?'scratch':dog.classList.contains('is-sitting')?'sit':dog.classList.contains('is-looking')?'look':'walk';
- if(lifeState!==lastLifeState){lifeTick=0;lastLifeState=lifeState;}
+ const sitPhase=dog.dataset.sitPhase||'';
+ if(lifeState!==lastLifeState||sitPhase!==lastSitPhase){lifeTick=0;lastLifeState=lifeState;lastSitPhase=sitPhase;}
  if(dog.classList.contains('is-scratching')){const seq=lifeFrames.scratch;setFrame(lifeReady.scratch?seq[pingPong(Math.floor(lifeTick++/2),seq.length)]:'sit')}
- else if(dog.classList.contains('is-sitting')){const seq=lifeFrames.sit;setFrame(lifeReady.sit?seq[pingPong(Math.floor(lifeTick++/2),seq.length)]:'sit')}
+ else if(dog.classList.contains('is-sitting')){const seq=lifeFrames.sit,phase=dog.dataset.sitPhase||'hold';const idx=phase==='hold'?seq.length-1:phase==='exit'?Math.max(0,seq.length-1-Math.floor(lifeTick++/2)):Math.min(seq.length-1,Math.floor(lifeTick++/2));setFrame(lifeReady.sit?seq[idx]:'sit')}
  else if(dog.classList.contains('is-looking')){const seq=lifeFrames.look;setFrame(lifeReady.look?seq[pingPong(Math.floor(lifeTick++/3),seq.length)]:'idle')}
  else if(dog.classList.contains('is-peeing'))setFrame('leg_lift');
  else if(dog.classList.contains('is-sniffing'))setFrame('sniff');
