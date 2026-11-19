@@ -30,6 +30,15 @@
 .shiba-nibbled{animation:shiba-text-nibble .15s ease-in-out 5 alternate}
 @keyframes shiba-text-nibble{to{transform:translateX(3px) rotate(-1deg)}}@media(prefers-reduced-motion:reduce){.shiba-reaction,.shiba-nibbled{animation:none}}
 
+/* Shiba quiet moments: static gaze, seated breathing and a gentle ear-scratch. */
+.shiba-walker.is-resting .shiba-png{animation:none}
+.shiba-walker.is-looking .shiba-png{animation:shiba-look 2.4s ease-in-out both}
+.shiba-walker.is-sitting .shiba-png{animation:shiba-sit-breathe 1.6s ease-in-out infinite alternate}
+.shiba-walker.is-scratching .shiba-png{animation:shiba-ear-scratch .26s ease-in-out infinite alternate;transform-origin:50% 42%}
+@keyframes shiba-look{0%,100%{transform:scale(1)}40%,75%{transform:scale(1.035) translateY(-1px)}}
+@keyframes shiba-sit-breathe{to{transform:scale(1.015) translateY(-1px)}}
+@keyframes shiba-ear-scratch{to{transform:rotate(3deg) translateY(-2px)}}
+@media(prefers-reduced-motion:reduce){.shiba-walker.is-resting .shiba-png{animation:none}}
 /* PNG Shiba upgrade: preserves original SVG as fallback until sprites are deployed */
 .shiba-walker.has-png svg{display:none}.shiba-png{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;image-rendering:auto;display:none}.shiba-walker.has-png .shiba-png{display:block}.shiba-walker.has-png{width:96px;height:85px}.shiba-walker.has-png.is-playing .shiba-png{animation:none}@media(max-width:750px){.shiba-walker.has-png{width:76px;height:66px}}
 
@@ -74,7 +83,7 @@
 (function(){
  const dog=document.querySelector('.shiba-walker');
  if(!dog||!dog.animate||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
- let busy=false, last=0, timer, roam=null;
+ let busy=false, last=0, timer, roam=null, restTimer=null;
  const walkingSpeed=78.75; // 25% slower than the previous 105px/s
  function resumeWalking(x,facing){
    if(roam){roam.cancel();roam=null;}
@@ -181,6 +190,48 @@
    resumeWalking(x,dx<0?1:-1);
    busy=false;
  }
+ async function quietMoment(){
+   if(busy||document.hidden||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+   if(!dog.classList.contains('has-png'))return;
+   const rect=dog.getBoundingClientRect();
+   if(rect.right<0||rect.left>innerWidth)return;
+   const matrix=new DOMMatrixReadOnly(getComputedStyle(dog).transform);
+   const facing=matrix.a<0?-1:1;
+   busy=true;
+   if(roam){roam.cancel();roam=null;}
+   dog.classList.add('is-playing','is-resting');
+   dog.style.left=rect.left+'px';
+   dog.style.transform='scaleX('+facing+')';
+   dog.style.animation='none';
+   try{
+     // Most pauses are a brief look; occasionally the dog sits and scratches.
+     const sit=Math.random()<.42;
+     if(sit){
+       dog.classList.add('is-sitting');
+       await wait(1700);
+       if(Math.random()<.65){
+         dog.classList.add('is-scratching');
+         await wait(1900);
+         dog.classList.remove('is-scratching');
+       }
+       await wait(800);
+       dog.classList.remove('is-sitting');
+     }else{
+       dog.classList.add('is-looking');
+       await wait(2400);
+       dog.classList.remove('is-looking');
+     }
+   }finally{
+     dog.classList.remove('is-looking','is-sitting','is-scratching','is-resting','is-playing');
+     resumeWalking(rect.left,facing);
+     busy=false;
+   }
+ }
+ function scheduleRest(){
+   clearTimeout(restTimer);
+   restTimer=setTimeout(async()=>{await quietMoment();scheduleRest()},30000+Math.random()*15000);
+ }
+ scheduleRest();
  function schedule(delay){clearTimeout(timer);timer=setTimeout(async()=>{await play();schedule(22000+Math.random()*9000)},delay)}
  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!busy)schedule(9000)});
  schedule(8500);
@@ -191,7 +242,10 @@ const root='/assets/shiba/',frames=['idle','walk_1','walk_2','sniff','bite','leg
 let walk=0,frameTimer,walkReady=false;
 function setFrame(name){if(cache[name])sprite.src=cache[name].src}
 function begin(){if(frameTimer)clearInterval(frameTimer);dog.classList.add('has-png');setFrame(walkReady?walkFrames[0]:'walk_1');frameTimer=setInterval(()=>{
- if(dog.classList.contains('is-peeing'))setFrame('leg_lift');
+ if(dog.classList.contains('is-scratching'))setFrame('sit');
+ else if(dog.classList.contains('is-sitting'))setFrame('sit');
+ else if(dog.classList.contains('is-looking'))setFrame('idle');
+ else if(dog.classList.contains('is-peeing'))setFrame('leg_lift');
  else if(dog.classList.contains('is-sniffing'))setFrame('sniff');
  else if(dog.classList.contains('is-biting'))setFrame('bite');
  else if(dog.classList.contains('is-playing')&&!dog.classList.contains('is-approaching'))setFrame('idle');
