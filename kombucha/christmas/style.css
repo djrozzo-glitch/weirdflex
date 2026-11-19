@@ -1,0 +1,98 @@
+:root { color-scheme:dark; font: 16px/1.4 system-ui,sans-serif; color:#fff1d7; background:#091927; }
+* { box-sizing:border-box; }
+[hidden] { display:none !important; }
+body { margin:0; overflow:hidden; }
+main, #trail, #screen { position:fixed; inset:0; width:100%; height:100%; }
+#trail { touch-action:none; }
+#screen { display:grid; place-items:center; padding: max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom)); background:#081a29a8; }
+#screen[data-view=start] { background:linear-gradient(90deg,#061320e8 0%,#061320a8 34%,#06132010 83%),url('../ui/cover-wide.webp') center/cover; justify-items:start; }
+#screen[data-view=result], #screen[data-view=leaderboard] { background:linear-gradient(#08172575,#08172575),url('../ui/results.webp') center/cover; }
+.panel { width:min(100%,420px); padding:clamp(16px,3vw,36px); text-align:center; background:#091927dc; border:1px solid #e5b77770; border-radius:16px; box-shadow:0 16px 50px #030a12a6; max-height:100%; overflow:auto; }
+#start { margin-inline-start:clamp(0px,7vw,132px); width:min(100%,465px); background:#07162283; }
+h1,h2,p { margin:0 0 14px; }
+h2 { font:clamp(27px,5vw,38px)/1.1 Georgia,serif; }
+.wordmark img { display:block; width:100%; height:auto; }
+small { display:block; margin-top:7px; color:#d7e1e8; }
+button,input { font:inherit; }
+button { cursor:pointer; touch-action:manipulation; }
+button:focus-visible,input:focus-visible { outline:2px solid #ffe2a3; outline-offset:3px; }
+.primary,.secondary { min-height:42px; width:100%; border-radius:8px; font-weight:700; padding:8px 14px; margin:4px 0; }
+.primary { color:#141b20; background:#eac083; border:1px solid #f9dcab; }
+.primary:disabled { opacity:.6; }
+.secondary { color:#ffe6bc; background:#102837; border:1px solid #d4a56d8c; }
+.icon { display:grid; width:48px; height:48px; padding:0; place-items:center; border:0; background:none; }
+.icon img { width:100%; height:100%; }
+#audio-controls,#hud { position:fixed; z-index:1; top:max(9px,env(safe-area-inset-top)); }
+main { --hud-icon-size:48px; --hud-icon-gap:6px; }
+#audio-controls { right:max(10px,env(safe-area-inset-right)); display:flex; gap:var(--hud-icon-gap); }
+#audio-controls .icon,#pause { width:var(--hud-icon-size); height:var(--hud-icon-size); }
+.audio-toggle { position:relative; }
+.music-symbol { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+.music-note { filter:drop-shadow(0 2px 2px #09120c); }
+.music-slash,.audio-toggle .effects-off { display:none; }
+.audio-toggle[aria-pressed=false] .music-note { opacity:.52; }
+.audio-toggle[aria-pressed=false] .music-slash,.audio-toggle[aria-pressed=false] .effects-off { display:block; }
+.audio-toggle[aria-pressed=false] .effects-on { display:none; }
+#hud { left:max(10px,env(safe-area-inset-left)); right:calc(max(10px,env(safe-area-inset-right)) + 2 * (var(--hud-icon-size) + var(--hud-icon-gap))); display:flex; align-items:center; justify-content:space-between; pointer-events:none; }
+#screen { padding-top:calc(max(9px,env(safe-area-inset-top)) + 52px); }
+#hud button { pointer-events:auto; }
+#score { display:flex; align-items:center; gap:5px; min-width:82px; padding:4px 13px; border:1px solid #d9ac727f; border-radius:22px; background:#081b2be5; font-weight:800; font-variant-numeric:tabular-nums; }
+#score img { height:25px; }
+.big-score { margin:0; font-size:1.8rem; color:#ffd497; }
+.big-score span { font-size:2.3rem; font-weight:800; }
+.entry { display:flex; align-items:center; gap:8px; }
+.entry .primary { flex:0 0 auto; width:auto; }
+input { min-width:0; width:100%; padding:8px; border-radius:7px; border:1px solid #ae9167; background:#0b2333; color:#fff1d7; }
+.status { font-size:.88rem; color:#d8e5ed; margin:4px 0 8px; }
+.status:empty { display:none; }
+.trophy { width:61px; height:61px; }
+ol { list-style:none; margin:0 0 12px; padding:0; }
+li { display:grid; grid-template-columns:2em minmax(0,1fr) auto; align-items:center; gap:8px; padding:7px; text-align:left; border-bottom:1px solid #e5b77732; }
+li span:nth-child(2) { overflow-wrap:anywhere; }
+li span:last-child { color:#ffda9f; font-variant-numeric:tabular-nums; }
+@media (orientation:portrait) {
+  #screen[data-view=start] { justify-items:center; background:linear-gradient(0deg,#061320dc 2%,#06132014 66%),url('../ui/cover-mobile.webp') center/cover; align-items:end; }
+  #start { margin:0; background:#071622dc; }
+}
+@media (max-height:460px) { .panel { padding:12px 20px; } .wordmark img { max-height:82px; object-fit:contain; } }
+
+.garland,.result-caribou { display:block; width:64px; height:64px; margin:0 auto; object-fit:contain; }
+.result-caribou { width:82px; height:74px; }
+.action { display:flex; align-items:center; justify-content:center; gap:7px; }
+.action img { width:28px; height:28px; }
+.rank-icon { display:block; width:25px; height:25px; }
+@media (max-height:460px) { .garland { display:none; } }
+
+/* Prevent Safari long-press text selection and callouts during gameplay. */
+html,body,main,#trail,#screen,#hud,button,img { -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+#trail { -webkit-tap-highlight-color:transparent; touch-action:none; }
+button { -webkit-tap-highlight-color:transparent; }
+input { -webkit-user-select:text; user-select:text; -webkit-touch-callout:default; }
+
+/* iOS Safari: disable selection handles on images and interactive game UI. */
+html,body { -webkit-touch-callout:none !important; -webkit-user-select:none !important; user-select:none !important; overscroll-behavior:none; }
+img,canvas,button { -webkit-user-drag:none; -webkit-touch-callout:none !important; -webkit-user-select:none !important; user-select:none !important; }
+input { -webkit-user-select:text !important; user-select:text !important; }
+
+/* Apply selection suppression to every nested label and pseudo-element. */
+html body main, html body main *, html body main *::before, html body main *::after {
+  -webkit-user-select:none !important;
+  user-select:none !important;
+  -webkit-touch-callout:none !important;
+  -webkit-tap-highlight-color:transparent;
+}
+html body main input, html body main textarea {
+  -webkit-user-select:text !important;
+  user-select:text !important;
+  -webkit-touch-callout:default !important;
+}
+
+#submit-score { display:grid; gap:7px; margin:10px 0; text-align:left; }
+#submit-score label { font-size:.85rem; }
+#submit-score input { min-height:42px; }
+#submit-score .privacy-note { font-size:.75rem; line-height:1.4; color:#d8e5ed; margin:2px 0; }
+
+/* Cyrillic text and longer Russian button labels. */
+.panel { overflow-wrap:break-word; }
+.primary,.secondary { line-height:1.25; white-space:normal; }
+@media (max-width:390px) { .panel { padding:16px; } h2 { font-size:clamp(25px,7vw,34px); } #start small { font-size:.8rem; } }

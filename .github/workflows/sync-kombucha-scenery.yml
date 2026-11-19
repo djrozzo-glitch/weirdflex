@@ -1,0 +1,28 @@
+name: Sync Kombucha scenery
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/sync-kombucha-scenery.yml'
+permissions:
+  contents: write
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Copy source panoramas
+        run: |
+          set -euo pipefail
+          mkdir -p kombucha/backgrounds/variants
+          for name in A_lake_3_red_balloon A_lake_4_snow_boat A_lake_5_smoke_heart B_village_0_cottage B_village_1_putin_window B_village_2_home_alone_window B_village_3_suitcase B_village_4_mailbox B_village_5_scarf_raven C_forest_3_santa_courier C_forest_4_green_santa C_forest_5_reindeer_sweater; do
+            curl --fail --location --retry 3 --silent --show-error "https://raw.githubusercontent.com/djrozzo-glitch/kombucha/main/backgrounds/variants/${name}.webp" -o "kombucha/backgrounds/variants/${name}.webp"
+            test "$(wc -c < "kombucha/backgrounds/variants/${name}.webp")" -gt 1000
+          done
+          git add kombucha/backgrounds/variants
+          if ! git diff --cached --quiet; then
+            git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Sync Kombucha scenery variants"
+            git push
+          fi

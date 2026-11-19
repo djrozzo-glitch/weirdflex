@@ -1,0 +1,276 @@
+// Kombucha Christmas Run — Cloudflare Worker (D1 binding: env.db)
+// Configure secret RUN_SECRET before enabling submissions.
+const RATE = 60;
+const MAX_TICKS = RATE * 3600;
+const HERO = 104;
+const POINTS = 10;
+// Crop the transparent margins so each silhouette sits on the snow.
+const obstacles = [
+  {file:'gift.png', crop:[3,4,250,208], width:43},
+  {file:'birch-log.png', crop:[3,3,251,149], width:50},
+  {file:'fir-branch.png', crop:[3,2,251,158], width:48},
+  {file:'sled.png', crop:[3,48,250,185], width:50},
+  {file:'disco-ball.webp', crop:[0,0,192,179], width:38},
+  {file:'fallen-skis.webp', crop:[0,0,192,64], width:58},
+  {file:'frozen-synth.webp', crop:[0,0,192,105], width:58},
+  {file:'frozen-toast.webp', crop:[0,0,192,120], width:56},
+  {file:'gift-ufo.webp', crop:[0,0,192,86], width:58},
+  {file:'ice-phone.webp', crop:[0,0,192,126], width:53},
+  {file:'knitted-octopus.webp', crop:[0,0,192,161], width:42},
+  {file:'ornament-crate.webp', crop:[0,0,192,99], width:58},
+  {file:'penguin-skate.webp', crop:[0,0,139,192], width:25},
+  {file:'snow-globe.webp', crop:[0,0,171,192], width:31},
+  {file:'snowman.webp', crop:[0,0,159,192], width:29},
+  {file:'snowy-mailbox.webp', crop:[0,0,192,126], width:53}
+].map(obstacle=>({
+  ...obstacle,
+  height:obstacle.width*obstacle.crop[3]/obstacle.crop[2]
+}));
+const BOTTLE_HEIGHT = 36;
+const jumps = [-8.35,-7.3];
+const bottleArc = [[-35,30],[0,44],[35,30]];
+const HIGH_ARC_CHANCE = .25;
+// The lowest bottle in a high arc sits above the reach of a single jump.
+const HIGH_ARC_MIN_HEIGHT = 152;
+const BASE_SPEED = 4.05;
+const SPEED_GAIN_PER_MINUTE = .75;
+const MAX_SPEED_MULTIPLIER = 3.2;
+
+function speedAtTick(tick) {
+  const minutes = tick / (RATE*60);
+  return BASE_SPEED * Math.min(MAX_SPEED_MULTIPLIER,1+minutes*SPEED_GAIN_PER_MINUTE);
+}
+
+function createRun(seed) {
+  return {seed:seed>>>0, tick:0, distance:0, bottles:0, y:0, vy:0,
+    jumps:0, landed:-100, picked:-100, objects:[], next:760, over:false};
+}
+
+function random(run) {
+  run.seed = (Math.imul(run.seed,1664525)+1013904223)>>>0;
+  return run.seed/4294967296;
+}
+
+function spawn(run) {
+  const x = run.next;
+  const kind = Math.floor(random(run)*obstacles.length);
+  const {height} = obstacles[kind];
+  const highArc = random(run)<HIGH_ARC_CHANCE;
+  const variation = Math.floor(random(run)*13);
+  const arcBase = highArc ? HIGH_ARC_MIN_HEIGHT - bottleArc[0][1] : height;
+  const arcLift = arcBase + variation;
+  for (const [offset,lift] of bottleArc) {
+    run.objects.push({x:x+offset, y:lift+arcLift, bottle:true});
+  }
+  // High bottle arcs guard a larger obstacle: a double jump is required.
+  run.objects.push({x, kind, tall:highArc});
+  // Vary time-to-next-obstacle instead of relying on extreme scrolling speed.
+  // Minimum 76 ticks allows a full single jump and landing before the next obstacle.
+  // Short gaps become more frequent over the first three minutes, with occasional breathers.
+  const progress=Math.min(1,run.tick/(RATE*180));
+  const roll=random(run);
+  const gapTicks=roll < .18+.34*progress
+    ? 76+Math.floor(random(run)*22)    // tight pair: 76–97 ticks
+    : roll < .82+.10*progress
+      ? 105+Math.floor(random(run)*34) // medium: 105–138 ticks
+      : 155+Math.floor(random(run)*48); // breather: 155–202 ticks
+  run.next += speedAtTick(run.tick)*gapTicks;
+}
+
+function step(run, jump = false) {
+  if (run.over) return;
+  if (jump && run.jumps<2) {
+    run.vy = jumps[run.jumps++];
+  }
+  run.y += run.vy;
+  run.vy += .46;
+  if(run.y>=0) {
+    if(run.jumps) run.landed=run.tick;
+    run.y=0; run.vy=0; run.jumps=0;
+  }
+  run.distance += speedAtTick(run.tick);
+  const jumpHeight = -run.y;
+  while(run.next < run.distance+1200) spawn(run);
+  for(const item of run.objects) {
+    if(item.taken) continue;
+    const dx = item.x-run.distance;
+    if(item.bottle) {
+      if(Math.abs(dx)<27 && jumpHeight>=18 && item.y>=jumpHeight-26 && item.y<=jumpHeight+65) {
+        item.taken=true; run.bottles++; run.picked=run.tick;
+      }
+      continue;
+    }
+    const {width,height} = obstacles[item.kind];
+    const hitWidth=item.tall ? width*1.44 : width;
+    const hitHeight=item.tall ? height*1.44 : height;
+    if(Math.abs(dx)<15+hitWidth*.35 && jumpHeight+5<hitHeight) {
+      run.over=true;
+      break;
+    }
+  }
+  run.objects = run.objects.filter(item=>!item.taken && item.x>run.distance-150);
+  run.tick++;
+  if(run.tick>=MAX_TICKS) run.over=true;
+}
+
+function score(run) {
+  return run.bottles*POINTS;
+}
+
+function replay(seed, inputs, endTick) {
+  if(!Number.isInteger(endTick)||endTick<1||endTick>MAX_TICKS||
+     !Array.isArray(inputs)||inputs.length>endTick) return null;
+  let previous=-1;
+  for(const tick of inputs) {
+    if(!Number.isInteger(tick)||tick<=previous||tick>=endTick) return null;
+    previous=tick;
+  }
+  const run=createRun(seed);
+  let cursor=0;
+  while(!run.over && run.tick<endTick) {
+    const jump=inputs[cursor]===run.tick;
+    if(jump) cursor++;
+    step(run,jump);
+  }
+  return run.over && run.tick===endTick ? run : null;
+}
+
+const cors={'Access-Control-Allow-Origin':'https://weirdflex.online','Access-Control-Allow-Methods':'GET, POST, OPTIONS','Access-Control-Allow-Headers':'Content-Type','Vary':'Origin'};
+const json=(value,status=200)=>new Response(JSON.stringify(value),{status,headers:{...cors,'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'}});
+const bytes=s=>new TextEncoder().encode(s);
+const b64=buffer=>btoa(String.fromCharCode(...new Uint8Array(buffer))).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
+async function signature(secret,message){const key=await crypto.subtle.importKey('raw',bytes(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);return b64(await crypto.subtle.sign('HMAC',key,bytes(message)));}
+function validName(s){return typeof s==='string'&&s.trim().length>0&&s.trim().length<=24&&!/[\p{Cc}\p{Cf}]/u.test(s);}
+function validEmail(s){return typeof s==='string'&&s.length<=254&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);}
+const waves = {route:'/api/waves-of-light', tokenType:'waves', table:'waves_scores', maxScore:10000000, minimumSeconds:0};
+const leMartini = {route:'/api/le-martini', tokenType:'martini', table:'le_martini_scores', maxScore:340, minimumSeconds:87};
+const leMartiniEndless = {
+ route:'/api/le-martini-endless', tokenType:'martini-endless', table:'le_martini_endless_runs',
+ maxScore:Number.MAX_SAFE_INTEGER, minimumSeconds:0, maxAgeSeconds:Infinity, longestShift:true
+};
+let endlessTableReady = false;
+async function ensureEndlessTable(db) {
+ if(endlessTableReady) return;
+ await db.prepare(`CREATE TABLE IF NOT EXISTS le_martini_endless_runs (
+  run_id TEXT PRIMARY KEY,
+  nickname TEXT NOT NULL,
+  score INTEGER NOT NULL CHECK(score > 0),
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+ )`).run();
+ endlessTableReady = true;
+}
+const leMartiniOrigins = new Set(['https://weirdflex.online','https://djrozzo-glitch.github.io']);
+async function arcadeLeaderboard(request, env, path, game, reply) {
+ const {route, tokenType, table, maxScore, minimumSeconds} = game;
+ const scores = path === route + '/scores';
+ const run = path === route + '/run';
+ if(scores&&request.method==='GET'){
+  const candidates = game.longestShift
+   ? `(SELECT nickname, score, created_at, run_id, ROW_NUMBER() OVER (
+       PARTITION BY nickname COLLATE NOCASE ORDER BY score DESC, created_at ASC, run_id ASC
+      ) AS player_rank FROM ${table}) WHERE player_rank=1`
+   : table;
+  const {results}=await env.db.prepare(`SELECT nickname AS name, score FROM ${candidates} ORDER BY score DESC, created_at ASC, run_id ASC LIMIT 10`).all();
+  return reply({entries:results});
+ }
+ if(request.method!=='POST'||(!run&&!scores))return reply({error:'Not found'},404);
+ if(!env.RUN_SECRET)return reply({error:'RUN_SECRET not configured'},503);
+ if(run){
+  const payload=[tokenType,Date.now(),crypto.randomUUID()].join('.');
+  return reply({token:payload+'.'+await signature(env.RUN_SECRET,payload)});
+ }
+ let data;
+ if(Number(request.headers.get('content-length')||0)>1024)return reply({error:'Payload too large'},413);
+ try{
+  const body=await request.text();
+  if(body.length>1024)return reply({error:'Payload too large'},413);
+  data=JSON.parse(body);
+ }catch{return reply({error:'Invalid submission'},400);}
+ const {name,score,token}=data||{};
+ if(!validName(name)||!Number.isSafeInteger(score)||score<1||score>maxScore||typeof token!=='string')
+  return reply({error:'Invalid submission'},400);
+ const parts=token.split('.');
+ if(parts.length!==4||parts[0]!==tokenType||await signature(env.RUN_SECRET,parts.slice(0,3).join('.'))!==parts[3])
+  return reply({error:'Invalid run token'},403);
+ const seconds=(Date.now()-Number(parts[1]))/1000;
+ if(!Number.isFinite(seconds)||seconds<minimumSeconds||seconds>(game.maxAgeSeconds??86400)||(game.longestShift&&score>seconds+10)||(tokenType==='waves'&&score>10000+seconds*5000))
+  return reply({error:'Invalid run duration or score'},400);
+ const result=await env.db.prepare(`INSERT INTO ${table}(run_id,nickname,score) VALUES(?,?,?) ON CONFLICT(run_id) DO NOTHING`)
+  .bind(parts[2],name.trim(),score).run();
+ if(!result.meta.changes){
+  const saved=await env.db.prepare(`SELECT nickname,score FROM ${table} WHERE run_id=?`).bind(parts[2]).first();
+  if(saved?.nickname!==name.trim()||saved?.score!==score)return reply({error:'Run already submitted'},409);
+ }
+ return reply({ok:true});
+}
+
+async function serveLeMartini(request, env, path, game) {
+ const origin = request.headers.get('Origin');
+ const headers = {...cors, 'Access-Control-Allow-Origin':origin || 'https://weirdflex.online'};
+ const reply = (value,status=200) => new Response(JSON.stringify(value), {
+  status, headers:{...headers,'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'}
+ });
+ if(origin && !leMartiniOrigins.has(origin)) return new Response(null,{status:403});
+ if(request.method==='OPTIONS') return new Response(null,{status:204,headers});
+ if(!env.db) return reply({error:'D1 binding missing: expected db'},503);
+ try {
+  if(game.longestShift && path===game.route+'/scores') await ensureEndlessTable(env.db);
+  return await arcadeLeaderboard(request,env,path,game,reply);
+ } catch(error) {
+  console.error(error);
+  return reply({error:'Request failed'},500);
+ }
+}
+
+export default {
+ async fetch(request,env){
+  const url=new URL(request.url);
+  const path=url.pathname.replace(/\/$/,'');
+  if(path.startsWith(leMartiniEndless.route+'/'))return serveLeMartini(request,env,path,leMartiniEndless);
+  if(path.startsWith(leMartini.route+'/'))return serveLeMartini(request,env,path,leMartini);
+  const origin=request.headers.get('Origin');
+  if(origin&&origin!=='https://weirdflex.online')return json({error:'Origin not allowed'},403);
+  if(request.method==='OPTIONS')return new Response(null,{status:204,headers:cors});
+  if(!env.db)return json({error:'D1 binding missing: expected db'},503);
+  try{
+   if(path.startsWith(waves.route+'/'))return await arcadeLeaderboard(request,env,path,waves,json);
+   if(request.method==='GET'&&(path==='/api/kombucha/scores'||path==='/scores')){
+    const {results}=await env.db.prepare('SELECT nickname AS name,best_score AS score FROM players WHERE best_score > 0 ORDER BY best_score DESC,updated_at ASC LIMIT 100').all();
+    return json({entries:results});
+   }
+   if(request.method!=='POST')return json({error:'Not found'},404);
+   if(!env.RUN_SECRET)return json({error:'RUN_SECRET not configured'},503);
+   if(Number(request.headers.get('content-length')||0)>25000)return json({error:'Payload too large'},413);
+   const data=await request.json();
+   if(path==='/api/kombucha/run'||path==='/run'){
+    const seed=crypto.getRandomValues(new Uint32Array(1))[0],issued=Date.now(),nonce=crypto.randomUUID();
+    const payload=[seed,issued,nonce].join('.');
+    return json({seed,token:payload+'.'+await signature(env.RUN_SECRET,payload)});
+   }
+   if(path==='/api/kombucha/scores'||path==='/scores'){
+    const {token,inputs,endTick,name,email}=data||{};
+    if(typeof token!=='string'||!Array.isArray(inputs)||!Number.isInteger(endTick)||!validName(name)||!validEmail(email))return json({error:'Invalid submission'},400);
+    const parts=token.split('.');
+    if(parts.length!==4)return json({error:'Invalid run token'},400);
+    const payload=parts.slice(0,3).join('.');
+    if(await signature(env.RUN_SECRET,payload)!==parts[3])return json({error:'Invalid run token'},403);
+    const seed=Number(parts[0]),issued=Number(parts[1]);
+    if(!Number.isInteger(seed)||seed<0||seed>4294967295||!Number.isFinite(issued)||issued>Date.now()+60000||Date.now()-issued>86400000)return json({error:'Expired run'},400);
+    // Allow up to 2x simulation rate to accommodate mobile timing, but reject implausibly fast runs.
+    if(Date.now()-issued<endTick*1000/RATE*.45)return json({error:'Run completed too quickly'},400);
+    const result=replay(seed,inputs,endTick);
+    if(!result||result.bottles<1)return json({error:'Invalid run'},400);
+    const normalized=email.trim().toLowerCase(),nickname=name.trim(),id=crypto.randomUUID(),runId=parts[2];
+    // Deduplicate runs by signed nonce. Keep one player per normalized email.
+    const exists=await env.db.prepare('SELECT id FROM runs WHERE id=?').bind(runId).first();
+    if(exists)return json({error:'Run already submitted'},409);
+    await env.db.prepare('INSERT INTO players (id,nickname,email,email_normalized,best_score,best_bottles) VALUES (?,?,?,?,0,0) ON CONFLICT(email_normalized) DO NOTHING').bind(id,nickname,email.trim(),normalized).run();
+    const player=await env.db.prepare('SELECT id FROM players WHERE email_normalized=?').bind(normalized).first();
+    await env.db.prepare('INSERT INTO runs(id,player_id,score,bottles) VALUES(?,?,?,?)').bind(runId,player.id,score(result),result.bottles).run();
+    await env.db.prepare("UPDATE players SET nickname=?,best_score=MAX(best_score,?),best_bottles=CASE WHEN ? > best_score THEN ? ELSE best_bottles END,updated_at=datetime('now') WHERE id=?").bind(nickname,score(result),score(result),result.bottles,player.id).run();
+    return json({ok:true,score:score(result),bottles:result.bottles});
+   }
+   return json({error:'Not found'},404);
+  }catch(error){console.error(error);return json({error:'Request failed'},500);}
+ }
+};

@@ -1,0 +1,328 @@
+{
+  "version": "2.0",
+  "format": "RGBA PNG",
+  "resolution": [
+    512,
+    512
+  ],
+  "files": [
+    {
+      "id": "cheeky_seagull",
+      "city": "amsterdam",
+      "label": "Cheeky seagull",
+      "category": "city-life",
+      "file": "assets/amsterdam/cheeky_seagull.png",
+      "size": [
+        512,
+        512
+      ],
+      "artboardGroundY": 480,
+      "scaleHint": 0.144
+    },
+    {
+      "id": "fallen_friet",
+      "city": "amsterdam",
+      "label": "Fallen fries",
+      "category": "food",
+      "file": "assets/amsterdam/fallen_friet.png",
+      "size": [
+        512,
+        512
+      ],
+      "artboardGroundY": 480,
+      "scaleHint": 0.144
+    },
+    {
+      "id": "suspicious_plant",
+      "city": "amsterdam",
+      "label": "Suspicious plant",
+      "category": "social",
+      "file": "assets/amsterdam/suspicious_plant.png",
+      "size": [
+        512,
+        512
+      ],
+      "artboardGroundY": 480,
+      "scaleHint": 0.144
+    },
+    {
+      "id": "tulip_bike",
+      "city": "amsterdam",
+      "label": "Tulip bicycle",
+      "category": "city-life",
+      "file": "assets/amsterdam/tulip_bike.png",
+      "size": [
+        512,
+        512
+      ],
+      "artboardGroundY": 480,
+      "scaleHint": 0.144
+    },
+    {
+      "id": "currywurst",
+      "city": "berlin",
+      "label": "Currywurst",
+      "category": "food",
+      "file": "assets/berlin/currywurst.png",
+      "size": [
+        512,
+        512
+      ],
+      "artboardGroundY": 480,
+      "scaleHint": 0.144
+    },
+    {
+      "id": "doner",
+      "city": "berlin",
+      "label": "Döner kebab",
+      "category": "food",
+      "file": "assets/berlin/doner.png",
+      "size": [
+        512,
+        512
+      ],
+      "artboardGroundY": 480,
+      "scaleHint": 0.144
+    },
+    {
+      "id": "tapas",
+      "city": "madrid",
+      "label": "Tapas platter",
+      "category": "food",
+      "file": "assets/madrid/tapas.png",
+      "size": [
+        512,
+        512
+      ],
+      "artboardGroundY": 480,
+      "scaleHint": 0.144
+    },
+    {
+      "id": "matryoshka",
+      "city": "moscow",
+      "label": "Matryoshka doll",
+      "category": "cultural",
+      "file": "assets/moscow/matryoshka.png",
+      "size": [
+        512,
+        512
+      ],
+      "artboardGroundY": 480,
+      "scaleHint": 0.144
+    },
+    {
+      "id": "samovar",
+      "city": "moscow",
+      "label": "Samovar",
+      "category": "cultural",
+      "file": "assets/moscow/samovar.png",
+      "size": [
+        512,
+        512
+      ],
+      "artboardGroundY": 480,
+      "scaleHint": 0.144
+    },
+    {
+      "id": "accordion_case",
+      "city": "moscow",
+      "label": "Accordion case",
+      "category": "social",
+      "file": "assets/moscow/accordion_case.png",
+      "size": [
+        512,
+        512
+      ],
+      "artboardGroundY": 480,
+      "scaleHint": 0.144
+    },
+    {
+      "id": "burger",
+      "city": "newyork",
+      "label": "Cheeseburger",
+      "category": "food",
+      "file": "assets/newyork/burger.png",
+      "size": [
+        512,
+        512
+      ],
+      "artboardGroundY": 480,
+      "scaleHint": 0.144
+    },
+    {
+      "id": "coffee",
+      "city": "newyork",
+      "label": "Takeaway coffee",
+      "category": "city-life",
+      "file": "assets/newyork/coffee.png",
+      "size": [
+        512,
+        512
+      ],
+      "artboardGroundY": 480,
+      "scaleHint": 0.144
+    },
+    {
+      "id": "hydrant",
+      "city": "newyork",
+      "label": "Fire hydrant",
+      "category": "city-life",
+      "file": "assets/newyork/hydrant.png",
+      "size": [
+        512,
+        512
+      ],
+      "artboardGroundY": 480,
+      "scaleHint": 0.144
+    },
+    {
+      "id": "pizza_box",
+      "city": "newyork",
+      "label": "Closed pizza box",
+      "category": "food",
+      "file": "assets/newyork/pizza_box.png",
+      "size": [
+        512,
+        512
+      ],
+      "artboardGroundY": 480,
+      "scaleHint": 0.144
+    },
+    {
+      "id": "manhole",
+      "city": "newyork",
+      "label": "Manhole cover",
+      "category": "city-life",
+      "file": "assets/newyork/manhole.png",
+      "size": [
+        512,
+        512
+      ],
+      "artboardGroundY": 480,
+      "scaleHint": 0.144
+    },
+    {
+      "id": "open_pizza_box",
+      "city": "newyork",
+      "label": "Open pizza box",
+      "category": "food",
+      "file": "assets/newyork/open_pizza_box.png",
+      "size": [
+        512,
+        512
+      ],
+      "artboardGroundY": 480,
+      "scaleHint": 0.144
+    },
+    {
+      "id": "pizza_slice",
+      "city": "rome",
+      "label": "Pizza slice",
+      "category": "food",
+      "file": "assets/rome/pizza_slice.png",
+      "size": [
+        512,
+        512
+      ],
+      "artboardGroundY": 480,
+      "scaleHint": 0.144
+    }
+  ],
+  "cityDesignIdeas": {
+    "newyork": {
+      "retain": [
+        "Fire hydrant",
+        "Manhole cover",
+        "Takeaway coffee"
+      ],
+      "replace_food_with": [
+        "Yellow taxi bumper",
+        "Subway entrance sign",
+        "NYC trash can",
+        "Construction steam pipe",
+        "Pigeon with pretzel"
+      ]
+    },
+    "moscow": {
+      "retain": [
+        "Matryoshka",
+        "Samovar",
+        "Accordion case"
+      ],
+      "replace_food_with": [
+        "Snow-covered bench",
+        "Traffic police baton",
+        "Crooked metro sign",
+        "Icy puddle",
+        "Oversized fur hat"
+      ]
+    },
+    "rome": {
+      "retain": [
+        "Pizza slice (rare)"
+      ],
+      "replace_food_with": [
+        "Vespa scooter",
+        "Roman column fragment",
+        "Fountain splash",
+        "Gladiator helmet",
+        "Tourist selfie stick"
+      ]
+    },
+    "madrid": {
+      "retain": [
+        "Tapas platter (rare)"
+      ],
+      "replace_food_with": [
+        "Football rolling across plaza",
+        "Flamenco fan",
+        "Orange traffic cone",
+        "Tourist folding chair",
+        "Street musician guitar case"
+      ]
+    },
+    "berlin": {
+      "retain": [
+        "Currywurst (rare)",
+        "Döner (rare)"
+      ],
+      "replace_food_with": [
+        "Ampelmännchen sign",
+        "E-scooter",
+        "U-Bahn sign",
+        "Graffiti-painted construction barrier",
+        "Club queue stanchion"
+      ]
+    },
+    "amsterdam": {
+      "retain": [
+        "Tulip bicycle",
+        "Cheeky seagull",
+        "Suspicious plant",
+        "Fallen fries (rare)"
+      ],
+      "replace_food_with": [
+        "Canal bollard",
+        "Broken bike lock",
+        "Orange traffic pylon",
+        "Tulip crate",
+        "Canal duck"
+      ]
+    },
+    "tokyo": {
+      "retain": [
+        "Sleeping cat",
+        "Angry cat",
+        "Tanuki",
+        "Lantern"
+      ],
+      "replace_food_with": [
+        "Vending machine side panel",
+        "Umbrella stand",
+        "Railway crossing sign",
+        "Bento delivery crate",
+        "Festival lantern stand"
+      ]
+    }
+  }
+}

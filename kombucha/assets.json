@@ -1,0 +1,256 @@
+{
+  "heroAtlas": "kombucha-atlas.json",
+  "panoramas": [
+    {
+      "id": "woods",
+      "file": "backgrounds/woods.webp",
+      "dimensions": [
+        3200,
+        680
+      ]
+    },
+    {
+      "id": "village",
+      "file": "backgrounds/village.webp",
+      "dimensions": [
+        3200,
+        680
+      ]
+    },
+    {
+      "id": "aurora",
+      "file": "backgrounds/aurora.webp",
+      "dimensions": [
+        2784,
+        680
+      ]
+    }
+  ],
+  "terrain": "terrain/snow.webp",
+  "sceneTransition": {
+    "durationMs": 2000,
+    "method": "draw the current scrolling scene fully opaque, then overlay the next scrolling scene with smoothstep alpha; keep terrain and gameplay on top"
+  },
+  "images": {
+    "assets/kombucha_idle.png": [
+      320,
+      320
+    ],
+    "assets/kombucha_run_1.png": [
+      320,
+      320
+    ],
+    "assets/kombucha_run_2.png": [
+      320,
+      320
+    ],
+    "assets/kombucha_run_3.png": [
+      320,
+      320
+    ],
+    "assets/kombucha_run_4.png": [
+      320,
+      320
+    ],
+    "assets/kombucha_jump_launch.png": [
+      320,
+      320
+    ],
+    "assets/kombucha_jump_air.png": [
+      320,
+      320
+    ],
+    "assets/kombucha_double_jump.png": [
+      320,
+      320
+    ],
+    "assets/kombucha_landing.png": [
+      320,
+      320
+    ],
+    "assets/kombucha_hurt.png": [
+      320,
+      320
+    ],
+    "assets/kombucha_collect.png": [
+      320,
+      320
+    ],
+    "assets/kombucha_game_over.png": [
+      320,
+      320
+    ],
+    "kombucha-atlas.png": [
+      1280,
+      960
+    ],
+    "assets/kombucha-bottle.webp": [
+      76,
+      300
+    ],
+    "obstacles/gift.png": [
+      256,
+      247
+    ],
+    "obstacles/birch-log.png": [
+      256,
+      155
+    ],
+    "obstacles/fir-branch.png": [
+      256,
+      162
+    ],
+    "obstacles/sled.png": [
+      256,
+      236
+    ],
+    "effects/pickup-spark.png": [
+      252,
+      256
+    ],
+    "effects/snow-puff.png": [
+      256,
+      169
+    ],
+    "ui/bell.png": [
+      229,
+      256
+    ],
+    "ui/play.png": [
+      192,
+      192
+    ],
+    "ui/pause.png": [
+      192,
+      192
+    ],
+    "ui/replay.png": [
+      192,
+      192
+    ],
+    "ui/trophy.png": [
+      192,
+      192
+    ],
+    "ui/sound-on.png": [
+      192,
+      192
+    ],
+    "ui/sound-off.png": [
+      192,
+      192
+    ],
+    "ui/podium.png": [
+      192,
+      192
+    ],
+    "ui/garland.png": [
+      192,
+      192
+    ],
+    "effects/snowflake.png": [
+      100,
+      96
+    ],
+    "backgrounds/woods.webp": [
+      3200,
+      680
+    ],
+    "previews/woods-mobile.webp": [
+      450,
+      800
+    ],
+    "backgrounds/village.webp": [
+      3200,
+      680
+    ],
+    "previews/village-mobile.webp": [
+      450,
+      800
+    ],
+    "backgrounds/aurora.webp": [
+      2784,
+      680
+    ],
+    "previews/aurora-mobile.webp": [
+      450,
+      800
+    ],
+    "terrain/snow.webp": [
+      1724,
+      192
+    ],
+    "ui/cover-mobile.webp": [
+      900,
+      1600
+    ],
+    "ui/cover-wide.webp": [
+      1672,
+      941
+    ],
+    "ui/results.webp": [
+      900,
+      1600
+    ],
+    "assets/kombucha-logo.png": [
+      1021,
+      208
+    ],
+    "ui/app-icon-192.png": [
+      192,
+      192
+    ],
+    "ui/app-icon-512.png": [
+      512,
+      512
+    ],
+    "obstacles/snowman.webp": [
+      159,
+      192
+    ],
+    "obstacles/frozen-synth.webp": [
+      192,
+      105
+    ],
+    "obstacles/gift-ufo.webp": [
+      192,
+      86
+    ],
+    "obstacles/penguin-skate.webp": [
+      139,
+      192
+    ],
+    "obstacles/fallen-skis.webp": [
+      192,
+      64
+    ],
+    "obstacles/snow-globe.webp": [
+      171,
+      192
+    ],
+    "obstacles/snowy-mailbox.webp": [
+      192,
+      126
+    ],
+    "obstacles/ornament-crate.webp": [
+      192,
+      99
+    ],
+    "obstacles/disco-ball.webp": [
+      192,
+      179
+    ],
+    "obstacles/ice-phone.webp": [
+      192,
+      126
+    ],
+    "obstacles/frozen-toast.webp": [
+      192,
+      120
+    ],
+    "obstacles/knitted-octopus.webp": [
+      192,
+      161
+    ]
+  }
+}
