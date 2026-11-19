@@ -1,1 +1,1 @@
-# weirdflex
+WeirdFlex Shiba PNG site assets. Upload the assets/shiba folder to the root of djrozzo-glitch/weirdflex on GitHub. The site already contains PNG integration code and falls back to the old character if the PNGs are not yet present. bite.png currently uses a clean jump pose rather than the previous source with the embedded PLAY text. All files RGBA 256x256.
