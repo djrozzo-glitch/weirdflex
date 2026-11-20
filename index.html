@@ -92,10 +92,10 @@
  let x=innerWidth*.45,y=innerHeight-95,face=-1,mode='walk',destination=null;
  let busy=false,drag=false,pointer=null,dx=0,dy=0,previous=performance.now(),nextDecision=0,epoch=0;
  const size=()=>({w:dog.offsetWidth||96,h:dog.offsetHeight||85});
- const bounds=()=>{const {w,h}=size();return {left:0,top:0,right:Math.max(0,innerWidth-w),bottom:Math.max(0,innerHeight-h)}};
+ const bounds=()=>{const {w,h}=size();return {left:-w*.28,top:-h*.15,right:Math.max(0,innerWidth-w*.72),bottom:Math.max(0,innerHeight-h*.85)}};
  const render=()=>{dog.style.left=x+'px';dog.style.top=y+'px';dog.style.bottom='auto';dog.style.transform='scaleX('+face+')'};
  function state(s){mode=s;dog.classList.toggle('is-approaching',s==='walk');dog.classList.toggle('is-looking',s==='look');dog.classList.toggle('is-sitting',s==='sit'||s==='scratch');dog.classList.toggle('is-scratching',s==='scratch');dog.classList.toggle('is-sniffing',s==='sniff');dog.classList.toggle('is-biting',s==='bite');dog.classList.toggle('is-peeing',s==='pee');dog.classList.toggle('is-playing',s!=='walk');}
- function randomDestination(){const b=bounds();return {x:Math.random()*b.right,y:Math.random()*b.bottom};}
+ function randomDestination(){const b=bounds();return {x:b.left+Math.random()*(b.right-b.left),y:b.top+Math.random()*(b.bottom-b.top)};}
  function visibleHeadings(){return [...document.querySelectorAll('h1,h2,h3')].filter(el=>{const r=el.getBoundingClientRect();return r.width>55&&r.height>18&&r.bottom>45&&r.top<innerHeight-50&&r.right>25&&r.left<innerWidth-25})}
  function choose(){if(busy||drag||reduced)return;
    const titles=visibleHeadings();
@@ -133,10 +133,12 @@
        if(!destination&&now>nextDecision)choose();
        if(destination){
          const vx=destination.x-x,vy=destination.y-y,dist=Math.hypot(vx,vy);
-         if(dist<3){x=destination.x;y=destination.y;const {action,target}=destination;destination=null;
+         if(dist<=Math.max(3,speed*dt+1)){x=destination.x;y=destination.y;const {action,target}=destination;destination=null;
            if(action)scene(action,target);else nextDecision=now+700+Math.random()*1300;
          }else{
            const step=Math.min(dist,speed*dt),b=bounds();
+           // Keep the target reachable even if viewport or sprite dimensions change.
+           destination.x=clamp(destination.x,b.left,b.right);destination.y=clamp(destination.y,b.top,b.bottom);
            x=clamp(x+vx/dist*step,b.left,b.right);y=clamp(y+vy/dist*step,b.top,b.bottom);
            if(Math.abs(vx)>1)face=vx<0?1:-1;
          }
