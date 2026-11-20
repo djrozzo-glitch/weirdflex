@@ -32,13 +32,17 @@
 
 /* Shiba quiet moments: static gaze, seated breathing and a gentle ear-scratch. */
 .shiba-walker.is-resting .shiba-png{animation:none}
-.shiba-walker.is-looking .shiba-png{animation:shiba-look 2.4s ease-in-out both}
-.shiba-walker.is-sitting .shiba-png{animation:shiba-sit-breathe 1.6s ease-in-out infinite alternate}
-.shiba-walker.is-scratching .shiba-png{animation:shiba-ear-scratch .26s ease-in-out infinite alternate;transform-origin:50% 42%}
+.shiba-walker.is-looking .shiba-png{animation:none}
+.shiba-walker.is-sitting .shiba-png{animation:none}
+.shiba-walker.is-scratching .shiba-png{animation:none}
 @keyframes shiba-look{0%,100%{transform:scale(1)}40%,75%{transform:scale(1.035) translateY(-1px)}}
 @keyframes shiba-sit-breathe{to{transform:scale(1.015) translateY(-1px)}}
 @keyframes shiba-ear-scratch{to{transform:rotate(3deg) translateY(-2px)}}
 @media(prefers-reduced-motion:reduce){.shiba-walker.is-resting .shiba-png{animation:none}}
+/* Draggable Shiba character */
+.shiba-walker{animation:none!important;pointer-events:auto;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.shiba-walker.is-dragging{cursor:grabbing;filter:drop-shadow(0 9px 8px rgba(0,0,0,.22))}
+.shiba-walker.is-dragging .shiba-png{transform:rotate(-5deg)}
 /* PNG Shiba upgrade: preserves original SVG as fallback until sprites are deployed */
 .shiba-walker.has-png svg{display:none}.shiba-png{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;image-rendering:auto;display:none}.shiba-walker.has-png .shiba-png{display:block}.shiba-walker.has-png{width:96px;height:85px}.shiba-walker.has-png.is-playing .shiba-png{animation:none}@media(max-width:750px){.shiba-walker.has-png{width:76px;height:66px}}
 
@@ -54,12 +58,19 @@
 @keyframes shiba-shadow-step{0%{transform:scaleX(1);opacity:.7}100%{transform:scaleX(.8);opacity:.4}}
 @media(prefers-reduced-motion:reduce){.shiba-walker.has-png .shiba-png,.shiba-walker.has-png::after{animation:none!important}}
 .shiba-walker.has-png.is-approaching .shiba-png{animation:shiba-walk-step .22s ease-in-out infinite alternate!important}
+
+/* Editorial preview CTA: compact pill with a clear play affordance. */
+.offer-preview span{display:inline-flex;align-items:center;gap:10px;left:auto;right:14px;bottom:14px;max-width:calc(100% - 28px);box-sizing:border-box;padding:11px 13px;border-radius:999px;background:rgba(248,247,243,.96);color:#191919;border:1px solid rgba(255,255,255,.65);box-shadow:0 3px 14px rgba(0,0,0,.15);font-size:11px;font-weight:750;line-height:1;letter-spacing:.035em;white-space:nowrap;transition:background .2s,transform .2s,box-shadow .2s}
+.offer-preview span::before{content:'▶';display:grid;place-items:center;width:25px;height:25px;flex:0 0 25px;border-radius:50%;background:#d96e56;color:white;font-size:10px;line-height:1;padding-left:1px;box-sizing:border-box}
+.offer-preview:hover span,.offer-preview:focus-visible span{background:#fff;transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.2)}
+.offer-preview:focus-visible{outline:3px solid #d96e56;outline-offset:3px}
+@media(max-width:750px){.offer-preview span{right:12px;bottom:12px;padding:9px 11px;font-size:10px;gap:8px}.offer-preview span::before{width:22px;height:22px;flex-basis:22px;font-size:9px}}
 </style></head><body><div class="wrap"><header class="top"><a class="logo" href="/" aria-label="WeirdFlex home">weird<span>flex.</span></a><nav aria-label="Main navigation"><a href="#services">Services</a><a href="#work">Games</a><a href="#about">About</a><a href="#contact">Contact &rarr;</a></nav></header><main><div class="hero"><div class="eyebrow">Independent playable studio · Creative technology & music</div><h1>Ideas worth<br><em>playing.</em></h1><div class="hero-bottom"><p class="lead">We make browser games, interactive campaigns and music experiences people actually want to spend time with.</p></div></div>
 <section id="services" class="offerings"><div class="section-head"><h2>What we<br>make.</h2><p>Four ways to turn a good idea into something people can actually play.</p></div>
-<article class="offering" id="brand-games"><div class="offer-index">01 / FOR BRANDS</div><div class="offer-main"><h3>Brand<br>games<span class="period">.</span></h3><p>Mobile-first mini-games built around your brand, product launch or campaign. Designed for replay, sharing and measurable actions.</p><div class="chips"><span>Branded arcade</span><span>Leaderboards</span><span>Prizes &amp; CTAs</span></div><a class="offer-link" href="mailto:djrozzo@gmail.com?subject=Brand%20game%20brief">Discuss a brand game <span>&rarr;</span></a></div><a class="offer-preview" href="/shibarun/" aria-label="Play an example arcade runner"><img src="/shibarun/assets/ozzy-logo.webp" alt="Example mobile arcade runner" loading="lazy"><span>PLAY AN EXAMPLE &nearr;</span></a></article>
-<article class="offering" id="music-releases"><div class="offer-index">02 / FOR ARTISTS &amp; LABELS</div><div class="offer-main"><h3>Playable music<br>releases<span class="period">.</span></h3><p>Give a track or EP its own playable world. Let listeners discover the music through gameplay, then take them to your release.</p><div class="chips"><span>Music integration</span><span>Sharing</span><span>Streaming links</span></div><a class="offer-link" href="mailto:djrozzo@gmail.com?subject=Playable%20music%20release">Make a release playable <span>&rarr;</span></a></div><a class="offer-preview" href="/grooverider/" aria-label="Play Waves of Light"><img src="/grooverider/assets/share-card.jpg" alt="Waves of Light music game" loading="lazy"><span>PLAY AN EXAMPLE &nearr;</span></a></article>
-<article class="offering" id="experiences"><div class="offer-index">03 / FOR EVENTS &amp; CULTURE</div><div class="offer-main"><h3>Interactive<br>experiences<span class="period">.</span></h3><p>Playful digital activations for festivals, venues and cultural projects. From participation mechanics to immersive online worlds.</p><div class="chips"><span>Events</span><span>Interactive storytelling</span><span>Audience participation</span></div><a class="offer-link" href="mailto:djrozzo@gmail.com?subject=Interactive%20experience%20brief">Explore an experience <span>&rarr;</span></a></div><a class="offer-preview" href="/nightshift/" aria-label="Play NightShift"><img src="/nightshift/assets/artwork/main_page_pic.jpg" alt="NightShift interactive club experience" loading="lazy"><span>PLAY AN EXAMPLE &nearr;</span></a></article>
-<article class="offering" id="prototyping"><div class="offer-index">04 / FOR CREATIVE TEAMS</div><div class="offer-main"><h3>Creative<br>prototyping<span class="period">.</span></h3><p>Have an unusual brief? We turn concepts into working prototypes fast, with creative strategy, interaction design and production under one roof.</p><div class="chips"><span>Concept development</span><span>Playable prototypes</span><span>White-label</span></div><a class="offer-link" href="mailto:djrozzo@gmail.com?subject=Creative%20prototype%20brief">Bring us a brief <span>&rarr;</span></a></div><a class="offer-preview" href="/breach/" aria-label="Play BREACH.exe"><img src="/breach/assets/screens/missions.png" alt="BREACH.exe interactive puzzle" loading="lazy"><span>PLAY AN EXAMPLE &nearr;</span></a></article></section>
+<article class="offering" id="brand-games"><div class="offer-index">01 / FOR BRANDS</div><div class="offer-main"><h3>Brand<br>games<span class="period">.</span></h3><p>Mobile-first mini-games built around your brand, product launch or campaign. Designed for replay, sharing and measurable actions.</p><div class="chips"><span>Branded arcade</span><span>Leaderboards</span><span>Prizes &amp; CTAs</span></div><a class="offer-link" href="mailto:djrozzo@gmail.com?subject=Brand%20game%20brief">Discuss a brand game <span>&rarr;</span></a></div><a class="offer-preview" href="/shibarun/" aria-label="Play an example arcade runner"><img src="/shibarun/assets/ozzy-logo.webp" alt="Example mobile arcade runner" loading="lazy"><span>PLAY THE GAME</span></a></article>
+<article class="offering" id="music-releases"><div class="offer-index">02 / FOR ARTISTS &amp; LABELS</div><div class="offer-main"><h3>Playable music<br>releases<span class="period">.</span></h3><p>Give a track or EP its own playable world. Let listeners discover the music through gameplay, then take them to your release.</p><div class="chips"><span>Music integration</span><span>Sharing</span><span>Streaming links</span></div><a class="offer-link" href="mailto:djrozzo@gmail.com?subject=Playable%20music%20release">Make a release playable <span>&rarr;</span></a></div><a class="offer-preview" href="/grooverider/" aria-label="Play Waves of Light"><img src="/grooverider/assets/share-card.jpg" alt="Waves of Light music game" loading="lazy"><span>PLAY THE GAME</span></a></article>
+<article class="offering" id="experiences"><div class="offer-index">03 / FOR EVENTS &amp; CULTURE</div><div class="offer-main"><h3>Interactive<br>experiences<span class="period">.</span></h3><p>Playful digital activations for festivals, venues and cultural projects. From participation mechanics to immersive online worlds.</p><div class="chips"><span>Events</span><span>Interactive storytelling</span><span>Audience participation</span></div><a class="offer-link" href="mailto:djrozzo@gmail.com?subject=Interactive%20experience%20brief">Explore an experience <span>&rarr;</span></a></div><a class="offer-preview" href="/nightshift/" aria-label="Play NightShift"><img src="/nightshift/assets/artwork/main_page_pic.jpg" alt="NightShift interactive club experience" loading="lazy"><span>PLAY THE GAME</span></a></article>
+<article class="offering" id="prototyping"><div class="offer-index">04 / FOR CREATIVE TEAMS</div><div class="offer-main"><h3>Creative<br>prototyping<span class="period">.</span></h3><p>Have an unusual brief? We turn concepts into working prototypes fast, with creative strategy, interaction design and production under one roof.</p><div class="chips"><span>Concept development</span><span>Playable prototypes</span><span>White-label</span></div><a class="offer-link" href="mailto:djrozzo@gmail.com?subject=Creative%20prototype%20brief">Bring us a brief <span>&rarr;</span></a></div><a class="offer-preview" href="/breach/" aria-label="Play BREACH.exe"><img src="/breach/assets/screens/missions.png" alt="BREACH.exe interactive puzzle" loading="lazy"><span>PLAY THE GAME</span></a></article></section>
 <section id="work"><div class="section-head"><h2>Play the<br>portfolio.</h2><p>Browse the full collection. Swipe through the games and tap to play.</p></div><div class="gallery-shell"><div class="gallery-controls"><button class="gallery-arrow" type="button" data-dir="-1" aria-label="Previous games">←</button><button class="gallery-arrow" type="button" data-dir="1" aria-label="Next games">→</button></div><div class="grid" id="games-gallery" tabindex="0" aria-label="Scrollable game gallery">
 <a class="project" href="/grooverider/"><div class="thumb"><img src="/grooverider/assets/share-card.jpg" alt="Waves of Light vinyl arcade shooter" loading="lazy"></div><div class="tag">Music · Playable release</div><h3>Waves of Light &rarr;</h3><p>A jungle EP you can fly through. Music becomes gameplay.</p></a>
 <a class="project" href="/nightshift/"><div class="thumb"><img src="/nightshift/assets/artwork/main_page_pic.jpg" alt="NightShift nightclub game" loading="lazy"></div><div class="tag">Music · Interactive experience</div><h3>NightShift &rarr;</h3><p>Step inside a digital nightclub and take control of the night.</p></a>
@@ -79,174 +90,127 @@
 <path d="M36 42 Q40 39 44 42 Q41 46 38 45 Z" fill="#29211c"/><path d="M40 45 Q40 49 36 49 M40 45 Q40 49 44 49" fill="none" stroke="#29211c" stroke-width="1.4" stroke-linecap="round"/>
 <circle cx="19" cy="43" r="3" fill="#e9a28d" opacity=".65"/><circle cx="51" cy="43" r="3" fill="#e9a28d" opacity=".65"/>
 </svg></div><script>
-/* Tiny Shiba behavior loop. Never intercepts input or modifies document text. */
+/* Shiba world controller: one coordinate system for roaming, mischief and dragging. */
 (function(){
  const dog=document.querySelector('.shiba-walker');
- if(!dog||!dog.animate||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
- let busy=false, last=0, timer, roam=null, restTimer=null;
- const walkingSpeed=78.75; // 25% slower than the previous 105px/s
- function resumeWalking(x,facing){
-   if(roam){roam.cancel();roam=null;}
-   dog.style.left=x+'px';dog.style.transform='scaleX('+facing+')';dog.style.animation='none';
-   const width=dog.getBoundingClientRect().width||76;
-   const leftEdge=-width-8,rightEdge=innerWidth+8;
-   const first=facing===1?leftEdge:rightEdge;
-   const second=facing===1?rightEdge:leftEdge;
-   const a=Math.abs(first-x),b=Math.abs(second-first),c=Math.abs(first-second);
-   const total=a+b+c;
-   roam=dog.animate([
-     {offset:0,transform:'translateX(0px) scaleX('+facing+')'},
-     {offset:a/total,transform:'translateX('+(first-x)+'px) scaleX('+facing+')'},
-     {offset:a/total+0.00001,transform:'translateX('+(first-x)+'px) scaleX('+(-facing)+')'},
-     {offset:(a+b)/total,transform:'translateX('+(second-x)+'px) scaleX('+(-facing)+')'},
-     {offset:(a+b)/total+0.00001,transform:'translateX('+(second-x)+'px) scaleX('+facing+')'},
-     {offset:1,transform:'translateX('+(first-x)+'px) scaleX('+facing+')'}
-   ],{duration:total/walkingSpeed*1000,iterations:Infinity,easing:'linear',fill:'both'});
+ if(!dog)return;
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const speed=78.75, clamp=(n,a,b)=>Math.max(a,Math.min(b,n)),wait=ms=>new Promise(r=>setTimeout(r,ms));
+ let x=innerWidth*.45,y=innerHeight-95,face=-1,mode='walk',destination=null;
+ let busy=false,drag=false,pointer=null,dx=0,dy=0,previous=performance.now(),nextDecision=0,epoch=0,edgeSide=1;
+ const size=()=>({w:dog.offsetWidth||96,h:dog.offsetHeight||85});
+ const bounds=()=>{const {w,h}=size();return {left:0,top:0,right:Math.max(0,innerWidth-w),bottom:Math.max(0,innerHeight-h)}};
+ const edgeX=side=>side<0?-size().w-16:innerWidth+16;
+ const render=()=>{dog.style.left=x+'px';dog.style.top=y+'px';dog.style.bottom='auto';dog.style.transform='scaleX('+face+')'};
+ function state(s){mode=s;dog.classList.toggle('is-approaching',s==='walk');dog.classList.toggle('is-looking',s==='look');dog.classList.toggle('is-sitting',s==='sit'||s==='scratch');dog.classList.toggle('is-scratching',s==='scratch');dog.classList.toggle('is-sniffing',s==='sniff');dog.classList.toggle('is-biting',s==='bite');dog.classList.toggle('is-peeing',s==='pee');dog.classList.toggle('is-playing',s!=='walk');}
+ function randomDestination(){const b=bounds();return {x:b.left+Math.random()*(b.right-b.left),y:b.top+Math.random()*(b.bottom-b.top)};}
+ function visibleHeadings(){return [...document.querySelectorAll('h1,h2,h3')].filter(el=>{const r=el.getBoundingClientRect();return r.width>55&&r.height>18&&r.bottom>45&&r.top<innerHeight-50&&r.right>25&&r.left<innerWidth-25})}
+ function choose(){if(busy||drag||reduced)return;
+   // Regular full-width crossings: walk completely offscreen, turn, come back.
+   if(Math.random()<.22){const side=x<innerWidth/2?-1:1;destination={x:edgeX(side),y:clamp(y,0,bounds().bottom),action:null,edge:true};state('walk');return;}
+   const titles=visibleHeadings();
+   if(titles.length&&Math.random()<.42){const el=titles[Math.floor(Math.random()*titles.length)],r=el.getBoundingClientRect(),b=bounds();
+     destination={x:clamp(r.left+r.width*.35,0,b.right),y:clamp(r.bottom+6,0,b.bottom),action:['sniff','bite','pee'][Math.floor(Math.random()*3)],target:el};
+   }else destination={...randomDestination(),action:Math.random()<.48?'rest':null};
+   state('walk');
  }
- const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
- const mobile=()=>innerWidth<751;
- function candidates(kind){
-   const selector=kind==='sniff'?'.offer-preview,.project .thumb':'h1,.section-head h2,.offer-main h3,.contact h2';
-   return [...document.querySelectorAll(selector)].filter(el=>{
-     const r=el.getBoundingClientRect();
-     return r.width>50&&r.height>20&&r.bottom>innerHeight*.36&&r.top<innerHeight-90&&r.left<innerWidth-30&&r.right>30;
-   });
- }
- function pop(x,y,type){
-   const el=document.createElement('span');el.className='shiba-reaction'+(type==='puddle'?' puddle':'');
-   if(type!=='puddle')el.textContent=type;
-   el.style.left=Math.max(4,Math.min(innerWidth-35,x))+'px';
-   el.style.top=Math.max(15,Math.min(innerHeight-22,y))+'px';
-   document.body.append(el);setTimeout(()=>el.remove(),type==='puddle'?2800:1400);
- }
- async function play(){
-   if(busy||document.hidden||Date.now()-last<14000)return;
-   const kinds=['sniff','bite','pee'];
-   const eligible=kinds.map(kind=>({kind,els:candidates(kind)})).filter(o=>o.els.length);
-   if(!eligible.length)return;
-   const chosen=eligible[Math.floor(Math.random()*eligible.length)];
-   const target=chosen.els[Math.floor(Math.random()*chosen.els.length)];
-   const rect=target.getBoundingClientRect();
-   const dogRect=dog.getBoundingClientRect();
-   const currentTransform=getComputedStyle(dog).transform;
-   const currentFacing=currentTransform&&currentTransform!=='none'?(new DOMMatrixReadOnly(currentTransform).a<0?-1:1):1;
-   if(roam){roam.cancel();roam=null;}
-   const dogW=dogRect.width||66,dogH=dogRect.height||56;
-   const x=Math.max(5,Math.min(innerWidth-dogW-5,rect.left+Math.min(rect.width*.35,100)));
-   const targetY=chosen.kind==='sniff'?rect.bottom-18:rect.bottom-12;
-   const rise=Math.max(0,Math.min(mobile()?240:310,innerHeight-targetY-dogH-8));
-   busy=true;last=Date.now();
-   dog.classList.add('is-playing');
-   dog.style.left=dogRect.left+'px';
-   dog.style.transform='scaleX('+currentFacing+')';
-   dog.style.animation='none';
-   const dx=x-dogRect.left;
+ async function scene(action,target){
+   if(drag||busy)return;busy=true;destination=null;const token=epoch;
+   const alive=()=>!drag&&token===epoch;
    try{
-     // Travel at a consistent walking speed instead of teleporting to the target.
-     // Keep walk frames playing during approach; freeze only for the interaction.
-     dog.classList.add('is-approaching');
-     const facing=dx<0?1:-1;
-     const duration=Math.max(700,Math.abs(dx)/walkingSpeed*1000);
-     const approach=dog.animate([
-       {transform:'translate(0px,0px) scaleX('+facing+')'},
-       {transform:'translate('+dx+'px,0px) scaleX('+facing+')'}
-     ],{duration,easing:'linear',fill:'forwards'});
-     await approach.finished;
-     dog.style.left=x+'px';
-     dog.style.transform='scaleX('+facing+')';
-     approach.cancel();
-     // Move up to the visible content only after reaching its horizontal position.
-     if(rise>0){
-       const climb=dog.animate([{transform:'translateY(0px) scaleX('+facing+')'},{transform:'translateY('+(-rise)+'px) scaleX('+facing+')'}],{duration:Math.max(500,rise/170*1000),easing:'ease-in-out',fill:'forwards'});
-       await climb.finished;
-       dog.style.transform='translateY('+(-rise)+'px) scaleX('+facing+')';
-       climb.cancel();
-     }
-     dog.classList.remove('is-approaching');
-     const cls=chosen.kind==='sniff'?'is-sniffing':chosen.kind==='bite'?'is-biting':'is-peeing';
-     dog.classList.add(cls);
-     if(chosen.kind==='bite'){
-       target.classList.add('shiba-nibbled');
-       pop(x+dogW*.3,innerHeight-rise-dogH-14,'✦');
-     }else if(chosen.kind==='pee'){
-       const body=dog.getBoundingClientRect();
-       // Puddle belongs to the raised rear leg, at the dog's actual screen position.
-       // PNG artwork faces left: unflipped rear is on the right, mirrored rear on the left.
-       const hindX=facing===1?body.left+body.width*.22:body.right-body.width*.22;
-       pop(hindX,body.bottom-body.height*.18,'puddle');
-     }else{
-       pop(x+dogW*.5,innerHeight-rise-dogH-15,'♡');
-     }
-     await wait(chosen.kind==='pee'?2100:chosen.kind==='sniff'?1400:1100);
-     target.classList.remove('shiba-nibbled');
-     dog.classList.remove(cls);
-     const retreat=dog.animate([{transform:'translateY('+(-rise)+'px) scaleX('+facing+')'},{transform:'translateY(0) scaleX('+facing+')'}],{duration:450,easing:'ease-in',fill:'forwards'});
-     await retreat.finished;retreat.cancel();
-   }catch(e){}
-   dog.classList.remove('is-playing','is-approaching','is-sniffing','is-biting','is-peeing');
-   target.classList.remove('shiba-nibbled');
-   dog.style.removeProperty('bottom');
-   // Continue from the actual interaction position, never reset to CSS animation start.
-   resumeWalking(x,dx<0?1:-1);
-   busy=false;
- }
- async function quietMoment(){
-   if(busy||document.hidden||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-   if(!dog.classList.contains('has-png'))return;
-   const rect=dog.getBoundingClientRect();
-   if(rect.right<0||rect.left>innerWidth)return;
-   const matrix=new DOMMatrixReadOnly(getComputedStyle(dog).transform);
-   const facing=matrix.a<0?-1:1;
-   busy=true;
-   if(roam){roam.cancel();roam=null;}
-   dog.classList.add('is-playing','is-resting');
-   dog.dataset.lifeTick='0';
-   dog.style.left=rect.left+'px';
-   dog.style.transform='scaleX('+facing+')';
-   dog.style.animation='none';
-   try{
-     // Most pauses are a brief look; occasionally the dog sits and scratches.
-     const sit=Math.random()<.42;
-     if(sit){
-       dog.classList.add('is-sitting');
-       await wait(1700);
-       if(Math.random()<.65){
-         dog.classList.add('is-scratching');
-         await wait(1900);
-         dog.classList.remove('is-scratching');
+     if(action==='rest'){
+       const extras=['tail','roll','stretch','sleep','sneeze','tilt'];
+       const available=extras.filter(k=>dog.dataset['ready'+k]==='1');
+       if(available.length&&Math.random()<.65){
+         const picked=available[Math.floor(Math.random()*available.length)];
+         dog.dataset.extraAction=picked;state('idle');
+         await wait(({tail:4200,roll:6300,stretch:2400,sleep:9500,sneeze:1500,tilt:3600})[picked]);
+         delete dog.dataset.extraAction;
+       }else if(Math.random()<.4){state('look');await wait(2800+Math.random()*1300)}
+       else{
+         dog.dataset.sitPhase='enter';state('sit');await wait(850);if(!alive())return;
+         dog.dataset.sitPhase='hold';await wait(3200+Math.random()*2200);if(!alive())return;
+         if(Math.random()<.55){state('scratch');await wait(3200+Math.random()*1600);if(!alive())return;state('sit');await wait(850)}
+         if(!alive())return;dog.dataset.sitPhase='exit';await wait(850);
        }
-       await wait(800);
-       dog.classList.remove('is-sitting');
      }else{
-       dog.classList.add('is-looking');
-       await wait(2400);
-       dog.classList.remove('is-looking');
+       state(action);if(action==='bite'&&target)target.classList.add('shiba-nibbled');
+       await wait(action==='pee'?2200:action==='sniff'?1900:1200);
      }
    }finally{
-     dog.classList.remove('is-looking','is-sitting','is-scratching','is-resting','is-playing');
-     resumeWalking(rect.left,facing);
-     busy=false;
+     if(target)target.classList.remove('shiba-nibbled');
+     delete dog.dataset.sitPhase;
+     delete dog.dataset.extraAction;
+     if(alive()){state('walk');nextDecision=performance.now()+650;busy=false}
    }
  }
- function scheduleRest(){
-   clearTimeout(restTimer);
-   restTimer=setTimeout(async()=>{await quietMoment();scheduleRest()},30000+Math.random()*15000);
+ function tick(now){
+   const dt=Math.min(.06,(now-previous)/1000);previous=now;
+   if(!drag&&!reduced&&!document.hidden){
+     if(!busy){
+       if(!destination&&now>nextDecision)choose();
+       if(destination){
+         const vx=destination.x-x,vy=destination.y-y,dist=Math.hypot(vx,vy);
+         if(dist<=Math.max(3,speed*dt+1)){x=destination.x;y=destination.y;const {action,target,edge}=destination;destination=null;
+           if(edge){
+             // Re-enter from the same edge, then return to normal wandering.
+             const b=bounds();face=x<0?-1:1;
+             destination={x:x<0?Math.min(b.right,innerWidth*.3):Math.max(0,innerWidth*.7-size().w),y:clamp(y+(Math.random()-.5)*innerHeight*.35,b.top,b.bottom),action:Math.random()<.5?'rest':null};
+           }
+           else if(action)scene(action,target);else nextDecision=now+700+Math.random()*1300;
+         }else{
+           const step=Math.min(dist,speed*dt),b=bounds();
+           // Keep the target reachable even if viewport or sprite dimensions change.
+           if(!destination.edge)destination.x=clamp(destination.x,b.left,b.right);destination.y=clamp(destination.y,b.top,b.bottom);
+           x=destination.edge?x+vx/dist*step:clamp(x+vx/dist*step,b.left,b.right);y=clamp(y+vy/dist*step,b.top,b.bottom);
+           if(Math.abs(vx)>1)face=vx<0?1:-1;
+         }
+       }
+     }
+   }
+   render();requestAnimationFrame(tick);
  }
- scheduleRest();
- function schedule(delay){clearTimeout(timer);timer=setTimeout(async()=>{await play();schedule(22000+Math.random()*9000)},delay)}
- document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!busy)schedule(9000)});
- schedule(8500);
+ function stopForDrag(e){
+   if(e.button!==undefined&&e.button!==0)return;
+   e.preventDefault();e.stopPropagation();
+   const r=dog.getBoundingClientRect();dx=e.clientX-r.left;dy=e.clientY-r.top;
+   x=r.left;y=r.top;pointer=e.pointerId;drag=true;epoch++;busy=false;destination=null;
+   dog.setPointerCapture(e.pointerId);dog.classList.add('is-dragging');state('idle');
+ }
+ dog.addEventListener('pointerdown',stopForDrag);
+ dog.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==pointer)return;
+   const b=bounds();x=clamp(e.clientX-dx,b.left,b.right);y=clamp(e.clientY-dy,b.top,b.bottom);
+ });
+ function release(e){if(!drag||e.pointerId!==pointer)return;
+   drag=false;pointer=null;dog.classList.remove('is-dragging');
+   state('look');busy=true;const token=epoch;
+   wait(850).then(()=>{if(token===epoch&&!drag){busy=false;state('walk');nextDecision=performance.now()+350}});
+ }
+ dog.addEventListener('pointerup',release);dog.addEventListener('pointercancel',release);
+ addEventListener('resize',()=>{const b=bounds();x=clamp(x,b.left,b.right);y=clamp(y,b.top,b.bottom);destination=null});
+ dog.style.animation='none';dog.style.bottom='auto';dog.style.right='auto';dog.style.margin='0';
+ if(reduced){x=innerWidth-(size().w+16);y=innerHeight-(size().h+12);state('idle')}
+ else{state('walk');nextDecision=performance.now()+600}
+ render();requestAnimationFrame(tick);
 })();
 </script><script>(function(){
 const dog=document.querySelector('.shiba-walker'),sprite=dog&&dog.querySelector('.shiba-png');if(!sprite)return;
 const root='/assets/shiba/',frames=['idle','walk_1','walk_2','sniff','bite','leg_lift','jump','sit'];const walkFrames=Array.from({length:8},(_,i)=>'walk_'+String(i+1).padStart(2,'0'));const cache={};
-let walk=0,frameTimer,walkReady=false,lifeTick=0;const lifeFrames={look:Array.from({length:6},(_,i)=>'look_'+String(i+1).padStart(2,'0')),sit:Array.from({length:4},(_,i)=>'sit_'+String(i+1).padStart(2,'0')),scratch:Array.from({length:8},(_,i)=>'scratch_'+String(i+1).padStart(2,'0'))};const lifeReady={look:false,sit:false,scratch:false};
-function setFrame(name){if(cache[name])sprite.src=cache[name].src}
+let walk=0,frameTimer,walkReady=false,lifeTick=0,lastLifeState='',lastSitPhase='';
+const extraCounts={tail:8,roll:10,stretch:6,sleep:8,sneeze:6,tilt:5};
+const extraFrames=Object.fromEntries(Object.entries(extraCounts).map(([k,n])=>[k,Array.from({length:n},(_,i)=>k+'_'+String(i+1).padStart(2,'0'))]));
+const extraReady={};const lifeFrames={look:Array.from({length:6},(_,i)=>'look_'+String(i+1).padStart(2,'0')),sit:Array.from({length:4},(_,i)=>'sit_'+String(i+1).padStart(2,'0')),scratch:Array.from({length:8},(_,i)=>'scratch_'+String(i+1).padStart(2,'0'))};const lifeReady={look:false,sit:false,scratch:false};
+function pingPong(t,length){if(length<=1)return 0;const period=2*(length-1),p=t%period;return p<length?p:period-p}
+function setFrame(name){if(cache[name]&&sprite.src!==cache[name].src)sprite.src=cache[name].src}
 function begin(){if(frameTimer)clearInterval(frameTimer);dog.classList.add('has-png');setFrame(walkReady?walkFrames[0]:'walk_1');frameTimer=setInterval(()=>{
- if(!dog.classList.contains('is-resting'))lifeTick=0;
- if(dog.classList.contains('is-scratching')){const seq=lifeFrames.scratch;setFrame(lifeReady.scratch?seq[Math.floor(lifeTick++/3)%seq.length]:'sit')}
- else if(dog.classList.contains('is-sitting')){const seq=lifeFrames.sit;setFrame(lifeReady.sit?seq[Math.floor(lifeTick++/7)%seq.length]:'sit')}
- else if(dog.classList.contains('is-looking')){const seq=lifeFrames.look;setFrame(lifeReady.look?seq[Math.min(seq.length-1,Math.floor(lifeTick++/4))]:'idle')}
+ const extra=dog.dataset.extraAction||'';
+ const lifeState=extra?'extra:'+extra:dog.classList.contains('is-scratching')?'scratch':dog.classList.contains('is-sitting')?'sit':dog.classList.contains('is-looking')?'look':'walk';
+ const sitPhase=dog.dataset.sitPhase||'';
+ if(lifeState!==lastLifeState||sitPhase!==lastSitPhase){lifeTick=0;lastLifeState=lifeState;lastSitPhase=sitPhase;}
+ if(extra&&extraReady[extra]){const seq=extraFrames[extra],t=Math.floor(lifeTick++/2),loops={tail:[1,6],roll:[3,6],stretch:[1,3],sleep:[4,6],sneeze:[2,3],tilt:[1,3]};const [lo,hi]=loops[extra];const intro=t<lo?t:lo+((t-lo)%(hi-lo+1));const outro=Math.max(0,Math.floor((({tail:4200,roll:6300,stretch:2400,sleep:9500,sneeze:1500,tilt:3600})[extra]-500)/105));setFrame(seq[Math.min(seq.length-1,lifeTick/2>outro?hi+Math.floor(lifeTick/2-outro):intro)])}
+ else if(dog.classList.contains('is-scratching')){const seq=lifeFrames.scratch;setFrame(lifeReady.scratch?seq[pingPong(Math.floor(lifeTick++/2),seq.length)]:'sit')}
+ else if(dog.classList.contains('is-sitting')){const seq=lifeFrames.sit,phase=dog.dataset.sitPhase||'hold';const idx=phase==='hold'?seq.length-1:phase==='exit'?Math.max(0,seq.length-1-Math.floor(lifeTick++/2)):Math.min(seq.length-1,Math.floor(lifeTick++/2));setFrame(lifeReady.sit?seq[idx]:'sit')}
+ else if(dog.classList.contains('is-looking')){const seq=lifeFrames.look;setFrame(lifeReady.look?seq[pingPong(Math.floor(lifeTick++/3),seq.length)]:'idle')}
  else if(dog.classList.contains('is-peeing'))setFrame('leg_lift');
  else if(dog.classList.contains('is-sniffing'))setFrame('sniff');
  else if(dog.classList.contains('is-biting'))setFrame('bite');
@@ -254,7 +218,8 @@ function begin(){if(frameTimer)clearInterval(frameTimer);dog.classList.add('has-
  else {walk=(walk+1)%(walkReady?8:2);setFrame(walkReady?walkFrames[walk]:(walk?'walk_1':'walk_2'))}
 },walkReady?105:140)}
 let done=0,failed=false;frames.forEach(name=>{const im=new Image();im.onload=()=>{cache[name]=im;if(++done===frames.length&&!failed)begin()};im.onerror=()=>{failed=true};im.src=root+name+'.png'}); 
-Object.entries(lifeFrames).forEach(([kind,seq])=>Promise.all(seq.map(name=>new Promise(resolve=>{const im=new Image();im.onload=()=>{cache[name]=im;resolve(true)};im.onerror=()=>resolve(false);im.src=root+name+'.png?v=1'}))).then(results=>{lifeReady[kind]=results.every(Boolean)}));
-Promise.all(walkFrames.map(name=>new Promise(resolve=>{const im=new Image();im.onload=()=>{cache[name]=im;resolve(true)};im.onerror=()=>resolve(false);im.src=root+name+'.png?v=2'}))).then(results=>{if(results.every(Boolean)){walkReady=true;if(dog.classList.contains('has-png'))begin()}});
+Object.entries(lifeFrames).forEach(([kind,seq])=>Promise.all(seq.map(name=>new Promise(resolve=>{const im=new Image();im.onload=()=>{cache[name]=im;resolve(true)};im.onerror=()=>resolve(false);im.src=root+name+'.png?v=3'}))).then(results=>{lifeReady[kind]=results.every(Boolean)}));
+Object.entries(extraFrames).forEach(([kind,seq])=>Promise.all(seq.map(name=>new Promise(resolve=>{const im=new Image();im.onload=()=>{cache[name]=im;resolve(true)};im.onerror=()=>resolve(false);im.src=root+name+'.png?v=1'}))).then(results=>{extraReady[kind]=results.every(Boolean);dog.dataset['ready'+kind]=extraReady[kind]?'1':'0'}));
+Promise.all(walkFrames.map(name=>new Promise(resolve=>{const im=new Image();im.onload=()=>{cache[name]=im;resolve(true)};im.onerror=()=>resolve(false);im.src=root+name+'.png?v=3'}))).then(results=>{if(results.every(Boolean)){walkReady=true;if(dog.classList.contains('has-png'))begin()}});
 document.addEventListener('visibilitychange',()=>{if(frameTimer){clearInterval(frameTimer);frameTimer=null;if(!document.hidden)begin()}});
 })();</script></body></html>
