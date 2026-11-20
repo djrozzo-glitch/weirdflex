@@ -65,7 +65,43 @@
 .offer-preview:hover span,.offer-preview:focus-visible span{background:#fff;transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.2)}
 .offer-preview:focus-visible{outline:3px solid #d96e56;outline-offset:3px}
 @media(max-width:750px){.offer-preview span{right:12px;bottom:12px;padding:9px 11px;font-size:10px;gap:8px}.offer-preview span::before{width:22px;height:22px;flex-basis:22px;font-size:9px}}
-</style></head><body><div class="wrap"><header class="top"><a class="logo" href="/" aria-label="WeirdFlex home">weird<span>flex.</span></a><nav aria-label="Main navigation"><a href="#services">Services</a><a href="#work">Games</a><a href="#about">About</a><a href="#contact">Contact &rarr;</a></nav></header><main><div class="hero"><div class="eyebrow">Independent playable studio · Creative technology & music</div><h1>Ideas worth<br><em>playing.</em></h1><div class="hero-bottom"><p class="lead">We make browser games, interactive campaigns and music experiences people actually want to spend time with.</p></div></div>
+</style><script>
+/* WeirdFlex analytics. Add the PostHog project token and regional host to enable. */
+(function(){
+ const PROJECT_TOKEN=''; // PostHog Project Settings -> Project token (public client token)
+ const API_HOST='https://eu.i.posthog.com'; // change to https://us.i.posthog.com for US projects
+ const key='weirdflex_analytics_consent_v1';
+ const valid=/^phc_[a-zA-Z0-9]+$/.test(PROJECT_TOKEN);
+ const track=(name,properties={})=>{if(window.posthog&&typeof window.posthog.capture==='function'&&window.__wfAnalyticsReady)window.posthog.capture(name,properties)};
+ window.wfTrack=track;
+ if(!valid)return;
+ const css=document.createElement('style');css.textContent='.wf-consent{position:fixed;z-index:1000;left:16px;bottom:16px;max-width:380px;background:#f5f3ee;color:#171715;border:1px solid #d8d6cf;box-shadow:0 8px 32px #0002;border-radius:14px;padding:18px;font:14px/1.5 Arial,sans-serif}.wf-consent p{margin:0 0 12px}.wf-consent button{border:1px solid #171715;border-radius:999px;background:transparent;color:#171715;padding:9px 16px;margin-right:8px;font-weight:bold;cursor:pointer}.wf-consent button:first-of-type{background:#171715;color:white}';document.head.appendChild(css);
+ function load(){
+   if(window.__wfAnalyticsReady||window.__wfAnalyticsLoading)return;
+   window.__wfAnalyticsLoading=true;
+   const script=document.createElement('script');script.src='https://cdn.jsdelivr.net/npm/posthog-js@1/dist/array.js';script.async=true;
+   // Use the official PostHog browser SDK via CDN, with no session recording or automatic form capture.
+   script.onload=()=>{if(!window.posthog){return}window.posthog.init(PROJECT_TOKEN,{api_host:API_HOST,capture_pageview:true,capture_pageleave:true,autocapture:false,disable_session_recording:true,person_profiles:'identified_only'});window.__wfAnalyticsReady=true};
+   script.onerror=()=>{window.__wfAnalyticsLoading=false};
+   document.head.appendChild(script);
+ }
+ if(localStorage.getItem(key)==='yes')load();
+ else if(localStorage.getItem(key)!=='no'){
+   const box=document.createElement('aside');box.className='wf-consent';box.setAttribute('aria-label','Analytics preferences');
+   box.innerHTML='<p>Can we use privacy-conscious analytics to improve WeirdFlex? No session recordings.</p><button type="button" data-consent="yes">Allow analytics</button><button type="button" data-consent="no">No thanks</button>';
+   box.addEventListener('click',e=>{const value=e.target.dataset.consent;if(!value)return;localStorage.setItem(key,value);box.remove();if(value==='yes')load()});
+   document.addEventListener('DOMContentLoaded',()=>document.body.appendChild(box),{once:true});
+ }
+ document.addEventListener('click',e=>{
+   const link=e.target.closest('a[href]');if(!link)return;
+   const href=link.getAttribute('href')||'';
+   const project=link.closest('.project,.offer-preview');
+   if(project){track('project_open',{project:href,placement:project.classList.contains('offer-preview')?'preview':'portfolio'});return}
+   if(href.startsWith('mailto:'))track('contact_click',{placement:link.classList.contains('offer-link')?'service':link.classList.contains('contact-link')?'contact':'other'});
+   else if(href.startsWith('#'))track('navigation_click',{section:href.slice(1)});
+ },{capture:true});
+})();
+</script></head><body><div class="wrap"><header class="top"><a class="logo" href="/" aria-label="WeirdFlex home">weird<span>flex.</span></a><nav aria-label="Main navigation"><a href="#services">Services</a><a href="#work">Games</a><a href="#about">About</a><a href="#contact">Contact &rarr;</a></nav></header><main><div class="hero"><div class="eyebrow">Independent playable studio · Creative technology & music</div><h1>Ideas worth<br><em>playing.</em></h1><div class="hero-bottom"><p class="lead">We make browser games, interactive campaigns and music experiences people actually want to spend time with.</p></div></div>
 <section id="services" class="offerings"><div class="section-head"><h2>What we<br>make.</h2><p>Four ways to turn a good idea into something people can actually play.</p></div>
 <article class="offering" id="brand-games"><div class="offer-index">01 / FOR BRANDS</div><div class="offer-main"><h3>Brand<br>games<span class="period">.</span></h3><p>Mobile-first mini-games built around your brand, product launch or campaign. Designed for replay, sharing and measurable actions.</p><div class="chips"><span>Branded arcade</span><span>Leaderboards</span><span>Prizes &amp; CTAs</span></div><a class="offer-link" href="mailto:djrozzo@gmail.com?subject=Brand%20game%20brief">Discuss a brand game <span>&rarr;</span></a></div><a class="offer-preview" href="/shibarun/" aria-label="Play an example arcade runner"><img src="/shibarun/assets/ozzy-logo.webp" alt="Example mobile arcade runner" loading="lazy"><span>PLAY THE GAME</span></a></article>
 <article class="offering" id="music-releases"><div class="offer-index">02 / FOR ARTISTS &amp; LABELS</div><div class="offer-main"><h3>Playable music<br>releases<span class="period">.</span></h3><p>Give a track or EP its own playable world. Let listeners discover the music through gameplay, then take them to your release.</p><div class="chips"><span>Music integration</span><span>Sharing</span><span>Streaming links</span></div><a class="offer-link" href="mailto:djrozzo@gmail.com?subject=Playable%20music%20release">Make a release playable <span>&rarr;</span></a></div><a class="offer-preview" href="/grooverider/" aria-label="Play Waves of Light"><img src="/grooverider/assets/share-card.jpg" alt="Waves of Light music game" loading="lazy"><span>PLAY THE GAME</span></a></article>
@@ -124,6 +160,7 @@
        if(available.length&&Math.random()<.65){
          const picked=available[Math.floor(Math.random()*available.length)];
          // The sprite player owns the full intro / loop / outro timeline.
+         if(window.wfTrack)window.wfTrack('shiba_animation',{animation:picked});
          dog.dataset.extraAction=picked;
          dog.dataset.extraStarted=String(performance.now());
          state('idle');
@@ -140,6 +177,7 @@
          if(!alive())return;dog.dataset.sitPhase='exit';await wait(850);
        }
      }else{
+       if(window.wfTrack)window.wfTrack('shiba_interaction',{action:action,target:target?.tagName?.toLowerCase()||'none'});
        state(action);if(action==='bite'&&target)target.classList.add('shiba-nibbled');
        await wait(action==='pee'?2200:action==='sniff'?1900:1200);
      }
@@ -182,6 +220,7 @@
    e.preventDefault();e.stopPropagation();
    const r=dog.getBoundingClientRect();dx=e.clientX-r.left;dy=e.clientY-r.top;
    x=r.left;y=r.top;pointer=e.pointerId;drag=true;epoch++;busy=false;destination=null;
+   if(window.wfTrack)window.wfTrack('shiba_drag_start',{input:e.pointerType||'mouse'});
    dog.setPointerCapture(e.pointerId);dog.classList.add('is-dragging');state('idle');
  }
  dog.addEventListener('pointerdown',stopForDrag);
@@ -190,6 +229,7 @@
  });
  function release(e){if(!drag||e.pointerId!==pointer)return;
    drag=false;pointer=null;dog.classList.remove('is-dragging');
+   if(window.wfTrack)window.wfTrack('shiba_drag_end',{input:e.pointerType||'mouse'});
    state('look');busy=true;const token=epoch;
    wait(850).then(()=>{if(token===epoch&&!drag){busy=false;state('walk');nextDecision=performance.now()+350}});
  }
