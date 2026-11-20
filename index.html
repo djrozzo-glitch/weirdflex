@@ -168,7 +168,7 @@
  else{state('walk');nextDecision=performance.now()+600}
  render();requestAnimationFrame(tick);
 })();
-<script>(function(){
+</script><script>(function(){
 const dog=document.querySelector('.shiba-walker'),sprite=dog&&dog.querySelector('.shiba-png');if(!sprite)return;
 const root='/assets/shiba/',frames=['idle','walk_1','walk_2','sniff','bite','leg_lift','jump','sit'];const walkFrames=Array.from({length:8},(_,i)=>'walk_'+String(i+1).padStart(2,'0'));const cache={};
 let walk=0,frameTimer,walkReady=false,lifeTick=0,lastLifeState='',lastSitPhase='';const lifeFrames={look:Array.from({length:6},(_,i)=>'look_'+String(i+1).padStart(2,'0')),sit:Array.from({length:4},(_,i)=>'sit_'+String(i+1).padStart(2,'0')),scratch:Array.from({length:8},(_,i)=>'scratch_'+String(i+1).padStart(2,'0'))};const lifeReady={look:false,sit:false,scratch:false};
