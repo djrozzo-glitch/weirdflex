@@ -79,9 +79,13 @@
  function load(){
    if(window.__wfAnalyticsReady||window.__wfAnalyticsLoading)return;
    window.__wfAnalyticsLoading=true;
-   const script=document.createElement('script');script.src='https://cdn.jsdelivr.net/npm/posthog-js@1/dist/array.js';script.async=true;
+   const script=document.createElement('script');script.src=API_HOST+'/static/array.js';script.async=true;
+   // Official browser bootstrap queues init until the PostHog library is loaded.
+   const stub=[];stub.__SV=1;stub._i=[];['capture','identify','register','opt_in_capturing','opt_out_capturing','onFeatureFlags','get_distinct_id'].forEach(method=>{stub[method]=function(){stub.push([method,...arguments])}});
+   stub.init=function(token,options){stub._i.push([token,options]);};window.posthog=stub;
+   window.posthog.init(PROJECT_TOKEN,{api_host:API_HOST,capture_pageview:true,capture_pageleave:true,autocapture:false,disable_session_recording:true,person_profiles:'identified_only'});window.__wfAnalyticsReady=true;
    // Use the official PostHog browser SDK via CDN, with no session recording or automatic form capture.
-   script.onload=()=>{if(!window.posthog){return}window.posthog.init(PROJECT_TOKEN,{api_host:API_HOST,capture_pageview:true,capture_pageleave:true,autocapture:false,disable_session_recording:true,person_profiles:'identified_only'});window.__wfAnalyticsReady=true};
+   script.onload=()=>{};
    script.onerror=()=>{window.__wfAnalyticsLoading=false};
    document.head.appendChild(script);
  }
