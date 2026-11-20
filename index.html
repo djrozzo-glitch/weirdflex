@@ -119,7 +119,14 @@
    const alive=()=>!drag&&token===epoch;
    try{
      if(action==='rest'){
-       if(Math.random()<.4){state('look');await wait(2800+Math.random()*1300)}
+       const extras=['tail','roll','stretch','sleep','sneeze','tilt'];
+       const available=extras.filter(k=>dog.dataset['ready'+k]==='1');
+       if(available.length&&Math.random()<.65){
+         const picked=available[Math.floor(Math.random()*available.length)];
+         dog.dataset.extraAction=picked;state('idle');
+         await wait(({tail:4200,roll:6300,stretch:2400,sleep:9500,sneeze:1500,tilt:3600})[picked]);
+         delete dog.dataset.extraAction;
+       }else if(Math.random()<.4){state('look');await wait(2800+Math.random()*1300)}
        else{
          dog.dataset.sitPhase='enter';state('sit');await wait(850);if(!alive())return;
          dog.dataset.sitPhase='hold';await wait(3200+Math.random()*2200);if(!alive())return;
@@ -133,6 +140,7 @@
    }finally{
      if(target)target.classList.remove('shiba-nibbled');
      delete dog.dataset.sitPhase;
+     delete dog.dataset.extraAction;
      if(alive()){state('walk');nextDecision=performance.now()+650;busy=false}
    }
  }
@@ -188,14 +196,19 @@
 </script><script>(function(){
 const dog=document.querySelector('.shiba-walker'),sprite=dog&&dog.querySelector('.shiba-png');if(!sprite)return;
 const root='/assets/shiba/',frames=['idle','walk_1','walk_2','sniff','bite','leg_lift','jump','sit'];const walkFrames=Array.from({length:8},(_,i)=>'walk_'+String(i+1).padStart(2,'0'));const cache={};
-let walk=0,frameTimer,walkReady=false,lifeTick=0,lastLifeState='',lastSitPhase='';const lifeFrames={look:Array.from({length:6},(_,i)=>'look_'+String(i+1).padStart(2,'0')),sit:Array.from({length:4},(_,i)=>'sit_'+String(i+1).padStart(2,'0')),scratch:Array.from({length:8},(_,i)=>'scratch_'+String(i+1).padStart(2,'0'))};const lifeReady={look:false,sit:false,scratch:false};
+let walk=0,frameTimer,walkReady=false,lifeTick=0,lastLifeState='',lastSitPhase='';
+const extraCounts={tail:8,roll:10,stretch:6,sleep:8,sneeze:6,tilt:5};
+const extraFrames=Object.fromEntries(Object.entries(extraCounts).map(([k,n])=>[k,Array.from({length:n},(_,i)=>k+'_'+String(i+1).padStart(2,'0'))]));
+const extraReady={};const lifeFrames={look:Array.from({length:6},(_,i)=>'look_'+String(i+1).padStart(2,'0')),sit:Array.from({length:4},(_,i)=>'sit_'+String(i+1).padStart(2,'0')),scratch:Array.from({length:8},(_,i)=>'scratch_'+String(i+1).padStart(2,'0'))};const lifeReady={look:false,sit:false,scratch:false};
 function pingPong(t,length){if(length<=1)return 0;const period=2*(length-1),p=t%period;return p<length?p:period-p}
 function setFrame(name){if(cache[name]&&sprite.src!==cache[name].src)sprite.src=cache[name].src}
 function begin(){if(frameTimer)clearInterval(frameTimer);dog.classList.add('has-png');setFrame(walkReady?walkFrames[0]:'walk_1');frameTimer=setInterval(()=>{
- const lifeState=dog.classList.contains('is-scratching')?'scratch':dog.classList.contains('is-sitting')?'sit':dog.classList.contains('is-looking')?'look':'walk';
+ const extra=dog.dataset.extraAction||'';
+ const lifeState=extra?'extra:'+extra:dog.classList.contains('is-scratching')?'scratch':dog.classList.contains('is-sitting')?'sit':dog.classList.contains('is-looking')?'look':'walk';
  const sitPhase=dog.dataset.sitPhase||'';
  if(lifeState!==lastLifeState||sitPhase!==lastSitPhase){lifeTick=0;lastLifeState=lifeState;lastSitPhase=sitPhase;}
- if(dog.classList.contains('is-scratching')){const seq=lifeFrames.scratch;setFrame(lifeReady.scratch?seq[pingPong(Math.floor(lifeTick++/2),seq.length)]:'sit')}
+ if(extra&&extraReady[extra]){const seq=extraFrames[extra],t=Math.floor(lifeTick++/2),loops={tail:[1,6],roll:[3,6],stretch:[1,3],sleep:[4,6],sneeze:[2,3],tilt:[1,3]};const [lo,hi]=loops[extra];const intro=t<lo?t:lo+((t-lo)%(hi-lo+1));const outro=Math.max(0,Math.floor((({tail:4200,roll:6300,stretch:2400,sleep:9500,sneeze:1500,tilt:3600})[extra]-500)/105));setFrame(seq[Math.min(seq.length-1,lifeTick/2>outro?hi+Math.floor(lifeTick/2-outro):intro)])}
+ else if(dog.classList.contains('is-scratching')){const seq=lifeFrames.scratch;setFrame(lifeReady.scratch?seq[pingPong(Math.floor(lifeTick++/2),seq.length)]:'sit')}
  else if(dog.classList.contains('is-sitting')){const seq=lifeFrames.sit,phase=dog.dataset.sitPhase||'hold';const idx=phase==='hold'?seq.length-1:phase==='exit'?Math.max(0,seq.length-1-Math.floor(lifeTick++/2)):Math.min(seq.length-1,Math.floor(lifeTick++/2));setFrame(lifeReady.sit?seq[idx]:'sit')}
  else if(dog.classList.contains('is-looking')){const seq=lifeFrames.look;setFrame(lifeReady.look?seq[pingPong(Math.floor(lifeTick++/3),seq.length)]:'idle')}
  else if(dog.classList.contains('is-peeing'))setFrame('leg_lift');
@@ -206,6 +219,7 @@ function begin(){if(frameTimer)clearInterval(frameTimer);dog.classList.add('has-
 },walkReady?105:140)}
 let done=0,failed=false;frames.forEach(name=>{const im=new Image();im.onload=()=>{cache[name]=im;if(++done===frames.length&&!failed)begin()};im.onerror=()=>{failed=true};im.src=root+name+'.png'}); 
 Object.entries(lifeFrames).forEach(([kind,seq])=>Promise.all(seq.map(name=>new Promise(resolve=>{const im=new Image();im.onload=()=>{cache[name]=im;resolve(true)};im.onerror=()=>resolve(false);im.src=root+name+'.png?v=3'}))).then(results=>{lifeReady[kind]=results.every(Boolean)}));
+Object.entries(extraFrames).forEach(([kind,seq])=>Promise.all(seq.map(name=>new Promise(resolve=>{const im=new Image();im.onload=()=>{cache[name]=im;resolve(true)};im.onerror=()=>resolve(false);im.src=root+name+'.png?v=1'}))).then(results=>{extraReady[kind]=results.every(Boolean);dog.dataset['ready'+kind]=extraReady[kind]?'1':'0'}));
 Promise.all(walkFrames.map(name=>new Promise(resolve=>{const im=new Image();im.onload=()=>{cache[name]=im;resolve(true)};im.onerror=()=>resolve(false);im.src=root+name+'.png?v=3'}))).then(results=>{if(results.every(Boolean)){walkReady=true;if(dog.classList.contains('has-png'))begin()}});
 document.addEventListener('visibilitychange',()=>{if(frameTimer){clearInterval(frameTimer);frameTimer=null;if(!document.hidden)begin()}});
 })();</script></body></html>
