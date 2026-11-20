@@ -39,6 +39,10 @@
 @keyframes shiba-sit-breathe{to{transform:scale(1.015) translateY(-1px)}}
 @keyframes shiba-ear-scratch{to{transform:rotate(3deg) translateY(-2px)}}
 @media(prefers-reduced-motion:reduce){.shiba-walker.is-resting .shiba-png{animation:none}}
+/* Draggable Shiba character */
+.shiba-walker{animation:none!important;pointer-events:auto;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.shiba-walker.is-dragging{cursor:grabbing;filter:drop-shadow(0 9px 8px rgba(0,0,0,.22))}
+.shiba-walker.is-dragging .shiba-png{transform:rotate(-5deg)}
 /* PNG Shiba upgrade: preserves original SVG as fallback until sprites are deployed */
 .shiba-walker.has-png svg{display:none}.shiba-png{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;image-rendering:auto;display:none}.shiba-walker.has-png .shiba-png{display:block}.shiba-walker.has-png{width:96px;height:85px}.shiba-walker.has-png.is-playing .shiba-png{animation:none}@media(max-width:750px){.shiba-walker.has-png{width:76px;height:66px}}
 
@@ -79,168 +83,92 @@
 <path d="M36 42 Q40 39 44 42 Q41 46 38 45 Z" fill="#29211c"/><path d="M40 45 Q40 49 36 49 M40 45 Q40 49 44 49" fill="none" stroke="#29211c" stroke-width="1.4" stroke-linecap="round"/>
 <circle cx="19" cy="43" r="3" fill="#e9a28d" opacity=".65"/><circle cx="51" cy="43" r="3" fill="#e9a28d" opacity=".65"/>
 </svg></div><script>
-/* Tiny Shiba behavior loop. Never intercepts input or modifies document text. */
+/* Shiba world controller: one coordinate system for roaming, mischief and dragging. */
 (function(){
  const dog=document.querySelector('.shiba-walker');
- if(!dog||!dog.animate||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
- let busy=false, last=0, timer, roam=null, restTimer=null;
- const walkingSpeed=78.75; // 25% slower than the previous 105px/s
- function resumeWalking(x,facing){
-   if(roam){roam.cancel();roam=null;}
-   dog.style.left=x+'px';dog.style.transform='scaleX('+facing+')';dog.style.animation='none';
-   const width=dog.getBoundingClientRect().width||76;
-   const leftEdge=-width-8,rightEdge=innerWidth+8;
-   const first=facing===1?leftEdge:rightEdge;
-   const second=facing===1?rightEdge:leftEdge;
-   const a=Math.abs(first-x),b=Math.abs(second-first),c=Math.abs(first-second);
-   const total=a+b+c;
-   roam=dog.animate([
-     {offset:0,transform:'translateX(0px) scaleX('+facing+')'},
-     {offset:a/total,transform:'translateX('+(first-x)+'px) scaleX('+facing+')'},
-     {offset:a/total+0.00001,transform:'translateX('+(first-x)+'px) scaleX('+(-facing)+')'},
-     {offset:(a+b)/total,transform:'translateX('+(second-x)+'px) scaleX('+(-facing)+')'},
-     {offset:(a+b)/total+0.00001,transform:'translateX('+(second-x)+'px) scaleX('+facing+')'},
-     {offset:1,transform:'translateX('+(first-x)+'px) scaleX('+facing+')'}
-   ],{duration:total/walkingSpeed*1000,iterations:Infinity,easing:'linear',fill:'both'});
+ if(!dog)return;
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const speed=78.75, clamp=(n,a,b)=>Math.max(a,Math.min(b,n)),wait=ms=>new Promise(r=>setTimeout(r,ms));
+ let x=innerWidth*.45,y=innerHeight-95,face=-1,mode='walk',destination=null;
+ let busy=false,drag=false,pointer=null,dx=0,dy=0,previous=performance.now(),nextDecision=0,epoch=0;
+ const size=()=>({w:dog.offsetWidth||96,h:dog.offsetHeight||85});
+ const bounds=()=>{const {w,h}=size();return {left:0,top:0,right:Math.max(0,innerWidth-w),bottom:Math.max(0,innerHeight-h)}};
+ const render=()=>{dog.style.left=x+'px';dog.style.top=y+'px';dog.style.bottom='auto';dog.style.transform='scaleX('+face+')'};
+ function state(s){mode=s;dog.classList.toggle('is-approaching',s==='walk');dog.classList.toggle('is-looking',s==='look');dog.classList.toggle('is-sitting',s==='sit'||s==='scratch');dog.classList.toggle('is-scratching',s==='scratch');dog.classList.toggle('is-sniffing',s==='sniff');dog.classList.toggle('is-biting',s==='bite');dog.classList.toggle('is-peeing',s==='pee');dog.classList.toggle('is-playing',s!=='walk');}
+ function randomDestination(){const b=bounds();return {x:Math.random()*b.right,y:Math.random()*b.bottom};}
+ function visibleHeadings(){return [...document.querySelectorAll('h1,h2,h3')].filter(el=>{const r=el.getBoundingClientRect();return r.width>55&&r.height>18&&r.bottom>45&&r.top<innerHeight-50&&r.right>25&&r.left<innerWidth-25})}
+ function choose(){if(busy||drag||reduced)return;
+   const titles=visibleHeadings();
+   if(titles.length&&Math.random()<.42){const el=titles[Math.floor(Math.random()*titles.length)],r=el.getBoundingClientRect(),b=bounds();
+     destination={x:clamp(r.left+r.width*.35,0,b.right),y:clamp(r.bottom+6,0,b.bottom),action:['sniff','bite','pee'][Math.floor(Math.random()*3)],target:el};
+   }else destination={...randomDestination(),action:Math.random()<.48?'rest':null};
+   state('walk');
  }
- const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
- const mobile=()=>innerWidth<751;
- function candidates(kind){
-   const selector=kind==='sniff'?'.offer-preview,.project .thumb':'h1,.section-head h2,.offer-main h3,.contact h2';
-   return [...document.querySelectorAll(selector)].filter(el=>{
-     const r=el.getBoundingClientRect();
-     return r.width>50&&r.height>20&&r.bottom>innerHeight*.36&&r.top<innerHeight-90&&r.left<innerWidth-30&&r.right>30;
-   });
- }
- function pop(x,y,type){
-   const el=document.createElement('span');el.className='shiba-reaction'+(type==='puddle'?' puddle':'');
-   if(type!=='puddle')el.textContent=type;
-   el.style.left=Math.max(4,Math.min(innerWidth-35,x))+'px';
-   el.style.top=Math.max(15,Math.min(innerHeight-22,y))+'px';
-   document.body.append(el);setTimeout(()=>el.remove(),type==='puddle'?2800:1400);
- }
- async function play(){
-   if(busy||document.hidden||Date.now()-last<14000)return;
-   const kinds=['sniff','bite','pee'];
-   const eligible=kinds.map(kind=>({kind,els:candidates(kind)})).filter(o=>o.els.length);
-   if(!eligible.length)return;
-   const chosen=eligible[Math.floor(Math.random()*eligible.length)];
-   const target=chosen.els[Math.floor(Math.random()*chosen.els.length)];
-   const rect=target.getBoundingClientRect();
-   const dogRect=dog.getBoundingClientRect();
-   const currentTransform=getComputedStyle(dog).transform;
-   const currentFacing=currentTransform&&currentTransform!=='none'?(new DOMMatrixReadOnly(currentTransform).a<0?-1:1):1;
-   if(roam){roam.cancel();roam=null;}
-   const dogW=dogRect.width||66,dogH=dogRect.height||56;
-   const x=Math.max(5,Math.min(innerWidth-dogW-5,rect.left+Math.min(rect.width*.35,100)));
-   const targetY=chosen.kind==='sniff'?rect.bottom-18:rect.bottom-12;
-   const rise=Math.max(0,Math.min(mobile()?240:310,innerHeight-targetY-dogH-8));
-   busy=true;last=Date.now();
-   dog.classList.add('is-playing');
-   dog.style.left=dogRect.left+'px';
-   dog.style.transform='scaleX('+currentFacing+')';
-   dog.style.animation='none';
-   const dx=x-dogRect.left;
+ async function scene(action,target){
+   if(drag||busy)return;busy=true;destination=null;const token=epoch;
+   const alive=()=>!drag&&token===epoch;
    try{
-     // Travel at a consistent walking speed instead of teleporting to the target.
-     // Keep walk frames playing during approach; freeze only for the interaction.
-     dog.classList.add('is-approaching');
-     const facing=dx<0?1:-1;
-     const duration=Math.max(700,Math.abs(dx)/walkingSpeed*1000);
-     const approach=dog.animate([
-       {transform:'translate(0px,0px) scaleX('+facing+')'},
-       {transform:'translate('+dx+'px,0px) scaleX('+facing+')'}
-     ],{duration,easing:'linear',fill:'forwards'});
-     await approach.finished;
-     dog.style.left=x+'px';
-     dog.style.transform='scaleX('+facing+')';
-     approach.cancel();
-     // Move up to the visible content only after reaching its horizontal position.
-     if(rise>0){
-       const climb=dog.animate([{transform:'translateY(0px) scaleX('+facing+')'},{transform:'translateY('+(-rise)+'px) scaleX('+facing+')'}],{duration:Math.max(500,rise/170*1000),easing:'ease-in-out',fill:'forwards'});
-       await climb.finished;
-       dog.style.transform='translateY('+(-rise)+'px) scaleX('+facing+')';
-       climb.cancel();
-     }
-     dog.classList.remove('is-approaching');
-     const cls=chosen.kind==='sniff'?'is-sniffing':chosen.kind==='bite'?'is-biting':'is-peeing';
-     dog.classList.add(cls);
-     if(chosen.kind==='bite'){
-       target.classList.add('shiba-nibbled');
-       pop(x+dogW*.3,innerHeight-rise-dogH-14,'✦');
-     }else if(chosen.kind==='pee'){
-       // Puddle is part of the sprite itself.
-     }else{
-       pop(x+dogW*.5,innerHeight-rise-dogH-15,'♡');
-     }
-     await wait(chosen.kind==='pee'?2100:chosen.kind==='sniff'?1400:1100);
-     target.classList.remove('shiba-nibbled');
-     dog.classList.remove(cls);
-     const retreat=dog.animate([{transform:'translateY('+(-rise)+'px) scaleX('+facing+')'},{transform:'translateY(0) scaleX('+facing+')'}],{duration:450,easing:'ease-in',fill:'forwards'});
-     await retreat.finished;retreat.cancel();
-   }catch(e){}
-   dog.classList.remove('is-playing','is-approaching','is-sniffing','is-biting','is-peeing');
-   target.classList.remove('shiba-nibbled');
-   dog.style.removeProperty('bottom');
-   // Continue from the actual interaction position, never reset to CSS animation start.
-   resumeWalking(x,dx<0?1:-1);
-   busy=false;
- }
- async function quietMoment(){
-   if(busy||document.hidden||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-   if(!dog.classList.contains('has-png'))return;
-   const rect=dog.getBoundingClientRect();
-   if(rect.right<0||rect.left>innerWidth)return;
-   const matrix=new DOMMatrixReadOnly(getComputedStyle(dog).transform);
-   const facing=matrix.a<0?-1:1;
-   busy=true;
-   if(roam){roam.cancel();roam=null;}
-   dog.classList.add('is-playing','is-resting');
-   dog.style.left=rect.left+'px';
-   dog.style.transform='scaleX('+facing+')';
-   dog.style.animation='none';
-   try{
-     // Let each quiet activity breathe. Sitting is held, scratching is a
-     // separate occasional action, and the dog resumes from this position.
-     const activity=Math.random();
-     if(activity<.38){
-       dog.classList.add('is-looking');
-       await wait(3200+Math.random()*1800);
-       dog.classList.remove('is-looking');
-     }else{
-       dog.dataset.sitPhase='enter';
-       dog.classList.add('is-sitting');
-       await wait(850);
-       dog.dataset.sitPhase='hold';
-       await wait(3500+Math.random()*2500);
-       if(activity>.63){
-         dog.classList.add('is-scratching');
-         await wait(3600+Math.random()*1500);
-         dog.classList.remove('is-scratching');
-         await wait(2200+Math.random()*1800);
+     if(action==='rest'){
+       if(Math.random()<.4){state('look');await wait(2800+Math.random()*1300)}
+       else{
+         dog.dataset.sitPhase='enter';state('sit');await wait(850);if(!alive())return;
+         dog.dataset.sitPhase='hold';await wait(3200+Math.random()*2200);if(!alive())return;
+         if(Math.random()<.55){state('scratch');await wait(3200+Math.random()*1600);if(!alive())return;state('sit');await wait(850)}
+         if(!alive())return;dog.dataset.sitPhase='exit';await wait(850);
        }
-       dog.dataset.sitPhase='exit';
-       await wait(850);
-       dog.classList.remove('is-sitting');
-       delete dog.dataset.sitPhase;
+     }else{
+       state(action);if(action==='bite'&&target)target.classList.add('shiba-nibbled');
+       await wait(action==='pee'?2200:action==='sniff'?1900:1200);
      }
    }finally{
-     dog.classList.remove('is-looking','is-sitting','is-scratching','is-resting','is-playing');
+     if(target)target.classList.remove('shiba-nibbled');
      delete dog.dataset.sitPhase;
-     resumeWalking(rect.left,facing);
-     busy=false;
+     if(alive()){state('walk');nextDecision=performance.now()+650;busy=false}
    }
  }
- function scheduleRest(){
-   clearTimeout(restTimer);
-   restTimer=setTimeout(async()=>{await quietMoment();scheduleRest()},30000+Math.random()*15000);
+ function tick(now){
+   const dt=Math.min(.06,(now-previous)/1000);previous=now;
+   if(!drag&&!reduced&&!document.hidden){
+     if(!busy){
+       if(!destination&&now>nextDecision)choose();
+       if(destination){
+         const vx=destination.x-x,vy=destination.y-y,dist=Math.hypot(vx,vy);
+         if(dist<3){x=destination.x;y=destination.y;const {action,target}=destination;destination=null;
+           if(action)scene(action,target);else nextDecision=now+700+Math.random()*1300;
+         }else{
+           const step=Math.min(dist,speed*dt),b=bounds();
+           x=clamp(x+vx/dist*step,b.left,b.right);y=clamp(y+vy/dist*step,b.top,b.bottom);
+           if(Math.abs(vx)>1)face=vx<0?1:-1;
+         }
+       }
+     }
+   }
+   render();requestAnimationFrame(tick);
  }
- scheduleRest();
- function schedule(delay){clearTimeout(timer);timer=setTimeout(async()=>{await play();schedule(22000+Math.random()*9000)},delay)}
- document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!busy)schedule(9000)});
- schedule(8500);
+ function stopForDrag(e){
+   if(e.button!==undefined&&e.button!==0)return;
+   e.preventDefault();e.stopPropagation();
+   const r=dog.getBoundingClientRect();dx=e.clientX-r.left;dy=e.clientY-r.top;
+   x=r.left;y=r.top;pointer=e.pointerId;drag=true;epoch++;busy=false;destination=null;
+   dog.setPointerCapture(e.pointerId);dog.classList.add('is-dragging');state('idle');
+ }
+ dog.addEventListener('pointerdown',stopForDrag);
+ dog.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==pointer)return;
+   const b=bounds();x=clamp(e.clientX-dx,b.left,b.right);y=clamp(e.clientY-dy,b.top,b.bottom);
+ });
+ function release(e){if(!drag||e.pointerId!==pointer)return;
+   drag=false;pointer=null;dog.classList.remove('is-dragging');
+   state('look');busy=true;const token=epoch;
+   wait(850).then(()=>{if(token===epoch&&!drag){busy=false;state('walk');nextDecision=performance.now()+350}});
+ }
+ dog.addEventListener('pointerup',release);dog.addEventListener('pointercancel',release);
+ addEventListener('resize',()=>{const b=bounds();x=clamp(x,b.left,b.right);y=clamp(y,b.top,b.bottom);destination=null});
+ dog.style.animation='none';dog.style.bottom='auto';dog.style.right='auto';
+ if(reduced){x=innerWidth-(size().w+16);y=innerHeight-(size().h+12);state('idle')}
+ else{state('walk');nextDecision=performance.now()+600}
+ render();requestAnimationFrame(tick);
 })();
-</script><script>(function(){
+<script>(function(){
 const dog=document.querySelector('.shiba-walker'),sprite=dog&&dog.querySelector('.shiba-png');if(!sprite)return;
 const root='/assets/shiba/',frames=['idle','walk_1','walk_2','sniff','bite','leg_lift','jump','sit'];const walkFrames=Array.from({length:8},(_,i)=>'walk_'+String(i+1).padStart(2,'0'));const cache={};
 let walk=0,frameTimer,walkReady=false,lifeTick=0,lastLifeState='',lastSitPhase='';const lifeFrames={look:Array.from({length:6},(_,i)=>'look_'+String(i+1).padStart(2,'0')),sit:Array.from({length:4},(_,i)=>'sit_'+String(i+1).padStart(2,'0')),scratch:Array.from({length:8},(_,i)=>'scratch_'+String(i+1).padStart(2,'0'))};const lifeReady={look:false,sit:false,scratch:false};
