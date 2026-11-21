@@ -289,3 +289,18 @@ button:focus-visible,.hero-actions a:focus-visible,.top nav a:focus-visible,.con
 .case-examples span{display:block;font-size:10px;letter-spacing:.06em;font-weight:800;margin-top:10px}
 @media(max-width:900px){.game-catalog{grid-template-columns:repeat(2,minmax(0,1fr))}.catalog-case{grid-template-columns:1fr}}
 @media(max-width:600px){.game-catalog{grid-template-columns:1fr;gap:15px}.catalog-copy{padding:20px}.catalog-copy h3{font-size:34px;margin:16px 0 10px}.catalog-case{padding:20px;gap:22px}.case-examples{gap:10px}.case-examples span{font-size:9px}}
+
+/* Accessible, lightweight FAQ accordion */
+.faq-list{border-top:1px solid var(--ink)}
+.faq-list details{border-bottom:1px solid var(--line)}
+.faq-list summary{position:relative;display:block;list-style:none;cursor:pointer;padding:25px 52px 25px 0;font-size:clamp(19px,2.5vw,30px);font-weight:750;letter-spacing:-.045em;line-height:1.2}
+.faq-list summary::-webkit-details-marker{display:none}
+.faq-list summary::after{content:'+';position:absolute;right:7px;top:50%;transform:translateY(-50%);font-size:30px;font-weight:400;line-height:1;color:var(--accent)}
+.faq-list details[open] summary::after{content:'−'}
+.faq-list summary:hover{color:var(--accent)}
+.faq-list summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.faq-answer{max-width:790px;padding:0 30px 24px 0}
+.faq-answer p{font-size:clamp(15px,1.5vw,18px);line-height:1.6;color:var(--muted);margin:0}
+.faq-answer a{text-decoration:underline;text-underline-offset:3px;color:var(--ink)}
+.faq-answer a:hover{color:var(--accent)}
+@media(max-width:600px){.faq-list summary{padding:20px 38px 20px 0;font-size:21px}.faq-answer{padding:0 10px 20px 0}}
