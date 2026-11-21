@@ -293,9 +293,6 @@ footer{padding-block:18px 23px}
      }
    }finally{
      if(target)target.classList.remove('shiba-nibbled');
-     delete dog.dataset.sitPhase;
-     delete dog.dataset.extraAction;
-     delete dog.dataset.extraStarted;
      if(alive()){state('walk');nextDecision=performance.now()+650;busy=false}
    }
  }
@@ -348,7 +345,7 @@ footer{padding-block:18px 23px}
    state('look');busy=true;const token=epoch;
    wait(850).then(()=>{if(token===epoch&&!drag){busy=false;state('walk');nextDecision=performance.now()+350}});
  }
- dog.addEventListener('pointerup',release);dog.addEventListener('pointercancel',release);
+ dog.addEventListener('pointerup',release);dog.addEventListener('pointercancel',release);dog.addEventListener('lostpointercapture',e=>{if(drag&&e.pointerId===pointer)release(e)});
  dog.addEventListener('pointerenter',e=>{if(e.pointerType==='touch'||drag||busy||reduced||performance.now()<hoverCooldown)return;hoverCooldown=performance.now()+12000;state('look');busy=true;const token=epoch;wait(900).then(()=>{if(token===epoch&&!drag){busy=false;state('walk');nextDecision=performance.now()+500}})});
  document.addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey||e.target.closest('input,textarea,[contenteditable]'))return;if(e.key.length!==1)return;secretInput=(secretInput+e.key.toLowerCase()).slice(-4);if(secretInput==='ozzy'){secretInput='';unlock('ozzy','Ozzy knows his name!');react('tail',4800)}});
  addEventListener('resize',()=>{const b=bounds();x=clamp(x,b.left,b.right);y=clamp(y,b.top,b.bottom);destination=null});
