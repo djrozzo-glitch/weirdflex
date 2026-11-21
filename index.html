@@ -142,13 +142,13 @@
  const secretSeen=new Set();
  function announce(message){let el=document.getElementById('shiba-secret-toast');if(!el){el=document.createElement('div');el.id='shiba-secret-toast';el.setAttribute('role','status');el.style.cssText='position:fixed;bottom:112px;left:50%;transform:translateX(-50%);z-index:99999;background:#191919;color:#fff;border-radius:18px;padding:12px 18px;font:600 14px/1.4 system-ui,sans-serif;box-shadow:0 8px 32px #0003;pointer-events:none;transition:opacity .25s';document.body.appendChild(el)}el.textContent=message;el.style.opacity='1';clearTimeout(el._hide);el._hide=setTimeout(()=>el.style.opacity='0',2600)}
  function unlock(name,message){if(secretSeen.has(name))return;secretSeen.add(name);announce(message+' · '+secretSeen.size+'/2 secrets');if(window.wfTrack)window.wfTrack('shiba_secret',{secret:name})}
- async function react(kind,duration){if(drag||busy||reduced||secretLock)return false;const token=++epoch;secretLock=true;busy=true;destination=null;state('idle');if(window.wfTrack)window.wfTrack('shiba_pet',{reaction:kind});if(dog.dataset['ready'+kind]==='1'){dog.dataset.extraAction=kind;dog.dataset.extraStarted=String(performance.now())}else state('look');await wait(duration);if(token===epoch&&!drag){delete dog.dataset.extraAction;delete dog.dataset.extraStarted;busy=false;state('walk');nextDecision=performance.now()+800}secretLock=false;return true}
+ async function react(kind,duration){if(drag||busy||reduced||secretLock)return false;const token=++epoch;secretLock=true;busy=true;destination=null;state('idle');if(window.wfTrack)window.wfTrack('shiba_pet',{reaction:kind});if(dog.dataset['ready'+kind]==='1'){dog.dataset.extraAction=kind;dog.dataset.extraStarted=String(performance.now())}else state('look');await wait(duration);if(token===epoch&&!drag){busy=false;state('walk');nextDecision=performance.now()+800}secretLock=false;return true}
 
  const size=()=>({w:dog.offsetWidth||96,h:dog.offsetHeight||85});
  const bounds=()=>{const {w,h}=size();return {left:0,top:0,right:Math.max(0,innerWidth-w),bottom:Math.max(0,innerHeight-h)}};
  const edgeX=side=>side<0?-size().w-16:innerWidth+16;
  const render=()=>{dog.style.left=x+'px';dog.style.top=y+'px';dog.style.bottom='auto';dog.style.transform='scaleX('+face+')'};
- function state(s){mode=s;dog.classList.toggle('is-approaching',s==='walk');dog.classList.toggle('is-looking',s==='look');dog.classList.toggle('is-sitting',s==='sit'||s==='scratch');dog.classList.toggle('is-scratching',s==='scratch');dog.classList.toggle('is-sniffing',s==='sniff');dog.classList.toggle('is-biting',s==='bite');dog.classList.toggle('is-peeing',s==='pee');dog.classList.toggle('is-playing',s!=='walk');}
+ function state(s){if(s==='walk'){delete dog.dataset.extraAction;delete dog.dataset.extraStarted;delete dog.dataset.sitPhase;}mode=s;dog.classList.toggle('is-approaching',s==='walk');dog.classList.toggle('is-looking',s==='look');dog.classList.toggle('is-sitting',s==='sit'||s==='scratch');dog.classList.toggle('is-scratching',s==='scratch');dog.classList.toggle('is-sniffing',s==='sniff');dog.classList.toggle('is-biting',s==='bite');dog.classList.toggle('is-peeing',s==='pee');dog.classList.toggle('is-playing',s!=='walk');}
  function randomDestination(){const b=bounds();return {x:b.left+Math.random()*(b.right-b.left),y:b.top+Math.random()*(b.bottom-b.top)};}
  function visibleHeadings(){return [...document.querySelectorAll('h1,h2,h3')].filter(el=>{const r=el.getBoundingClientRect();return r.width>55&&r.height>18&&r.bottom>45&&r.top<innerHeight-50&&r.right>25&&r.left<innerWidth-25})}
  function choose(){if(busy||drag||reduced)return;
@@ -230,7 +230,7 @@
    e.preventDefault();e.stopPropagation();
    pressStart=performance.now();pressX=e.clientX;pressY=e.clientY;pressMoved=false;
    const r=dog.getBoundingClientRect();dx=e.clientX-r.left;dy=e.clientY-r.top;
-   x=r.left;y=r.top;pointer=e.pointerId;drag=true;epoch++;busy=false;destination=null;
+   x=r.left;y=r.top;pointer=e.pointerId;drag=true;epoch++;busy=false;destination=null;delete dog.dataset.extraAction;delete dog.dataset.extraStarted;delete dog.dataset.sitPhase;
    if(window.wfTrack)window.wfTrack('shiba_drag_start',{input:e.pointerType||'mouse'});
    dog.setPointerCapture(e.pointerId);dog.classList.add('is-dragging');state('idle');
  }
@@ -266,7 +266,7 @@ const extraReady={};const lifeFrames={look:Array.from({length:6},(_,i)=>'look_'+
 function pingPong(t,length){if(length<=1)return 0;const period=2*(length-1),p=t%period;return p<length?p:period-p}
 function setFrame(name){if(cache[name]&&sprite.src!==cache[name].src)sprite.src=cache[name].src}
 function begin(){if(frameTimer)clearInterval(frameTimer);dog.classList.add('has-png');setFrame(walkReady?walkFrames[0]:'walk_1');frameTimer=setInterval(()=>{
- const extra=dog.dataset.extraAction||'';
+ const extra=dog.classList.contains('is-playing')&&!dog.classList.contains('is-dragging')?(dog.dataset.extraAction||''):'';
  const lifeState=extra?'extra:'+extra:dog.classList.contains('is-scratching')?'scratch':dog.classList.contains('is-sitting')?'sit':dog.classList.contains('is-looking')?'look':'walk';
  const sitPhase=dog.dataset.sitPhase||'';
  if(lifeState!==lastLifeState||sitPhase!==lastSitPhase){lifeTick=0;lastLifeState=lifeState;lastSitPhase=sitPhase;}
