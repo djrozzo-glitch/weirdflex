@@ -217,3 +217,8 @@ button:focus-visible,.hero-actions a:focus-visible,.top nav a:focus-visible,.con
 .dances-cover .cover-dot{color:#ab367e}
 .dances-cover .dance-figure{position:absolute;right:10%;top:5%;font-size:clamp(140px,21vw,300px);line-height:1;color:#b3408d;opacity:.27;transform:rotate(-20deg)}
 @media(max-width:750px){.editorial-cover .cover-title{font-size:clamp(36px,10vw,68px)}}
+
+/* Secondary portfolio examples within service descriptions. */
+.related-game{display:inline-flex;align-items:center;gap:6px;margin:12px 0 0 18px;font-size:13px;font-weight:700;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:5px;min-height:32px}
+.related-game:hover{color:var(--accent);text-decoration-color:var(--accent)}
+@media(max-width:750px){.related-game{margin:10px 0 0;display:flex;width:max-content}}
