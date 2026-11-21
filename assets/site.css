@@ -263,3 +263,29 @@ button:focus-visible,.hero-actions a:focus-visible,.top nav a:focus-visible,.con
 @media(max-width:900px){.step-card{flex-basis:calc((100% - 16px)/2)}}
 @media(max-width:600px){.steps-track{gap:12px}.step-card{flex-basis:86%;min-height:300px;padding:22px 20px}.step-card h3{font-size:36px;margin:35px 0 16px}.step-card-price h3{font-size:76px;margin:20px 0 14px}.steps-carousel-head{margin-top:12px}.steps-arrow{width:40px;height:40px}}
 @media(prefers-reduced-motion:reduce){.steps-track{scroll-behavior:auto}}
+
+/* Mini-game product catalog */
+.game-catalog{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.catalog-card{min-width:0;display:flex;flex-direction:column;border:1px solid var(--line);background:#ebe8e1;border-radius:12px;overflow:hidden}
+.catalog-art{position:relative;display:block;aspect-ratio:16/10;overflow:hidden;background:#292727}
+.catalog-art img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .3s ease}
+.catalog-art:hover img{transform:scale(1.04)}
+.catalog-play{position:absolute;bottom:12px;right:12px;background:var(--bg);border-radius:30px;padding:10px 13px;font-size:11px;font-weight:800;letter-spacing:.04em;color:var(--ink)}
+.catalog-copy{display:flex;flex-direction:column;flex:1;padding:22px 20px}
+.catalog-category{color:var(--accent);font-size:10px;font-weight:800;letter-spacing:.09em}
+.catalog-copy h3{font-size:clamp(25px,2.8vw,40px);letter-spacing:-.06em;line-height:1.04;margin:22px 0 12px}
+.catalog-copy p{color:#55534e;font-size:14px;line-height:1.55;margin:0 0 24px}
+.catalog-actions{display:flex;flex-direction:column;align-items:flex-start;gap:14px;margin-top:auto;border-top:1px solid #c7c2b8;padding-top:17px}
+.catalog-price{font-size:21px;font-weight:800;letter-spacing:-.04em}
+.catalog-order{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:12px 15px;background:var(--ink);color:white;font-size:12px;font-weight:800}
+.catalog-order:hover{background:var(--accent)}
+.catalog-case{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:36px;align-items:center;margin-top:30px;padding:28px;border:1px solid var(--line);border-radius:12px}
+.case-copy h3{font-size:clamp(28px,3.3vw,47px);line-height:1.02;letter-spacing:-.06em;margin:18px 0}
+.case-copy p{font-size:15px;line-height:1.55;color:var(--muted)}
+.case-footnote{display:block;color:var(--muted);font-size:12px;line-height:1.5;margin-top:22px}
+.case-examples{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.case-examples a{display:block;min-width:0}
+.case-examples img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#dedbd3;border-radius:7px}
+.case-examples span{display:block;font-size:10px;letter-spacing:.06em;font-weight:800;margin-top:10px}
+@media(max-width:900px){.game-catalog{grid-template-columns:repeat(2,minmax(0,1fr))}.catalog-case{grid-template-columns:1fr}}
+@media(max-width:600px){.game-catalog{grid-template-columns:1fr;gap:15px}.catalog-copy{padding:20px}.catalog-copy h3{font-size:34px;margin:16px 0 10px}.catalog-case{padding:20px;gap:22px}.case-examples{gap:10px}.case-examples span{font-size:9px}}
