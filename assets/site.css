@@ -195,3 +195,10 @@ button,a{-webkit-tap-highlight-color:transparent}
 button:focus-visible,.hero-actions a:focus-visible,.top nav a:focus-visible,.contact-link:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
 @media(max-width:750px){.hero-actions{margin-top:16px;gap:8px 18px}.hero-actions .cta{padding:13px 16px}.hero-secondary{font-size:13px}}
 @media(prefers-reduced-motion:reduce){.skip-link{transition:none}}
+
+/* Editorial hero actions: restrained text links, consistent with the site. */
+.hero-actions{gap:12px 30px;margin-top:24px}
+.hero-actions .cta,.hero-actions .hero-secondary{display:inline-flex;align-items:center;justify-content:flex-start;gap:10px;min-height:44px;margin:0;padding:0 0 5px;background:transparent;color:var(--ink);border:0;border-bottom:1.5px solid var(--ink);border-radius:0;box-shadow:none;font-size:14px;font-weight:750;letter-spacing:-.01em;line-height:1.2;white-space:nowrap;transform:none;transition:color .18s ease,border-color .18s ease}
+.hero-actions .cta:hover,.hero-actions .hero-secondary:hover{background:transparent;color:var(--accent);border-color:var(--accent);transform:none}
+.hero-actions .cta span,.hero-actions .hero-secondary span{display:inline-block;font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:400;line-height:1;background:none;box-shadow:none}
+@media(max-width:750px){.hero-actions{gap:8px 25px;margin-top:14px}.hero-actions .cta,.hero-actions .hero-secondary{min-height:42px;padding:0 0 4px;font-size:13px}}
