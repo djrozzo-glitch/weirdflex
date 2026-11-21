@@ -222,3 +222,18 @@ button:focus-visible,.hero-actions a:focus-visible,.top nav a:focus-visible,.con
 .related-game{display:inline-flex;align-items:center;gap:6px;margin:12px 0 0 18px;font-size:13px;font-weight:700;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:5px;min-height:32px}
 .related-game:hover{color:var(--accent);text-decoration-color:var(--accent)}
 @media(max-width:750px){.related-game{margin:10px 0 0;display:flex;width:max-content}}
+
+/* Small games / small businesses positioning. Reuse existing editorial visual language. */
+.hero .lead strong{font-weight:800;color:var(--ink)}
+.how-it-works{border-top:1px solid var(--line)}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,3vw,42px);margin:22px 0 35px}
+.step{border-top:1px solid var(--ink);padding-top:15px}
+.step-num,.price-eyebrow{display:block;color:var(--muted);font-size:12px;font-weight:800;letter-spacing:.12em}
+.step h3{font-size:clamp(23px,3vw,37px);line-height:1.1;letter-spacing:-.055em;margin:24px 0 12px}
+.step p{max-width:340px;color:var(--muted);line-height:1.55;margin:0}
+.price-note{display:flex;justify-content:space-between;align-items:center;gap:30px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:24px 0}
+.price-note strong{display:block;font-size:clamp(52px,9vw,92px);letter-spacing:-.09em;line-height:1;margin:8px 0}
+.price-note p{max-width:620px;margin:0;color:var(--muted);line-height:1.5;font-size:14px}
+.price-link{display:inline-flex;flex:none;align-items:center;gap:12px;border-bottom:1px solid var(--ink);font-weight:750;padding:12px 0;white-space:nowrap}
+.price-link:hover{color:var(--accent);border-color:var(--accent)}
+@media(max-width:750px){.steps{grid-template-columns:1fr;gap:20px}.step h3{margin:10px 0}.price-note{align-items:flex-start;flex-direction:column;gap:12px}.price-link{white-space:normal}}
