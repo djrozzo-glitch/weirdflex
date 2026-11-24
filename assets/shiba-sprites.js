@@ -10,7 +10,7 @@ function setFrame(name){if(cache[name]&&sprite.src!==cache[name].src)sprite.src=
 function motion(){return dog.dataset.motionState||'walk'}
 function syncFrame(){const m=motion();if(m==='walk'){walk=0;setFrame(walkReady?walkFrames[0]:'walk_1')}else if(m==='sit'||m==='scratch')setFrame(lifeReady.sit?lifeFrames.sit[0]:'sit');else if(m==='look')setFrame(lifeReady.look?lifeFrames.look[0]:'idle');else if(m==='sniff')setFrame('sniff');else if(m==='bite')setFrame('bite');else if(m==='pee')setFrame('leg_lift');else setFrame('idle')}
 dog.addEventListener('shiba-state-change',()=>{lastLifeState='';lastSitPhase='';lifeTick=0;syncFrame()});
-function begin(){if(frameTimer)clearInterval(frameTimer);dog.classList.add('has-png');syncFrame();frameTimer=setInterval(()=>{
+function begin(){if(!cache.idle&&!cache.walk_1&&!cache[walkFrames[0]])return;if(!sprite.getAttribute('src'))setFrame(cache.idle?'idle':cache.walk_1?'walk_1':walkFrames[0]);if(frameTimer)clearInterval(frameTimer);dog.classList.add('has-png');syncFrame();frameTimer=setInterval(()=>{
  const m=motion();
  const extra=m!=='walk'&&!dog.classList.contains('is-dragging')?(dog.dataset.extraAction||''):'';
  const lifeState=extra?'extra:'+extra:m;
@@ -55,18 +55,21 @@ function loadFrame(name,version=''){
  if(cache[name])return Promise.resolve(true);
  return new Promise(resolve=>{
   const im=new Image();
+  if(name==='idle')im.fetchPriority='high';
   im.onload=()=>{cache[name]=im;resolve(true)};
   im.onerror=()=>resolve(false);
   im.src=root+name+'.png'+(version?'?v='+version:'');
  });
 }
-Promise.all(frames.map(name=>loadFrame(name))).then(results=>{
- // Even if an optional base pose fails, retain the SVG fallback until idle/walk work.
- if(results[0]&&results[1]&&results[2]&&!document.hidden)begin();
-});
-Promise.all(walkFrames.map(name=>loadFrame(name,'3'))).then(results=>{
- if(results.every(Boolean)){walkReady=true;if(dog.classList.contains('has-png')&&!document.hidden)begin()}
-});
+async function boot(){
+ let ready=await loadFrame('idle');
+ if(!ready){await new Promise(r=>setTimeout(r,500));ready=await loadFrame('idle');}
+ if(ready){setFrame('idle');if(!document.hidden)begin();else dog.classList.add('has-png');}
+ await Promise.all(frames.filter(n=>n!=='idle').map(n=>loadFrame(n).then(ok=>{if(ok&&!dog.classList.contains('has-png')&&!document.hidden)begin();})));
+ const results=await Promise.all(walkFrames.map(name=>loadFrame(name,'3')));
+ if(results.every(Boolean)){walkReady=true;if(!document.hidden)begin();}
+}
+boot();
 function loadOptional(){
  Object.entries(lifeFrames).forEach(([kind,seq])=>
   Promise.all(seq.map(name=>loadFrame(name,'3'))).then(results=>{lifeReady[kind]=results.every(Boolean)})
@@ -80,5 +83,5 @@ function loadOptional(){
 }
 if('requestIdleCallback' in window)requestIdleCallback(loadOptional,{timeout:3500});
 else setTimeout(loadOptional,1600);
-document.addEventListener('visibilitychange',()=>{if(document.hidden){if(frameTimer)clearInterval(frameTimer);frameTimer=null}else if(!frameTimer&&dog.classList.contains('has-png'))begin()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){if(frameTimer)clearInterval(frameTimer);frameTimer=null}else if(!frameTimer)begin()});
 })();
