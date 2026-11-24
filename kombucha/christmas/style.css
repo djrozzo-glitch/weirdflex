@@ -96,3 +96,6 @@ html body main input, html body main textarea {
 .panel { overflow-wrap:break-word; }
 .primary,.secondary { line-height:1.25; white-space:normal; }
 @media (max-width:390px) { .panel { padding:16px; } h2 { font-size:clamp(25px,7vw,34px); } #start small { font-size:.8rem; } }
+
+#submit-score .consent-row { display:flex; align-items:center; gap:10px; font-size:.8rem; }
+#submit-score .consent-row input { width:22px; height:22px; min-height:0; flex:0 0 22px; accent-color:#eac083; }
