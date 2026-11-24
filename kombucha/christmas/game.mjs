@@ -177,7 +177,9 @@ function finish() {
   $('final').textContent=score(run);
   $('details').textContent=run.bottles+' '+bottleWord(run.bottles)+' · Личный рекорд: '+best+' '+pointWord(best);
   $('nickname').value=get('kombucha-christmas-name')||'';
-  $('email').value=get('kombucha-christmas-email')||'';
+  $('email').value='';
+  $('consent').checked=false;
+  try { localStorage.removeItem('kombucha-christmas-email'); } catch {}
   $('submit-score').hidden=!ticket||!run.bottles;
   $('save-status').textContent=ticket?'':'Тренировочный забег · Таблица рекордов пока недоступна.';
   show('result');
@@ -428,14 +430,15 @@ $('submit-score').onsubmit=async e=>{
     return;
   }
   if(!$('email').validity.valid||!email) { $('save-status').textContent='Проверь адрес электронной почты.'; return; }
+  if(!/^[a-z0-9._+-]+@example\.com$/i.test(email)||!$('consent').checked) { $('save-status').textContent='Для демонстрации используй адрес @example.com и отметь согласие.'; return; }
   const resultTicket=ticket;
   button.disabled=true;
   $('retry').disabled=true;
   $('save-status').textContent='Проверяем результат…';
   try {
-    await api('scores',{token:resultTicket.token,inputs,endTick:run.tick,name,email});
+    await api('scores',{token:resultTicket.token,inputs,endTick:run.tick,name,email,consent:true,consentVersion:'kombucha-v1'});
     set('kombucha-christmas-name',name);
-    set('kombucha-christmas-email',email);
+
     $('submit-score').hidden=true;
     $('save-status').textContent='Готово! Твой результат в таблице рекордов.';
   } catch {
