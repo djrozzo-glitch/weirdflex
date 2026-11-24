@@ -318,3 +318,33 @@ button:focus-visible,.hero-actions a:focus-visible,.top nav a:focus-visible,.con
  .top nav{gap:8px}
  .top nav a{font-size:10px}
 }
+
+/* Screen-by-screen editorial rhythm; natural scrolling and content-safe heights. */
+:root{--screen-height:100vh;--header-height:56px}
+@supports(height:100svh){:root{--screen-height:100svh}}
+#main-content>.hero{min-height:calc(var(--screen-height) - var(--header-height));display:flex;flex-direction:column;justify-content:center}
+#main-content>section{min-height:var(--screen-height);display:flex;flex-direction:column;justify-content:center;padding-block:clamp(28px,5vh,64px)}
+#main-content>#services{display:block;padding-block:0}
+#services>.section-head{padding-top:clamp(28px,5vh,64px);margin-bottom:0}
+#services>.offering{min-height:var(--screen-height);align-items:center;align-content:center;padding-block:clamp(28px,5vh,64px)}
+#services>.offering:first-of-type{min-height:calc(var(--screen-height) - 130px);border-top:0}
+#services .offer-preview{width:100%;align-self:center}
+#main-content>#choose-game{min-height:0;padding-block:0;display:block}
+#choose-game>.section-head{padding-top:clamp(28px,5vh,64px)}
+#choose-game>.game-catalog{min-height:calc(var(--screen-height) - 140px);align-content:center;padding-bottom:32px}
+#choose-game>.catalog-case{min-height:calc(var(--screen-height) - 64px);margin-block:32px;align-content:center}
+#main-content>#faq{justify-content:center}
+@media(max-width:750px){
+ :root{--header-height:52px}
+ #main-content>.hero{padding-block:32px}
+ #main-content>section{padding-block:32px}
+ #services>.offering{grid-template-columns:1fr;gap:16px;align-content:center;align-items:start;padding-block:28px}
+ #services>.offering:first-of-type{min-height:calc(var(--screen-height) - 110px)}
+ #services .offer-preview{display:block;max-width:100%;width:100%;margin:0}
+ #services .offer-preview img{max-height:30svh;object-fit:cover}
+ #choose-game>.game-catalog{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;align-items:stretch;gap:12px;min-height:0;padding-bottom:16px;scrollbar-width:thin}
+ #choose-game .catalog-card{flex:0 0 88%;scroll-snap-align:start}
+ #choose-game>.catalog-case{min-height:var(--screen-height);margin-block:24px}
+ #main-content>#faq{min-height:var(--screen-height)}
+}
+@media(max-height:600px) and (orientation:landscape){#main-content>.hero,#main-content>section,#services>.offering,#services>.offering:first-of-type,#choose-game>.game-catalog,#choose-game>.catalog-case{min-height:0}}
