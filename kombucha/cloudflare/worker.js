@@ -226,6 +226,8 @@ export default {
  async fetch(request,env){
   const url=new URL(request.url);
   const path=url.pathname.replace(/\/$/,'');
+  // Kombucha migrated to Timeweb. Never read legacy submission bodies.
+  if(path==='/api/kombucha'||path.startsWith('/api/kombucha/')||path==='/run'||path==='/scores') return json({error:'Kombucha API retired'},410);
   if(path.startsWith(leMartiniEndless.route+'/'))return serveLeMartini(request,env,path,leMartiniEndless);
   if(path.startsWith(leMartini.route+'/'))return serveLeMartini(request,env,path,leMartini);
   const origin=request.headers.get('Origin');
