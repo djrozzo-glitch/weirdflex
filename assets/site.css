@@ -265,9 +265,13 @@ button:focus-visible,.hero-actions a:focus-visible,.top nav a:focus-visible,.con
 @media(prefers-reduced-motion:reduce){.steps-track{scroll-behavior:auto}}
 
 /* Mini-game product catalog */
-.game-catalog{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
-.catalog-card{min-width:0;display:flex;flex-direction:column;border:1px solid var(--line);background:#ebe8e1;border-radius:12px;overflow:hidden}
+.catalog-controls{align-self:flex-end;margin-bottom:8px}
+.catalog-controls[hidden]{display:none}
+.game-catalog{--catalog-gap:18px;display:flex;gap:var(--catalog-gap);overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-inline:contain;padding-bottom:16px}
+.game-catalog:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.catalog-card{flex:0 0 calc((100% - 2 * var(--catalog-gap)) / 3);scroll-snap-align:start;min-width:0;display:flex;flex-direction:column;border:1px solid var(--line);background:#ebe8e1;border-radius:12px;overflow:hidden}
 .catalog-art{position:relative;display:block;aspect-ratio:16/10;overflow:hidden;background:#292727}
+.catalog-art:focus-visible{outline-offset:-4px;z-index:1}
 .catalog-art img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .3s ease}
 .catalog-art:hover img{transform:scale(1.04)}
 .catalog-play{position:absolute;bottom:12px;right:12px;background:var(--bg);border-radius:30px;padding:10px 13px;font-size:11px;font-weight:800;letter-spacing:.04em;color:var(--ink)}
@@ -287,8 +291,9 @@ button:focus-visible,.hero-actions a:focus-visible,.top nav a:focus-visible,.con
 .case-examples a{display:block;min-width:0}
 .case-examples img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#dedbd3;border-radius:7px}
 .case-examples span{display:block;font-size:10px;letter-spacing:.06em;font-weight:800;margin-top:10px}
-@media(max-width:900px){.game-catalog{grid-template-columns:repeat(2,minmax(0,1fr))}.catalog-case{grid-template-columns:1fr}}
-@media(max-width:600px){.game-catalog{grid-template-columns:1fr;gap:15px}.catalog-copy{padding:20px}.catalog-copy h3{font-size:34px;margin:16px 0 10px}.catalog-case{padding:20px;gap:22px}.case-examples{gap:10px}.case-examples span{font-size:9px}}
+@media(max-width:900px){.catalog-card{flex-basis:calc((100% - var(--catalog-gap)) / 2)}.catalog-case{grid-template-columns:1fr}}
+@media(max-width:750px){.game-catalog{--catalog-gap:12px}.catalog-card{flex-basis:88%}}
+@media(max-width:600px){.catalog-copy{padding:20px}.catalog-copy h3{font-size:34px;margin:16px 0 10px}.catalog-case{padding:20px;gap:22px}.case-examples{gap:10px}.case-examples span{font-size:9px}}
 
 /* Accessible, lightweight FAQ accordion */
 .faq-list{border-top:1px solid var(--ink)}
@@ -357,8 +362,6 @@ button:focus-visible,.hero-actions a:focus-visible,.top nav a:focus-visible,.con
  #services .offer-preview{grid-column:2;grid-row:auto;display:block;max-height:none;aspect-ratio:4/3;margin:0}
  #services .offer-preview span{display:none}
  #services .offer-link,#services .related-game{font-size:11px}
- #choose-game>.game-catalog{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;align-items:stretch;gap:12px;padding-bottom:16px}
- #choose-game .catalog-card{flex:0 0 88%;scroll-snap-align:start}
  #how-it-works .catalog-case{padding:14px;gap:12px;margin-top:16px}
  #how-it-works .case-examples img{max-height:none}
  #how-it-works .case-copy h3{font-size:25px}

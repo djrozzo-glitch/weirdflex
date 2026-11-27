@@ -14,7 +14,7 @@ Personalization starts at **€299** for a proven browser game. This covers agre
 | --- | --- |
 | Hero | Introduce the offer and starting price. Give visitors a choice between exploring games and making contact. |
 | Pick your play | Explain mini-games for small businesses, playable releases, interactive experiences, and original development. |
-| Choose your game | Offer four demos and a customization CTA for each. The design calls for a horizontal catalog. The current CSS uses a desktop grid and a mobile carousel. |
+| Choose your game | Offer four demos and a customization CTA for each in a horizontal carousel with arrows, keyboard controls, and touch scrolling. |
 | Simple by design | Combine the process carousel and the ShibaRun-to-Kombucha case study in one section. The case shows how a runner became a branded Christmas promotion with a caribou, bottle collectibles, and seasonal scenery. |
 | Play before you buy | Show playable work in a horizontal portfolio with consistent artwork and actions. |
 | Good questions | Cover scope, price, mobile play, hosting, and optional features. End with a contact CTA. |
@@ -50,7 +50,7 @@ The visual identity uses a warm off-white background, near-black type, terracott
 
 ## Ozzy
 
-The site mascot uses custom PNG artwork in `assets/shiba/`. `assets/shiba-controller.js` controls movement, interaction, animation state, and analytics hooks. `assets/shiba-sprites.js` loads frames and displays poses. The homepage preloads the original idle pose at high priority and keeps the dog hidden until the renderer has an image. The sprite loader retries idle once, then loads base and walking frames. Optional poses load during idle time. The renderer pauses its frame timer while the document is hidden and restarts it on return.
+The site mascot uses custom PNG artwork in `assets/shiba/`. `assets/shiba-controller.js` controls movement, interaction, animation state, and analytics hooks. `assets/shiba-sprites.js` loads frames and displays poses. The homepage preloads the original idle pose at high priority and keeps the dog hidden until the renderer has an image. The sprite loader retries idle once and gives it a short head start before loading fallback poses. The first successful original frame reveals the mascot, and the walking animation uses the frames that loaded. Optional poses load during idle time. The renderer pauses its frame timer while the document is hidden and restarts it on return.
 
 Preserve roaming and edge re-entry, heading interactions, resting and playful animations, petting, dragging, and Easter eggs. Check real iPhone Safari for browser chrome and safe areas, pointer behavior, sprite readiness on a cold load, and resume after switching tabs or apps.
 

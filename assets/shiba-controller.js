@@ -111,6 +111,7 @@
    const tapped=!pressMoved&&performance.now()-pressStart<550;
    if(window.wfTrack)window.wfTrack('shiba_drag_end',{input:e.pointerType||'mouse',was_tap:tapped});
    if(tapped){state('idle');petCount++;if(petCount===5){petCount=0;unlock('five_pets','Best human unlocked!');react('tail',4800)}else react(petCount%2?'tilt':'stretch',petCount%2?4100:2600);return}
+   if(reduced){state('idle');return}
    state('look');busy=true;const token=epoch;
    wait(850).then(()=>{if(token===epoch&&!drag){busy=false;state('walk');nextDecision=performance.now()+350}});
  }

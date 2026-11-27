@@ -1,16 +1,16 @@
 (function(){
 const dog=document.querySelector('.shiba-walker'),sprite=dog&&dog.querySelector('.shiba-png');if(!sprite)return;
-const root='/assets/shiba/',frames=['idle','walk_1','walk_2','sniff','bite','leg_lift','jump','sit'];const walkFrames=Array.from({length:8},(_,i)=>'walk_'+String(i+1).padStart(2,'0'));const cache={};
-let walk=0,frameTimer,walkReady=false,lifeTick=0,lastLifeState='',lastSitPhase='';
+const root='/assets/shiba/',baseFrames=['walk_1','walk_2','sniff','bite','leg_lift','jump','sit'];const walkFrames=Array.from({length:8},(_,i)=>'walk_'+String(i+1).padStart(2,'0'));const cache={};
+let walk=0,frameTimer,walking=['walk_1','walk_2'],walkInterval=140,lifeTick=0,lastLifeState='',lastSitPhase='';
 const extraCounts={tail:8,stretch:6,sleep:8,sneeze:6,tilt:5};
 const extraFrames=Object.fromEntries(Object.entries(extraCounts).map(([k,n])=>[k,Array.from({length:n},(_,i)=>k+'_'+String(i+1).padStart(2,'0'))]));
 const extraReady={};const lifeFrames={look:Array.from({length:6},(_,i)=>'look_'+String(i+1).padStart(2,'0')),sit:Array.from({length:4},(_,i)=>'sit_'+String(i+1).padStart(2,'0')),scratch:Array.from({length:8},(_,i)=>'scratch_'+String(i+1).padStart(2,'0'))};const lifeReady={look:false,sit:false,scratch:false};
 function pingPong(t,length){if(length<=1)return 0;const period=2*(length-1),p=t%period;return p<length?p:period-p}
 function setFrame(name){if(cache[name]&&sprite.src!==cache[name].src)sprite.src=cache[name].src}
 function motion(){return dog.dataset.motionState||'walk'}
-function syncFrame(){const m=motion();if(m==='walk'){walk=0;setFrame(walkReady?walkFrames[0]:'walk_1')}else if(m==='sit'||m==='scratch')setFrame(lifeReady.sit?lifeFrames.sit[0]:'sit');else if(m==='look')setFrame(lifeReady.look?lifeFrames.look[0]:'idle');else if(m==='sniff')setFrame('sniff');else if(m==='bite')setFrame('bite');else if(m==='pee')setFrame('leg_lift');else setFrame('idle')}
+function syncFrame(){const m=motion();if(m==='walk'){walk=0;setFrame(walking[0])}else if(m==='sit'||m==='scratch')setFrame(lifeReady.sit?lifeFrames.sit[0]:'sit');else if(m==='look')setFrame(lifeReady.look?lifeFrames.look[0]:'idle');else if(m==='sniff')setFrame('sniff');else if(m==='bite')setFrame('bite');else if(m==='pee')setFrame('leg_lift');else setFrame('idle')}
 dog.addEventListener('shiba-state-change',()=>{lastLifeState='';lastSitPhase='';lifeTick=0;syncFrame()});
-function begin(){if(!cache.idle&&!cache.walk_1&&!cache[walkFrames[0]])return;if(!sprite.getAttribute('src'))setFrame(cache.idle?'idle':cache.walk_1?'walk_1':walkFrames[0]);if(frameTimer)clearInterval(frameTimer);dog.classList.add('has-png');syncFrame();frameTimer=setInterval(()=>{
+function begin(){if(document.hidden||!dog.classList.contains('has-png'))return;if(frameTimer)clearInterval(frameTimer);syncFrame();frameTimer=setInterval(()=>{
  const m=motion();
  const extra=m!=='walk'&&!dog.classList.contains('is-dragging')?(dog.dataset.extraAction||''):'';
  const lifeState=extra?'extra:'+extra:m;
@@ -47,8 +47,8 @@ function begin(){if(!cache.idle&&!cache.walk_1&&!cache[walkFrames[0]])return;if(
  else if(m==='sniff')setFrame('sniff');
  else if(m==='bite')setFrame('bite');
  else if(m!=='walk')setFrame('idle');
- else {walk=(walk+1)%(walkReady?8:2);setFrame(walkReady?walkFrames[walk]:(walk?'walk_1':'walk_2'))}
-},walkReady?105:140)}
+ else {walk=(walk+1)%walking.length;setFrame(walking[walk])}
+},walkInterval)}
 // Prioritize the visible dog: base poses and walking frames first.
 // Optional animations are fetched when the browser is idle, not during first paint.
 function loadFrame(name,version=''){
@@ -56,18 +56,40 @@ function loadFrame(name,version=''){
  return new Promise(resolve=>{
   const im=new Image();
   if(name==='idle')im.fetchPriority='high';
-  im.onload=()=>{cache[name]=im;resolve(true)};
+  im.onload=()=>{
+   cache[name]=im;
+   if(!dog.classList.contains('has-png')){
+    setFrame(name);
+    dog.classList.add('has-png');
+    begin();
+   }
+   resolve(true);
+  };
   im.onerror=()=>resolve(false);
   im.src=root+name+'.png'+(version?'?v='+version:'');
  });
 }
+async function loadIdle(){
+ if(await loadFrame('idle'))return;
+ await new Promise(resolve=>setTimeout(resolve,500));
+ await loadFrame('idle');
+}
 async function boot(){
- let ready=await loadFrame('idle');
- if(!ready){await new Promise(r=>setTimeout(r,500));ready=await loadFrame('idle');}
- if(ready){setFrame('idle');if(!document.hidden)begin();else dog.classList.add('has-png');}
- await Promise.all(frames.filter(n=>n!=='idle').map(n=>loadFrame(n).then(ok=>{if(ok&&!dog.classList.contains('has-png')&&!document.hidden)begin();})));
- const results=await Promise.all(walkFrames.map(name=>loadFrame(name,'3')));
- if(results.every(Boolean)){walkReady=true;if(!document.hidden)begin();}
+ // Give the preloaded pose a head start without letting a stalled request block fallback frames.
+ let fallbackTimer;
+ await Promise.race([loadIdle(),new Promise(resolve=>{fallbackTimer=setTimeout(resolve,1500)})]);
+ clearTimeout(fallbackTimer);
+ await Promise.all(baseFrames.map(name=>loadFrame(name)));
+ const walkLoads=Promise.all(walkFrames.map(name=>loadFrame(name,'3')));
+ if('requestIdleCallback' in window)requestIdleCallback(loadOptional,{timeout:3500});
+ else setTimeout(loadOptional,1600);
+ await walkLoads;
+ const available=walkFrames.filter(name=>cache[name]);
+ if(available.length){
+  walking=available;
+  walkInterval=105;
+  begin();
+ }
 }
 boot();
 function loadOptional(){
@@ -81,7 +103,10 @@ function loadOptional(){
   })
  );
 }
-if('requestIdleCallback' in window)requestIdleCallback(loadOptional,{timeout:3500});
-else setTimeout(loadOptional,1600);
-document.addEventListener('visibilitychange',()=>{if(document.hidden){if(frameTimer)clearInterval(frameTimer);frameTimer=null}else if(!frameTimer)begin()});
+document.addEventListener('visibilitychange',()=>{
+ if(document.hidden){
+  clearInterval(frameTimer);
+  frameTimer=null;
+ }else if(!frameTimer)begin();
+});
 })();
